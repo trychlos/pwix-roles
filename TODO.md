@@ -10,7 +10,10 @@
 
 |   Id | Date       | Description and comment(s) |
 | ---: | :---       | :---                       |
-|    1 |  |  |
+|    1 | 2023- 2- 2 | have aliases |
+|    2 | 2023- 2- 2 | prEdit: a user should not be able to give roles higher than his own |
+|    3 | 2023- 2- 2 | implement f_CleanupObsoleteRoles at startup |
+|    4 |  | |
 
 ---
 ## Done

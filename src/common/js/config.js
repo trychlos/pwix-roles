@@ -4,7 +4,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-console.log( 'pwix:roles/src/common/config.js declaring global exported pwiRoles object' );
+//console.log( 'pwix:roles/src/common/config.js defining globally exported pwiRoles object' );
 
 _ready = {
     dep: new Tracker.Dependency(),
@@ -35,7 +35,7 @@ pwiRoles = {
      * @returns {Object} with the roles of the current logged-in user, as an object with keys:
      *  - id        {String}    the current user identifier
      *  - all       {Array}     all the roles, either directly or indirectly set
-     *  - direct    {Array}     only the directly attributed top roles in the hierarchy (removing indirect ones)
+     *  - direct    {Array}     only the directly attributed top roles in the hierarchy (after havng removed indirect ones)
      */
     current: function(){
         _current.dep.depend();
