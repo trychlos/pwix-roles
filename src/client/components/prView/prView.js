@@ -1,7 +1,7 @@
 /*
- * pwix:roles/src/client/components/prRolesView/prRolesView.js
+ * pwix:roles/src/client/components/prView/prView.js
  *
- * Don't want to use a 'read-only' version of prRolesEdit to not show to the user the roles he/she DOESN'T have...
+ * Don't want to use a 'read-only' version of prEdit to not show to the user the roles he/she DOESN'T have...
  * So just show here the roles directly attributed, along with the inherited ones.
  * 
  * If someone has provided any viewCb object, then display their result in tabs.
@@ -18,9 +18,9 @@ import '../../../common/js/index.js';
 
 import '../../stylesheets/pr_roles.less';
 
-import './prRolesView.html';
+import './prView.html';
 
-Template.prRolesView.onCreated( function(){
+Template.prView.onCreated( function(){
     const self = this;
 
     self.PR = {
@@ -91,11 +91,11 @@ Template.prRolesView.onCreated( function(){
     }
 });
 
-Template.prRolesView.onRendered( function(){
+Template.prView.onRendered( function(){
     this.$( '.modal' ).modal( 'show' );
 });
 
-Template.prRolesView.helpers({
+Template.prView.helpers({
     // i18n namespace
     namespace(){
         return ROLES_I18N;
@@ -136,10 +136,10 @@ Template.prRolesView.helpers({
     },
 });
 
-Template.prRolesView.events({
+Template.prView.events({
 
     // remove the Blaze element from the DOM
-    'hidden.bs.modal .prRolesView'( event, instance ){
+    'hidden.bs.modal .prView'( event, instance ){
         Blaze.remove( instance.view );
     }
 });

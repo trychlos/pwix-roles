@@ -2,7 +2,7 @@ Package.describe({
     name: 'pwix:roles',
     version: '1.0.0',
     summary: 'An encapsulation of alanning:roles',
-    git: '',
+    git: 'https://github.com/trychlos/pwix-roles',
     documentation: 'README.md'
 });
 
@@ -27,12 +27,12 @@ function configure( api ){
     api.use( 'alanning:roles', 'server' );
     api.use( 'blaze-html-templates', 'client' );
     api.use( 'ecmascript' );
-    api.use( 'less', 'client' );
+    api.use( 'less@4.0.0', 'client' );
     api.use( 'mongo', 'server' );
-    api.use( 'pwix:i18n' );
-    api.use( 'pwi:string-prototype' );
-    api.addFiles( 'src/client/components/prRolesEdit/prRolesEdit.js', 'client' );
-    api.addFiles( 'src/client/components/prRolesView/prRolesView.js', 'client' );
+    api.use( 'pwix:i18n@1.0.0' );
+    api.use( 'tmeasday:check-npm-versions@1.0.2', 'server' );
+    api.addFiles( 'src/client/components/prEdit/prEdit.js', 'client' );
+    api.addFiles( 'src/client/components/prView/prView.js', 'client' );
 }
 
 Npm.depends({

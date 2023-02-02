@@ -45,7 +45,10 @@ pwiRoles = {
     // should be *in same terms* called both by the client and the server
     configure: function( o ){
         console.log( 'pwix:roles configure() with', o );
-        pwiRoles.conf = { ...pwiRoles.conf, ...o };
+        pwiRoles.conf = {
+            ...pwiRoles.conf,
+            ...o
+        };
     },
 
     // internationalization
@@ -65,7 +68,7 @@ pwiRoles = {
     server: {},
 
     /**
-     * Let the caller provides a function whose result will be added as a HTML string to the prRolesView content.
+     * Let the caller provides a function whose result will be added as a HTML string to the prView content.
      * This result will be displayed as a distinct tab in the dialog.
      * @param {Object} o an object which following keys:
      *  - tabLabel: a function

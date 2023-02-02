@@ -4,6 +4,8 @@
 
 A Meteor package which encapsulates alanning:roles
 
+## Why ?
+
 ## Usage
 
 ## What does it provide ?
@@ -14,7 +16,7 @@ A Meteor package which encapsulates alanning:roles
             - exports a single 'pwiRoles' object which holds necessary data and functions
             - installs some Meteor methods
             - provides components to be included in an user interface
-                > prRolesEdit edit the roles attributed to a user
+                > prEdit edit the roles attributed to a user
 
     Configuration.
         The package MUST be configured before Meteor.startup(), so at the top of the application code.
@@ -58,3 +60,27 @@ A Meteor package which encapsulates alanning:roles
                 ]
             }
         }
+
+## NPM peer dependencies
+
+In accordance with advices from [the Meteor Guide](https://guide.meteor.com/writing-atmosphere-packages.html#npm-dependencies), we do not hardcode NPM dependencies in `package.js`. Instead we check npm versions of installed packages at runtime, on server startup, in development environment.
+
+Dependencies as of v 1.1.0:
+```
+    '@popperjs/core': '^2.11.6',
+    bootstrap: '^5.2.1',
+    jstree: '^3.3.12',
+    uuid: '^9.0.0'
+```
+Each of these dependencies should be installed at application level:
+```
+    meteor npm install <package> --save
+```
+
+## Translations
+
+New and updated translations are willingly accepted, and more than welcome. Just be kind enough to submit a PR on the [Github repository](https://github.com/trychlos/pwix-bootbox/pulls).
+
+---
+P. Wieser
+- Last updated on 2023, Feb. 2nd

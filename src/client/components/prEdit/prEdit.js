@@ -30,9 +30,9 @@ import '../../../common/js/index.js';
 import '../../stylesheets/jstree-style.css';
 import '../../stylesheets/pr_roles.less';
 
-import './prRolesEdit.html';
+import './prEdit.html';
 
-Template.prRolesEdit.onCreated( function(){
+Template.prEdit.onCreated( function(){
     const self = this;
 
     self.PR = {
@@ -77,7 +77,7 @@ Template.prRolesEdit.onCreated( function(){
     });
 });
 
-Template.prRolesEdit.onRendered( function(){
+Template.prEdit.onRendered( function(){
     const self = this;
 
     self.$( '.modal' ).modal( 'show' );
@@ -200,7 +200,7 @@ Template.prRolesEdit.onRendered( function(){
     });
 });
 
-Template.prRolesEdit.helpers({
+Template.prEdit.helpers({
     // i18n namespace
     namespace(){
         return ROLES_I18N;
@@ -215,7 +215,7 @@ Template.prRolesEdit.helpers({
     }
 });
 
-Template.prRolesEdit.events({
+Template.prEdit.events({
     // save the updates
     'click .pr-submit'( event, instance ){
         let checked = [];
@@ -233,7 +233,7 @@ Template.prRolesEdit.events({
     },
 
     // remove the Blaze element from the DOM
-    'hidden.bs.modal .prRolesEdit'( event, instance ){
+    'hidden.bs.modal .prEdit'( event, instance ){
         Blaze.remove( instance.view );
     }
 });
