@@ -10,6 +10,7 @@ pwiRoles.i18n = {
                 title: 'Edit user\'s roles',
                 title_mail: 'Edit roles for %s',
                 myroles: 'My roles',
+                norole: 'It seems you don\'t have any particular role at the moment.',
                 roles_tab: 'Roles',
                 cancel: 'Cancel',
                 save: 'Save',

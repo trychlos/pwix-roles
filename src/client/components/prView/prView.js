@@ -4,7 +4,7 @@
  * Don't want to use a 'read-only' version of prEdit to not show to the user the roles he/she DOESN'T have...
  * So just show here the roles directly attributed, along with the inherited ones.
  * 
- * If someone has provided any viewCb object, then display their result in tabs.
+ * If the caller has provided any viewCb object, then display their result in tabs.
  * 
  * Parms:
  * - title: (opt) a ReactiveVar which contains the modal title, defaulting to 'My roles'
@@ -58,12 +58,19 @@ Template.prView.onCreated( function(){
                 }
                 html += '</li>';
             }
+            let count = 0;
             html += '<ul class="pr-view-roles">';
             pwiRoles.userHierarchy( pwiRoles.current().direct ).every(( o ) => {
                 f_display( o );
+                count += 1;
                 return true;
             });
             html += '</ul>';
+            if( !count ){
+                html = '<p class="">';
+                html += i18n.label( ROLES_I18N, 'dialogs.norole' );
+                html += '</p>'
+            }
             return html;
         },
 
@@ -93,6 +100,9 @@ Template.prView.onCreated( function(){
 
 Template.prView.onRendered( function(){
     this.$( '.modal' ).modal( 'show' );
+
+    // add a tag class to body element to let the stylesheet identify *this* modal
+    $( 'body' ).addClass( 'prRoles-prView-class' );
 });
 
 Template.prView.helpers({
@@ -140,6 +150,7 @@ Template.prView.events({
 
     // remove the Blaze element from the DOM
     'hidden.bs.modal .prView'( event, instance ){
+        $( 'body' ).removeClass( 'prRoles-prView-class' );
         Blaze.remove( instance.view );
     }
 });

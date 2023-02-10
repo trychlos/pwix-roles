@@ -20,10 +20,11 @@
  *  in the dialog title.
  */
 
-import 'jquery/dist/jquery.min.js';
+//import 'jquery/dist/jquery.min.js';
 import 'jstree/dist/jstree.min.js';
 
 import { pwixI18n as i18n } from 'meteor/pwix:i18n';
+//import { pwixModal } from 'meteor/pwix:modal';
 
 import '../../../common/js/index.js';
 
@@ -198,6 +199,9 @@ Template.prEdit.onRendered( function(){
             });
         }
     });
+
+    // add a tag class to body element to let the stylesheet identify *this* modal
+    $( 'body' ).addClass( 'prRoles-prEdit-class' );
 });
 
 Template.prEdit.helpers({
@@ -234,6 +238,7 @@ Template.prEdit.events({
 
     // remove the Blaze element from the DOM
     'hidden.bs.modal .prEdit'( event, instance ){
+        $( 'body' ).removeClass( 'prRoles-prEdit-class' );
         Blaze.remove( instance.view );
     }
 });

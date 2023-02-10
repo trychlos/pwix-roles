@@ -29,7 +29,8 @@ function configure( api ){
     api.use( 'ecmascript' );
     api.use( 'less@4.0.0', 'client' );
     api.use( 'mongo', 'server' );
-    api.use( 'pwix:i18n@1.0.0' );
+    api.use( 'pwix:i18n' );
+    api.use( 'pwix:modal' );
     api.use( 'tmeasday:check-npm-versions@1.0.2', 'server' );
     api.addFiles( 'src/client/components/prEdit/prEdit.js', 'client' );
     api.addFiles( 'src/client/components/prView/prView.js', 'client' );

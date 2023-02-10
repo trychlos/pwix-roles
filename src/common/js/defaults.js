@@ -3,10 +3,12 @@
  */
 
 defaults = {
-    verbose: PR_VERBOSE_NONE
+    conf: {
+        verbose: PR_VERBOSE_NONE
+    }
 };
 
 pwiRoles.conf = {
     ...pwiRoles.conf,
-    ...defaults
+    ...defaults.conf
 };
