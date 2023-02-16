@@ -5,9 +5,8 @@
 import { Tracker } from 'meteor/tracker';
 import { Roles } from 'meteor/alanning:roles';
 
-import '../../common/js/index.js';
-
 // the package is said ready when the publication for the current user is ready
+//  client only as Roles.subscription is client only
 Tracker.autorun(() => {
     if( Roles.subscription.ready()){
         _ready.val = true,
@@ -16,11 +15,13 @@ Tracker.autorun(() => {
 });
 
 // update the current user roles when the logged-in status changes
+//  client only as Meteor.userId() doesn't has any sense on the server
 Tracker.autorun(() => {
     if( pwiRoles.ready()){
         const _previous = _current.val.id;
         const id = Meteor.userId();
         if( _previous !== id ){
+            console.log( 'pwix:roles set roles for current user' );
             const res = ( id ? Roles.getRolesForUser( id ) : [] ) || [];
             _current.val.all = res;
             _current.val.direct = pwiRoles.filter( res );

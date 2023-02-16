@@ -30,6 +30,7 @@ pwiRoles.directRolesForUser = function( user ){
  * @returns {Array}
  */
 pwiRoles.filter = function( array ){
+    //console.log( 'filter in', array );
     let filtered = [];
     function f_filter( role ){
         if( !filtered.includes( role )){
@@ -51,6 +52,10 @@ pwiRoles.filter = function( array ){
         f_filter( role );
         return true;
     });
+    //console.log( 'filter out', filtered );
+    //if( filtered.length === 0 && array.length > 0 ){
+    //    throw new Error( 'error' );
+    //}
     return filtered;
 }
 

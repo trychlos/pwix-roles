@@ -1,6 +1,6 @@
 Package.describe({
     name: 'pwix:roles',
-    version: '1.0.0',
+    version: '0.90.0',	// before first release
     summary: 'An encapsulation of alanning:roles',
     git: 'https://github.com/trychlos/pwix-roles',
     documentation: 'README.md'
@@ -32,6 +32,7 @@ function configure( api ){
     api.use( 'pwix:i18n' );
     api.use( 'pwix:modal' );
     api.use( 'tmeasday:check-npm-versions@1.0.2', 'server' );
+    api.use( 'webapp', 'server' );
     api.addFiles( 'src/client/components/prEdit/prEdit.js', 'client' );
     api.addFiles( 'src/client/components/prView/prView.js', 'client' );
 }

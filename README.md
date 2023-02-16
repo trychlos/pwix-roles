@@ -2,7 +2,7 @@
 
 ## What is it ?
 
-A Meteor package which encapsulates alanning:roles.
+A Meteor package which encapsulates `alanning:roles`.
 
 ## Why ?
 
@@ -17,9 +17,46 @@ But I missed some things that I have added here:
 - the concept of directly attributed roles vs. inherited ones,
 - aliases (todo #1)
 - a way of detected obsolete roles and to automatically cleanup them (a bit useful during development cycles)
-- some standard dialogs for view and edit roles.
+- some standard dialogs for viewing and editing roles.
 
 ## Usage
+
+### Installation
+
+```
+    meteor add pwix:roles
+```
+
+### Configure
+
+At initialization time, `pwix:roles` reads already defined roles from the database.
+
+Nonetheless, the hierarchy of roles you plan to use should be provided to the package at configuration time.
+
+```
+    import { pwiRoles } from 'meteor/pwix:roles';
+
+    pwiRoles.configure({
+        roles: {
+            hierarchy: [
+                {
+                    name: <role_name>,
+                    children: [
+                        {
+                            name: <role_name>,
+                            children: [
+                                ... and so on
+                            ]
+                        }
+                    ]
+                }
+            ],
+            aliases: [
+                ... see that later
+            ]
+        }
+    });
+```
 
 ## What does it provide ?
 

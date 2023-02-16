@@ -60,6 +60,7 @@ Template.prView.onCreated( function(){
             }
             let count = 0;
             html += '<ul class="pr-view-roles">';
+            //console.log( pwiRoles.current());
             pwiRoles.userHierarchy( pwiRoles.current().direct ).every(( o ) => {
                 f_display( o );
                 count += 1;

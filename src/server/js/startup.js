@@ -188,6 +188,9 @@ Meteor.startup( function(){
     f_CleanupObsoleteRoles();
 });
 
+// on the client, pwiRoles.ready() is set when Roles.subscription is itself ready.
+//  we force the package to be ready on the server at startup
 Meteor.startup( function(){
-    console.log( 'pwix:roles/src/server/startup.js Meteor.startup()', pwiRoles );
+    _ready.val = true,
+    _ready.dep.changed();
 });

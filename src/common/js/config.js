@@ -6,11 +6,14 @@ import { Tracker } from 'meteor/tracker';
 
 //console.log( 'pwix:roles/src/common/config.js defining globally exported pwiRoles object' );
 
+// available both in the client and the server
+//  while only relevant on the client (always true on the server)
 _ready = {
     dep: new Tracker.Dependency(),
     val: false
 };
 
+// only available on the client
 _current = {
     dep: new Tracker.Dependency(),
     val: {
@@ -32,6 +35,7 @@ pwiRoles = {
 
     /**
      * A reactive data source, only relevant on the client.
+     * @locus Client
      * @returns {Object} with the roles of the current logged-in user, as an object with keys:
      *  - id        {String}    the current user identifier
      *  - all       {Array}     all the roles, either directly or indirectly set
@@ -42,21 +46,32 @@ pwiRoles = {
         return _current.val;
     },
 
-    // should be *in same terms* called both by the client and the server
+    /**
+     * @summary Package configuration
+     *  Should be *in same terms* called both by the client and the server
+     * @locus Anywhere
+     * @param {Object} o 
+     */
     configure: function( o ){
         console.log( 'pwix:roles configure() with', o );
         pwiRoles.conf = {
             ...pwiRoles.conf,
             ...o
         };
+        // invalidate the currently built roles when the new hierarchy is defined
+        if( Meteor.isClient ){
+            _current.val.direct = pwiRoles.filter( _current.val.all );
+            _current.dep.changed();
+        }
     },
 
     // internationalization
     i18n: {},
 
     /**
-     * A reactive data source, only relevant on the client.
-     * Returned value is updated at package client startup.
+     * @summary A reactive data source, only relevant on the client.
+     *  Returned value is updated at package client startup.
+     * @locus Client
      * @returns {Boolean} true when the package is ready
      */
     ready: function(){
@@ -68,8 +83,9 @@ pwiRoles = {
     server: {},
 
     /**
-     * Let the caller provides a function whose result will be added as a HTML string to the prView content.
-     * This result will be displayed as a distinct tab in the dialog.
+     * @summary Let the caller provides a function whose result will be added as a HTML string to the prView content.
+     *  This result will be displayed as a distinct tab in the dialog.
+     * @locus Client
      * @param {Object} o an object which following keys:
      *  - tabLabel: a function
      *      which will be called with ( tabItem ) argument,
