@@ -1,7 +1,7 @@
 /*
  * pwix:roles/src/server/js/startup.js
  *
- *  It is expected that the application has configured the pwix:roles package by calling pwiRoles.config()
+ *  It is expected that the application has configured the pwix:roles package by calling pwixRoles.config()
  *  with at least an object { conf: { roles: { hierarchy: [] }}}, before Meteor.startup() time.
  *  So it is time for us to define these roles here.
  * 
@@ -82,7 +82,7 @@ function f_DefineNewRoles(){
     });
 
     // iterate on our roles, defining the missing ones
-    pwiRoles.conf.roles.hierarchy.every(( o ) => {
+    pwixRoles.conf.roles.hierarchy.every(( o ) => {
         f_define( o );
         return true;
     });
@@ -120,7 +120,7 @@ function f_InheritanceCompleteness(){
             });
         }
 
-        f_children( pwiRoles.conf.roles.hierarchy, name, false );
+        f_children( pwixRoles.conf.roles.hierarchy, name, false );
         return result;        
     }
 
@@ -188,7 +188,7 @@ Meteor.startup( function(){
     f_CleanupObsoleteRoles();
 });
 
-// on the client, pwiRoles.ready() is set when Roles.subscription is itself ready.
+// on the client, pwixRoles.ready() is set when Roles.subscription is itself ready.
 //  we force the package to be ready on the server at startup
 Meteor.startup( function(){
     _ready.val = true,

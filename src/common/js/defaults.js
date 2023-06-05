@@ -8,7 +8,7 @@ defaults = {
     }
 };
 
-pwiRoles.conf = {
-    ...pwiRoles.conf,
+pwixRoles.conf = {
+    ...pwixRoles.conf,
     ...defaults.conf
 };

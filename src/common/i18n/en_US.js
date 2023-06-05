@@ -2,8 +2,8 @@
  * pwix:roles/src/common/i18n/en_US.js
  */
 
-pwiRoles.i18n = {
-    ...pwiRoles.i18n,
+pwixRoles.i18n = {
+    ...pwixRoles.i18n,
     ...{
         en_US: {
             dialogs: {

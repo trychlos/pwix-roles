@@ -1,8 +1,12 @@
-# pwix:roles - ChangeLog
+# pwix:roles
 
-| Version | Release    | Content |
-| ---:    | :---       | :---    |
-| 1.0.0   | xxxxxxxxxx | Initial release |
+## ChangeLog
+
+### 1.0.0
+
+Release date:
+
+- Initial release
 
 ---
 P. Wieser

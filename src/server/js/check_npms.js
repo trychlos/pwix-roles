@@ -12,8 +12,10 @@ if( false ){
 
 checkNpmVersions({
     '@popperjs/core': '^2.11.6',
-    bootstrap: '^5.2.1',
+    'bootstrap': '^5.2.1',
     'deep-equal': '^2.2.0',
-    jstree: '^3.3.12',
-    uuid: '^9.0.0'
-}, 'pwix:roles' );
+    'jstree': '^3.3.12',
+    'uuid': '^9.0.0'
+},
+    'pwix:roles'
+);

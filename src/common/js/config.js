@@ -4,7 +4,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-//console.log( 'pwix:roles/src/common/config.js defining globally exported pwiRoles object' );
+//console.log( 'pwix:roles/src/common/config.js defining globally exported pwixRoles object' );
 
 // available both in the client and the server
 //  while only relevant on the client (always true on the server)
@@ -23,7 +23,7 @@ _current = {
     }
 };
 
-pwiRoles = {
+pwixRoles = {
 
     // client-specific data and functions
     client: {
@@ -54,13 +54,13 @@ pwiRoles = {
      */
     configure: function( o ){
         console.log( 'pwix:roles configure() with', o );
-        pwiRoles.conf = {
-            ...pwiRoles.conf,
+        pwixRoles.conf = {
+            ...pwixRoles.conf,
             ...o
         };
         // invalidate the currently built roles when the new hierarchy is defined
         if( Meteor.isClient ){
-            _current.val.direct = pwiRoles.filter( _current.val.all );
+            _current.val.direct = pwixRoles.filter( _current.val.all );
             _current.dep.changed();
         }
     },
@@ -96,9 +96,9 @@ pwiRoles = {
      */
     viewAdd: function( o ){
         console.log( 'pwix:roles adding a view callback' );
-        if( !Object.keys( pwiRoles.client ).includes( 'viewCbs' )){
-            pwiRoles.client.viewCbs = [];
+        if( !Object.keys( pwixRoles.client ).includes( 'viewCbs' )){
+            pwixRoles.client.viewCbs = [];
         }
-        pwiRoles.client.viewCbs.push( o );
+        pwixRoles.client.viewCbs.push( o );
     }
 };

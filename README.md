@@ -34,9 +34,9 @@ At initialization time, `pwix:roles` reads already defined roles from the databa
 Nonetheless, the hierarchy of roles you plan to use should be provided to the package at configuration time.
 
 ```
-    import { pwiRoles } from 'meteor/pwix:roles';
+    import { pwixRoles } from 'meteor/pwix:roles';
 
-    pwiRoles.configure({
+    pwixRoles.configure({
         roles: {
             hierarchy: [
                 {
@@ -62,9 +62,9 @@ Nonetheless, the hierarchy of roles you plan to use should be provided to the pa
 
 ### An exported object
 
-`pwiRoles`
+`pwixRoles`
 
-The `pwix:roles` package exports a single `pwiRoles` object which holds all necessary data and functions.
+The `pwix:roles` package exports a single `pwixRoles` object which holds all necessary data and functions.
 
 ### Constants
 
@@ -123,7 +123,7 @@ Roles have to be declared as an object with a top single key 'roles'
 
 ### Methods
 
-`pwiRoles.current()`
+`pwixRoles.current()`
 
 A reactive data source which returns on the client the roles of the currently logged-in user as an object:
 ```
@@ -134,15 +134,19 @@ A reactive data source which returns on the client the roles of the currently lo
 
 ## NPM peer dependencies
 
-In accordance with advices from [the Meteor Guide](https://guide.meteor.com/writing-atmosphere-packages.html#npm-dependencies), we do not hardcode NPM dependencies in `package.js`. Instead we check npm versions of installed packages at runtime, on server startup, in development environment.
+Starting with v 1.1.0, and in accordance with advices from [the Meteor Guide](https://guide.meteor.com/writing-atmosphere-packages.html#npm-dependencies), we no more hardcode NPM dependencies in the `Npm.depends` clause of the `package.js`. 
 
-Dependencies as of v 1.1.0:
+Instead we check npm versions of installed packages at runtime, on server startup, in development environment.
+
+Dependencies as of v 1.0.0:
+
 ```
     '@popperjs/core': '^2.11.6',
     bootstrap: '^5.2.1',
     jstree: '^3.3.12',
     uuid: '^9.0.0'
 ```
+
 Each of these dependencies should be installed at application level:
 ```
     meteor npm install <package> --save

@@ -54,7 +54,7 @@ Template.prEdit.onCreated( function(){
     // if a 'user' is specified, fine
     self.autorun(() => {
         if( Template.currentData().id ){
-            Meteor.call( 'pwiRoles.Accounts.User', Template.currentData().id, ( err, res ) => {
+            Meteor.call( 'pwixRoles.Accounts.User', Template.currentData().id, ( err, res ) => {
                 if( err ){
                     console.error( err );
                 } else {
@@ -73,7 +73,7 @@ Template.prEdit.onCreated( function(){
             self.PR.attributedRoles = Template.currentData().roles;
         } else {
             self.PR.attributedRoles = new ReactiveVar( null );
-            self.PR.attributedRoles.set( pwiRoles.directRolesForUser( self.PR.user ));
+            self.PR.attributedRoles.set( pwixRoles.directRolesForUser( self.PR.user ));
         }
     });
 });
@@ -166,10 +166,10 @@ Template.prEdit.onRendered( function(){
                     });
                 }
             }
-            //console.log( pwiRoles );
+            //console.log( pwixRoles );
             self.PR.creationAsked = 0;
             self.PR.creationDone.set( 0 );
-            pwiRoles.conf.roles.hierarchy.every(( o ) => {
+            pwixRoles.conf.roles.hierarchy.every(( o ) => {
                 f_role( o );
                 return true;
             });
@@ -227,11 +227,11 @@ Template.prEdit.events({
             checked.push( id.replace( instance.PR.radical, '' ));
             return true;
         });
-        const filtered = pwiRoles.filter( checked );
+        const filtered = pwixRoles.filter( checked );
         instance.PR.attributedRoles.set( filtered );
         console.log( 'checked', checked, 'filtered', filtered );
-        Meteor.call( 'pwiRoles.setUsersRoles', instance.PR.user._id, filtered );
-        Meteor.call( 'pwiRoles.Accounts.Updated', instance.PR.user._id );
+        Meteor.call( 'pwixRoles.setUsersRoles', instance.PR.user._id, filtered );
+        Meteor.call( 'pwixRoles.Accounts.Updated', instance.PR.user._id );
         instance.$( '.modal' ).modal( 'hide' );
         return false;
     },

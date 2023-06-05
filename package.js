@@ -9,7 +9,7 @@ Package.describe({
 Package.onUse( function( api ){
     configure( api );
     api.export([
-        'pwiRoles'
+        'pwixRoles'
     ]);
     api.mainModule( 'src/client/js/index.js', 'client' );
     api.mainModule( 'src/server/js/index.js', 'server' );
@@ -37,8 +37,5 @@ function configure( api ){
     api.addFiles( 'src/client/components/prView/prView.js', 'client' );
 }
 
-Npm.depends({
-    bootstrap: '5.2.1',
-    jstree: '3.3.12',
-    uuid: '9.0.0'
-});
+// NPM dependencies are checked in /src/server/js/check_npms.js
+// See also https://guide.meteor.com/writing-atmosphere-packages.html#npm-dependencies

@@ -4,7 +4,7 @@ import { rolesAliases } from '../aliases.js';
 Meteor.methods({
     /*
     // empty the collection
-    'pwiRoles.Aliases.empty'(){
+    'pwixRoles.Aliases.empty'(){
         return rolesAliases.remove({});
     },
 
@@ -21,7 +21,7 @@ Meteor.methods({
 
     /*
     // add an alias declaration in the database
-    'pwiRoles.Aliases.insert'( name, content ){
+    'pwixRoles.Aliases.insert'( name, content ){
         let orig = Contents.findOne({ name: name });
         //console.log( 'content.set orig=', orig );
         let o = {

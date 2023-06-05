@@ -12,7 +12,7 @@ import deepEqual from 'deep-equal';
  * @param {Array||Object|String} users an array of objects, or an object, or an array of strings, or a string identifier
  * @param {Object|String} roles either an aray of strings or a string
  */
-pwiRoles.addUsersToRoles = function( users, roles ){
+pwixRoles.addUsersToRoles = function( users, roles ){
     Roles.addUsersToRoles( users, roles );
 }
 
@@ -20,8 +20,8 @@ pwiRoles.addUsersToRoles = function( users, roles ){
  * @param {Object|String} user User identifier or actual user object
  * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */
-pwiRoles.directRolesForUser = function( user ){
-    return pwiRoles.filter( Roles.getRolesForUser( user ));
+pwixRoles.directRolesForUser = function( user ){
+    return pwixRoles.filter( Roles.getRolesForUser( user ));
 }
 
 /**
@@ -29,14 +29,14 @@ pwiRoles.directRolesForUser = function( user ){
  * @param {Array} array 
  * @returns {Array}
  */
-pwiRoles.filter = function( array ){
+pwixRoles.filter = function( array ){
     //console.log( 'filter in', array );
     let filtered = [];
     function f_filter( role ){
         if( !filtered.includes( role )){
             let hasParent = false;
             filtered.every(( f ) => {
-                if( pwiRoles.isParent( f, role )){
+                if( pwixRoles.isParent( f, role )){
                     hasParent = true;
                     return false;
                 }
@@ -47,7 +47,7 @@ pwiRoles.filter = function( array ){
             }
         }
     }
-    const sorted = pwiRoles.sort( array );
+    const sorted = pwixRoles.sort( array );
     sorted.every(( role ) => {
         f_filter( role );
         return true;
@@ -63,7 +63,7 @@ pwiRoles.filter = function( array ){
  * @param {Array|Object|String} users an array of objects, or an object, or an array of strings, or a string identifier
  * @returns {Array} an array of string identifiers
  */
-pwiRoles.idsFromUsers = function( users ){
+pwixRoles.idsFromUsers = function( users ){
     let ids = [];
     if( typeof users === 'string' ){
         ids.push( users );
@@ -91,8 +91,8 @@ pwiRoles.idsFromUsers = function( users ){
  * @param {String} b
  * @returns {Boolean} true if a is parent of b
  */
-pwiRoles.isParent = function( a, b ){
-    return pwiRoles.parents( b ).includes( a );
+pwixRoles.isParent = function( a, b ){
+    return pwixRoles.parents( b ).includes( a );
 }
 
 /**
@@ -100,7 +100,7 @@ pwiRoles.isParent = function( a, b ){
  * @param {String} role 
  * @returns {Array} the ordered parents, not including the given role
  */
-pwiRoles.parents = function( role ){
+pwixRoles.parents = function( role ){
     let parents = [];
     function f_search( o ){
         if( o.name === role ){
@@ -119,11 +119,11 @@ pwiRoles.parents = function( role ){
         }
         return !found;
     }
-    pwiRoles.conf.roles.hierarchy.every(( o ) => {
+    pwixRoles.conf.roles.hierarchy.every(( o ) => {
         parents = [];
         return f_search( o );
     });
-    //console.log( 'pwiRoles.parents of', role, 'are', parents );
+    //console.log( 'pwixRoles.parents of', role, 'are', parents );
     return parents;
 }
 
@@ -132,7 +132,7 @@ pwiRoles.parents = function( role ){
  * @param {Array} array 
  * @returns {Array}
  */
-pwiRoles.sort = function( array ){
+pwixRoles.sort = function( array ){
     let sorted = [];
     function f_sort( o ){
         // if the role is included in the input array, then all chilren are inherited
@@ -145,7 +145,7 @@ pwiRoles.sort = function( array ){
             });
         }
     }
-    const h = pwiRoles.conf && pwiRoles.conf.roles && pwiRoles.conf.roles.hierarchy ? pwiRoles.conf.roles.hierarchy : [];
+    const h = pwixRoles.conf && pwixRoles.conf.roles && pwixRoles.conf.roles.hierarchy ? pwixRoles.conf.roles.hierarchy : [];
     h.every(( o ) => {
         f_sort( o );
         return true;
@@ -157,7 +157,7 @@ pwiRoles.sort = function( array ){
  * @param {Array} roles a list of roles
  * @returns {Array} a deep copy the original roles hierarchy in which only the input roles are kept
  */
-pwiRoles.userHierarchy = function( roles ){
+pwixRoles.userHierarchy = function( roles ){
     let filtered = [];
     function f_filter( o ){
         // if we have the hierarchy object, we also have all its children
@@ -170,7 +170,7 @@ pwiRoles.userHierarchy = function( roles ){
             });
         }
     }
-    const h = pwiRoles.conf && pwiRoles.conf.roles && pwiRoles.conf.roles.hierarchy ? pwiRoles.conf.roles.hierarchy : [];
+    const h = pwixRoles.conf && pwixRoles.conf.roles && pwixRoles.conf.roles.hierarchy ? pwixRoles.conf.roles.hierarchy : [];
     h.every(( o ) => {
         f_filter( o );
         return true;
@@ -191,12 +191,12 @@ _userIsInRoles = {
     userRoles: [],
     reqRoles: []
 };
-pwiRoles.userIsInRoles = function( user, roles ){
+pwixRoles.userIsInRoles = function( user, roles ){
     if( !_userIsInRoles.dep ){
         _userIsInRoles.dep = new Tracker.Dependency();
         _userIsInRoles.dep.depend();
     }
-    //console.log( 'pwiRoles.userIsInRoles', user, roles );
+    //console.log( 'pwixRoles.userIsInRoles', user, roles );
 
     // keep a trace of previous values to advertise of change
     const prevId = _userIsInRoles.userId;

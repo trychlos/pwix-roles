@@ -16,6 +16,6 @@ Meteor.publish( null, function(){
 
 // publishes all the roles
 //  this may be needed by an application which would wish do some sort of user's roles management
-Meteor.publish( 'pwiRoles.allAssignments', function(){
+Meteor.publish( 'pwixRoles.allAssignments', function(){
     return Meteor.roleAssignment.find();
 });
