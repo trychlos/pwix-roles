@@ -2,16 +2,6 @@
  * pwix:roles/src/common/js/config.js
  */
 
-// only available on the client
-_current = {
-    dep: new Tracker.Dependency(),
-    val: {
-        id: '',
-        all: [],
-        direct: []
-    }
-};
-
 pwixRoles = {
 
     /**

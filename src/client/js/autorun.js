@@ -5,6 +5,16 @@
 import { Tracker } from 'meteor/tracker';
 import { Roles } from 'meteor/alanning:roles';
 
+// only available on the client
+_current = {
+    dep: new Tracker.Dependency(),
+    val: {
+        id: '',
+        all: [],
+        direct: []
+    }
+};
+
 // update the current user roles when the logged-in status changes
 //  client only as Meteor.userId() doesn't has any sense on the server
 Tracker.autorun(() => {
