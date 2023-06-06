@@ -2,17 +2,6 @@
  * pwix:roles/src/common/js/config.js
  */
 
-import { Tracker } from 'meteor/tracker';
-
-//console.log( 'pwix:roles/src/common/config.js defining globally exported pwixRoles object' );
-
-// available both in the client and the server
-//  while only relevant on the client (always true on the server)
-_ready = {
-    dep: new Tracker.Dependency(),
-    val: false
-};
-
 // only available on the client
 _current = {
     dep: new Tracker.Dependency(),
@@ -24,14 +13,6 @@ _current = {
 };
 
 pwixRoles = {
-
-    // client-specific data and functions
-    client: {
-    },
-
-    conf: {
-        roles: {}       // described in README.md
-    },
 
     /**
      * A reactive data source, only relevant on the client.
@@ -45,20 +26,6 @@ pwixRoles = {
         _current.dep.depend();
         return _current.val;
     },
-
-    /**
-     * @summary A reactive data source, only relevant on the client.
-     *  Returned value is updated at package client startup.
-     * @locus Client
-     * @returns {Boolean} true when the package is ready
-     */
-    ready: function(){
-        _ready.dep.depend();
-        return _ready.val;
-    },
-
-    // server-specific data and functions
-    server: {},
 
     /**
      * @summary Let the caller provides a function whose result will be added as a HTML string to the prView content.

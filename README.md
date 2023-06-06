@@ -167,14 +167,19 @@ Roles have to be declared as an object with a top single key 'roles'
 
 ### Methods
 
-`pwixRoles.current()`
+- `pwixRoles.current()`
 
 A reactive data source which returns on the client the roles of the currently logged-in user as an object:
+
 ```
-- id        {String}    the current user identifier
-- all       {Array}     all the roles, either directly or indirectly set
-- direct    {Array}     only the directly attributed top roles in the hierarchy (after havng removed indirect ones)
+    - id        {String}    the current user identifier
+    - all       {Array}     all the roles, either directly or indirectly set
+    - direct    {Array}     only the directly attributed top roles in the hierarchy (after havng removed indirect ones)
 ```
+
+- `pwixRoles.ready()`
+
+A client-only reactive data source which becomes `true` when the package is ready to be used.
 
 ## NPM peer dependencies
 

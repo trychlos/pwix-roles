@@ -16,6 +16,7 @@
 |    4 | 2023- 2-10 | read existing roles at initialization (before configured) so that we have something |
 |    5 | 2023- 2-10 | should plan enough rewriting to better distinguish between client-only features and server-only ones |
 |      |            | as an example, ready and current are rather relevant on the client |
+|      | 2023- 6- 6 | done for ready() |
 |      |            | though current could be useful on the server in below checks for example |
 |    6 | 2023- 2-10 | prEdit: checks **must also** be done server-side |
 |    7 | 2023- 6- 6 | f_DefineNewRoles() must be tolerant if roles are not configured |

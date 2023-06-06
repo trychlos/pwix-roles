@@ -8,10 +8,3 @@ Meteor.startup( function(){
         console.debug( 'pwix:roles client.startup()' );
     }
 });
-
-// on the client, pwixRoles.ready() is set when Roles.subscription is itself ready.
-//  we force the package to be ready on the server at startup
-Meteor.startup( function(){
-    _ready.val = true,
-    _ready.dep.changed();
-});

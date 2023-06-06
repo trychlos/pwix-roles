@@ -5,15 +5,6 @@
 import { Tracker } from 'meteor/tracker';
 import { Roles } from 'meteor/alanning:roles';
 
-// the package is said ready when the publication for the current user is ready
-//  client only as Roles.subscription is client only
-Tracker.autorun(() => {
-    if( Roles.subscription.ready()){
-        _ready.val = true,
-        _ready.dep.changed();
-    }
-});
-
 // update the current user roles when the logged-in status changes
 //  client only as Meteor.userId() doesn't has any sense on the server
 Tracker.autorun(() => {
