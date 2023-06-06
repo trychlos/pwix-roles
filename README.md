@@ -2,11 +2,11 @@
 
 ## What is it ?
 
-A Meteor package which encapsulates `alanning:roles`.
+A Meteor package which encapsulates and extends `alanning:roles`.
 
 ## Why ?
 
-alanning:roles is a very good package. I like it!
+`alanning:roles` is a very good package. I like it!
 
 I particularly like its way of defining roles, both as atomic capabilities and as conceptual user roles. This let the developer build a full hierarchy of roles/permissions/capabilities, whatever be the word you prefer...
 
@@ -60,11 +60,9 @@ Nonetheless, the hierarchy of roles you plan to use should be provided to the pa
 
 ## What does it provide ?
 
-### An exported object
+### `pwixRoles`
 
-`pwixRoles`
-
-The `pwix:roles` package exports a single `pwixRoles` object which holds all necessary data and functions.
+The globally exported object.
 
 ### Constants
 
@@ -78,9 +76,39 @@ The `pwix:roles` package exports a single `pwixRoles` object which holds all nec
 
 ## Configuration
 
-The package MUST be configured before Meteor.startup(), so at the top of the application code.
-At least a hierarchy of the expected roles must be provided.
-The configuration must be done in identical terms **both** in client and in server sides.
+The package's behavior can be configured through a call to the `pwixRoles.configure()` method, with just a single javascript object argument, which itself should only contains the options you want override.
+
+Known configuration options are:
+
+- `roles`
+
+    Define the known roles.
+
+    Defaults to an empty array.
+
+- `verbosity`
+
+    Define the expected verbosity level.
+
+    The accepted value can be:
+
+    - `PR_VERBOSE_NONE`
+
+        Do not display any trace log to the console
+    
+    or any or-ed combination of following:
+
+    - `PR_VERBOSE_CONFIGURE`
+
+        Trace `pwixRoles.configure()` calls and their result
+
+    - `PR_VERBOSE_STARTUP`
+
+        Emit a trace at startup time
+
+Please note that `pwixRoles.configure()` method should be called in the same terms both in client and server sides.
+
+Remind too that Meteor packages are instanciated at application level. They are so only configurable once, or, in other words, only one instance has to be or can be configured. Addtionnal calls to `pwixRoles.configure()` will just override the previous one. You have been warned: **only the application should configure a package**.
 
 ### Roles configuration
 

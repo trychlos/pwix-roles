@@ -15,6 +15,7 @@ checkNpmVersions({
     'bootstrap': '^5.2.1',
     'deep-equal': '^2.2.0',
     'jstree': '^3.3.12',
+    'merge': '^2.1.1',
     'uuid': '^9.0.0'
 },
     'pwix:roles'
