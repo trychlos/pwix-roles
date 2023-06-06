@@ -12,6 +12,7 @@ Package.onUse( function( api ){
         'pwixRoles',
         'PR_VERBOSE_NONE',
         'PR_VERBOSE_CONFIGURE',
+        'PR_VERBOSE_MAINTAIN',
         'PR_VERBOSE_STARTUP'
     ]);
     api.mainModule( 'src/client/js/index.js', 'client' );

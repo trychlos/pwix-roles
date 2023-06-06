@@ -4,8 +4,6 @@
 
 import { Roles } from 'meteor/alanning:roles';
 
-import '../../common/js/index.js';
-
 //const rolesAssignment = Mongo.Collection( 'role-assignment' );
 //console.log( Mongo );
 

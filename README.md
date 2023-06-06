@@ -12,9 +12,9 @@ I particularly like its way of defining roles, both as atomic capabilities and a
 
 Its concept of scope is not the least of this package.
 
-But I missed some things that I have added here:
-- a reactive data source for the roles of the currently logged-in user,
-- the concept of directly attributed roles vs. inherited ones,
+While `alanning:roles` provides primitives to execute CRUD operations on the roles, `pwix:roles` rather tries to manage the role's hierarchy itself. As such, the package adds:
+
+- the primitives to manage of directly attributed roles vs. inherited ones,
 - aliases (todo #1)
 - a way of detected obsolete roles and to automatically cleanup them (a bit useful during development cycles)
 - some standard dialogs for viewing and editing roles.
@@ -86,6 +86,18 @@ Known configuration options are:
 
     Defaults to an empty object.
 
+- `maintainHierarchy`
+
+    Whether the package should update the recorded hierarchy to match the provided one:
+
+    - new roles are added
+    - obsolete and unused roles are removed
+    - obsolete while still used roles are kept.
+
+    In order to make sure that the application has had a chance to configure the package, this work is done on the server at startup time.
+
+    Defaults to `true`.
+
 - `verbosity`
 
     Define the expected verbosity level.
@@ -101,6 +113,10 @@ Known configuration options are:
     - `PR_VERBOSE_CONFIGURE`
 
         Trace `pwixRoles.configure()` calls and their result
+
+    - `PR_VERBOSE_MAINTAIN`
+
+        Trace (on the server) the operations done while maintaining the roles hierarchy at startup time.
 
     - `PR_VERBOSE_STARTUP`
 

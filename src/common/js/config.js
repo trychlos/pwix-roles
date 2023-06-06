@@ -1,7 +1,7 @@
 /*
  * pwix:roles/src/common/js/config.js
  */
-import { ReactiveVar } from 'meteor/reactive-var';
+
 import { Tracker } from 'meteor/tracker';
 
 //console.log( 'pwix:roles/src/common/config.js defining globally exported pwixRoles object' );
@@ -45,28 +45,6 @@ pwixRoles = {
         _current.dep.depend();
         return _current.val;
     },
-
-    /**
-     * @summary Package configuration
-     *  Should be *in same terms* called both by the client and the server
-     * @locus Anywhere
-     * @param {Object} o 
-     */
-    configure: function( o ){
-        console.log( 'pwix:roles configure() with', o );
-        pwixRoles.conf = {
-            ...pwixRoles.conf,
-            ...o
-        };
-        // invalidate the currently built roles when the new hierarchy is defined
-        if( Meteor.isClient ){
-            _current.val.direct = pwixRoles.filter( _current.val.all );
-            _current.dep.changed();
-        }
-    },
-
-    // internationalization
-    i18n: {},
 
     /**
      * @summary A reactive data source, only relevant on the client.

@@ -6,6 +6,7 @@ import merge from 'merge';
 
 pwixRoles._defaults = {
     roles: {},
+    maintainHierarchy: true,
     verbosity: PR_VERBOSE_NONE
 };
 
