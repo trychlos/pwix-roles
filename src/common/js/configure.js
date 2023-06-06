@@ -5,7 +5,7 @@
 import merge from 'merge';
 
 pwixRoles._defaults = {
-    roles: [],
+    roles: {},
     verbosity: PR_VERBOSE_NONE
 };
 

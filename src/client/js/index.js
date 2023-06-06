@@ -4,3 +4,4 @@
 import '../../common/js/index.js';
 
 import './autorun.js';
+import './startup.js';

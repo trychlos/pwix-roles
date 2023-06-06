@@ -177,6 +177,13 @@ function f_InheritanceCompleteness(){
     }
 }
 
+// be verbose if asked for
+Meteor.startup( function(){
+    if( pwixRoles._conf.verbosity & PR_VERBOSE_CONFIGURE ){
+        console.debug( 'pwix:roles client.startup()' );
+    }
+});
+
 // make sure we do not keep obsolete AND unused roles
 //  obsolete but still used roles must first be de-assign before being removed
 function f_CleanupObsoleteRoles(){

@@ -84,7 +84,7 @@ Known configuration options are:
 
     Define the known roles.
 
-    Defaults to an empty array.
+    Defaults to an empty object.
 
 - `verbosity`
 
