@@ -29,7 +29,7 @@ function configure( api ){
     api.use( 'ecmascript' );
     api.use( 'less@4.0.0', 'client' );
     api.use( 'mongo', 'server' );
-    api.use( 'pwix:i18n' );
+    api.use( 'pwix:i18n@1.3.0' );
     api.use( 'pwix:modal' );
     api.use( 'tmeasday:check-npm-versions@1.0.2', 'server' );
     api.use( 'webapp', 'server' );
