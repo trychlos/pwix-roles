@@ -169,7 +169,7 @@ Template.prEdit.onRendered( function(){
             //console.log( pwixRoles );
             self.PR.creationAsked = 0;
             self.PR.creationDone.set( 0 );
-            pwixRoles.conf.roles.hierarchy.every(( o ) => {
+            pwixRoles._conf.roles.hierarchy.every(( o ) => {
                 f_role( o );
                 return true;
             });

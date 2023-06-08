@@ -127,7 +127,11 @@ function f_InheritanceCompleteness(){
             });
         }
 
-        f_children( pwixRoles.conf.roles.hierarchy, name, false );
+        if( pwixRoles._conf.roles && pwixRoles._conf.roles.hierarchy ){
+            f_children( pwixRoles._conf.roles.hierarchy, name, false );
+        } else {
+            result.push({ _id: name });
+        }
         return result;        
     }
 
@@ -182,7 +186,6 @@ function f_InheritanceCompleteness(){
         rolesAssignments.push( o );
         return true;
     });
-
     if( !msg ){
         if( pwixRoles._conf.verbosity & PR_VERBOSE_MAINTAIN ){
             console.log( 'pwix:roles/src/server/js/maintain.js roles inheritance is complete: fine.' );

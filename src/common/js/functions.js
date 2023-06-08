@@ -119,7 +119,7 @@ pwixRoles.parents = function( role ){
         }
         return !found;
     }
-    pwixRoles.conf.roles.hierarchy.every(( o ) => {
+    pwixRoles._conf.roles.hierarchy.every(( o ) => {
         parents = [];
         return f_search( o );
     });
@@ -145,7 +145,7 @@ pwixRoles.sort = function( array ){
             });
         }
     }
-    const h = pwixRoles.conf && pwixRoles.conf.roles && pwixRoles.conf.roles.hierarchy ? pwixRoles.conf.roles.hierarchy : [];
+    const h = pwixRoles._conf && pwixRoles._conf.roles && pwixRoles._conf.roles.hierarchy ? pwixRoles._conf.roles.hierarchy : [];
     h.every(( o ) => {
         f_sort( o );
         return true;
@@ -170,7 +170,7 @@ pwixRoles.userHierarchy = function( roles ){
             });
         }
     }
-    const h = pwixRoles.conf && pwixRoles.conf.roles && pwixRoles.conf.roles.hierarchy ? pwixRoles.conf.roles.hierarchy : [];
+    const h = pwixRoles._conf && pwixRoles._conf.roles && pwixRoles._conf.roles.hierarchy ? pwixRoles._conf.roles.hierarchy : [];
     h.every(( o ) => {
         f_filter( o );
         return true;
