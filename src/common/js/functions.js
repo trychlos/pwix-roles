@@ -8,15 +8,6 @@ import { Tracker } from 'meteor/tracker';
 import deepEqual from 'deep-equal';
 
 /**
- * Add role(s) to user(s).
- * @param {Array||Object|String} users an array of objects, or an object, or an array of strings, or a string identifier
- * @param {Object|String} roles either an aray of strings or a string
- */
-pwixRoles.addUsersToRoles = function( users, roles ){
-    Roles.addUsersToRoles( users, roles );
-}
-
-/**
  * @param {Object|String} user User identifier or actual user object
  * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */

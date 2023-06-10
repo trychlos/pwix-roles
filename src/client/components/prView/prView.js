@@ -64,7 +64,7 @@ Template.prView.onCreated( function(){
             }
             let count = 0;
             html += '<ul class="pr-view-roles">';
-            console.debug( pwixRoles.current());
+            //console.debug( pwixRoles.current());
             pwixRoles.userHierarchy( pwixRoles.current().direct ).every(( o ) => {
                 f_display( o );
                 count += 1;

@@ -141,7 +141,7 @@ Remind too that Meteor packages are instanciated at application level. They are 
 
 The globally exported object.
 
-### Methods
+### Functions
 
 - `pwixRoles.current()`
 
@@ -166,6 +166,26 @@ The globally exported object.
     - `tabLabel`: a function which will be called with a `tabItem` argument, and must return the tab label as a string
 
     - `paneContent`: a function which will be called with a `tabItem` argument, and must return a Promise which must eventually resolves to the HTML pane content.
+
+### Methods
+
+These are Meteor methods, i.e. to be `Meteor.call(...)` by the client.
+
+- `pwixRoles.addUsersToRoles( users, roles, options )`
+
+    Add roles to existing roles for each user.
+
+    - `users`: a user identifier, or a user object, or an array of user identifiers or user objects
+
+    - `roles`: a role name or an array of role names
+
+    - `options`: an optional object with following keys:
+
+        - `scope`: name of the scope, or null for the global role
+
+        - `ifExists`: if true, do not throw an exception if the role does not exist
+
+    This method directy calls `Roles.addUsersToRoles()` function. It is just clearer that this is a server code.
 
 ### Blaze components
 
