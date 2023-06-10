@@ -28,7 +28,7 @@ import { pwixI18n as i18n } from 'meteor/pwix:i18n';
 
 import '../../../common/js/index.js';
 
-import '../../stylesheets/jstree-style.css';
+//import '../../stylesheets/jstree-style.css';
 import '../../stylesheets/pr_roles.less';
 
 import './prEdit.html';
@@ -207,7 +207,7 @@ Template.prEdit.onRendered( function(){
 Template.prEdit.helpers({
     // i18n namespace
     namespace(){
-        return ROLES_I18N;
+        return I18N;
     },
 
     // set the mail address in the title
@@ -215,7 +215,7 @@ Template.prEdit.helpers({
         const self = Template.instance();
         const email = self.PR.user ? self.PR.user.emails[0].address : null;
         const key = email ? 'title_mail' : 'title';
-        return i18n.label( ROLES_I18N, 'dialogs.'+key, email );
+        return i18n.label( I18N, 'dialogs.'+key, email );
     }
 });
 

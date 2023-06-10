@@ -2,8 +2,8 @@
  * pwix:roles/src/common/js/functions.js
  */
 
-import { Tracker } from 'meteor/tracker';
 import { Roles } from 'meteor/alanning:roles';
+import { Tracker } from 'meteor/tracker';
 
 import deepEqual from 'deep-equal';
 

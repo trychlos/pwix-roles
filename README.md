@@ -111,13 +111,25 @@ Known configuration options are:
 
         Trace `pwixRoles.configure()` calls and their result
 
+    - `PR_VERBOSE_CURRENT`
+
+        Emit a trace on `pwixRoles.current()` changes
+
     - `PR_VERBOSE_MAINTAIN`
 
         Trace (on the server) the operations done while maintaining the roles hierarchy at startup time.
 
+    - `PR_VERBOSE_READY`
+
+        Emit a trace on `pwixRoles.ready()` changes
+
     - `PR_VERBOSE_STARTUP`
 
         Emit a trace at startup time
+
+    - `PR_VERBOSE_VIEWADD`
+
+        Emit a trace on `pwixRoles.viewAdd()` invocations
 
 Please note that `pwixRoles.configure()` method should be called in the same terms both in client and server sides.
 
@@ -133,7 +145,7 @@ The globally exported object.
 
 - `pwixRoles.current()`
 
-A reactive data source which provides the roles of the currently logged-in user as an object:
+A client-only reactive data source which provides the roles of the currently logged-in user as an object:
 
 ```
     - id        {String}    the current user identifier
@@ -143,7 +155,7 @@ A reactive data source which provides the roles of the currently logged-in user 
 
 - `pwixRoles.ready()`
 
-A client-only reactive data source which becomes `true` when the package is ready to be used.
+A client-only reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
 
 ### Blaze components
 
@@ -155,17 +167,14 @@ A client-only reactive data source which becomes `true` when the package is read
 
 ## NPM peer dependencies
 
-Starting with v 1.1.0, and in accordance with advices from [the Meteor Guide](https://guide.meteor.com/writing-atmosphere-packages.html#npm-dependencies), we no more hardcode NPM dependencies in the `Npm.depends` clause of the `package.js`. 
+Starting with v 1.0.0, and in accordance with advices from [the Meteor Guide](https://guide.meteor.com/writing-atmosphere-packages.html#npm-dependencies), we no more hardcode NPM dependencies in the `Npm.depends` clause of the `package.js`. 
 
 Instead we check npm versions of installed packages at runtime, on server startup, in development environment.
 
 Dependencies as of v 1.0.0:
 
 ```
-    '@popperjs/core': '^2.11.6',
-    'bootstrap': '^5.2.1',
     'deep-equal': '^2.2.0',
-    'jstree': '^3.3.12',
     'merge': '^2.1.1',
     'uuid': '^9.0.0'
 ```

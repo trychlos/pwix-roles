@@ -69,7 +69,7 @@ Template.prView.onCreated( function(){
             html += '</ul>';
             if( !count ){
                 html = '<p class="">';
-                html += i18n.label( ROLES_I18N, 'dialogs.norole' );
+                html += i18n.label( I18N, 'dialogs.norole' );
                 html += '</p>'
             }
             return html;
@@ -77,13 +77,13 @@ Template.prView.onCreated( function(){
 
         // get a translated label
         i18n: function( label ){
-            return i18n.label( ROLES_I18N, 'dialogs.'+label );
+            return i18n.label( I18N, 'dialogs.'+label );
         }
     };
 
     // increment the tabs with the registered ones
-    if( pwixRoles.client.viewCbs ){
-        pwixRoles.client.viewCbs.every(( o ) => {
+    if( pwixRoles._client.viewCbs ){
+        pwixRoles._client.viewCbs.every(( o ) => {
             const uuid = uuidv4();
             let tab = {
                 tabId: 'tab-'+uuid,
@@ -109,7 +109,7 @@ Template.prView.onRendered( function(){
 Template.prView.helpers({
     // i18n namespace
     namespace(){
-        return ROLES_I18N;
+        return I18N;
     },
     // modal title
     modalTitle(){

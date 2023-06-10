@@ -28,3 +28,10 @@ pwixRoles.ready = function(){
     _ready.dep.depend();
     return _ready.val;
 };
+
+// trace changes
+Tracker.autorun(() => {
+    if( pwixRoles._conf.verbosity & PR_VERBOSE_READY ){
+        console.log( 'pwixRoles.ready()', pwixRoles.ready());
+    }
+});
