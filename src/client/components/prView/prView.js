@@ -10,7 +10,8 @@
  * - title: (opt) a ReactiveVar which contains the modal title, defaulting to 'My roles'
  */
 
-import { pwixI18n as i18n } from 'meteor/pwix:i18n';
+import { pwixI18n } from 'meteor/pwix:i18n';
+import { pwixModal } from 'meteor/pwix:modal';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -37,6 +38,9 @@ Template.prView.onCreated( function(){
         // the active tab id
         activeTab: new ReactiveVar( 'roles_tab' ),
 
+        // modal title (expected to be a ReactiveVar if provided)
+        title: null,
+
         // returns the list of current user roles as a HTML hierarchy
         display( tab ){
             let html = '';
@@ -60,7 +64,7 @@ Template.prView.onCreated( function(){
             }
             let count = 0;
             html += '<ul class="pr-view-roles">';
-            //console.log( pwixRoles.current());
+            console.debug( pwixRoles.current());
             pwixRoles.userHierarchy( pwixRoles.current().direct ).every(( o ) => {
                 f_display( o );
                 count += 1;
@@ -69,15 +73,10 @@ Template.prView.onCreated( function(){
             html += '</ul>';
             if( !count ){
                 html = '<p class="">';
-                html += i18n.label( I18N, 'dialogs.norole' );
+                html += pwixI18n.label( I18N, 'dialogs.norole' );
                 html += '</p>'
             }
             return html;
-        },
-
-        // get a translated label
-        i18n: function( label ){
-            return i18n.label( I18N, 'dialogs.'+label );
         }
     };
 
@@ -97,61 +96,80 @@ Template.prView.onCreated( function(){
             return true;
         });
     }
+
+    // get the title
+    self.autorun(() => {
+        const title = Template.currentData().title;
+        if( title ){
+            self.PR.title = title;
+        }
+    });
 });
 
 Template.prView.onRendered( function(){
-    this.$( '.modal' ).modal( 'show' );
+    const self = this;
 
-    // add a tag class to body element to let the stylesheet identify *this* modal
-    $( 'body' ).addClass( 'prRoles-prView-class' );
+    pwixModal.run({
+        mdBody: 'prView_body',
+        mdFooter: 'prView_footer',
+        PR: self.PR
+    });
+
+    let title = pwixI18n.label( I18N, 'dialogs.myroles' );
+
+    self.autorun(() => {
+        if( self.PR.title ){
+            title = self.PR.title.get();
+        }
+        pwixModal.setTitle( title );
+    });
 });
 
-Template.prView.helpers({
-    // i18n namespace
-    namespace(){
-        return I18N;
-    },
-    // modal title
-    modalTitle(){
-        const rv = Template.currentData.title;
-        const title = rv ? rv.get() : Template.instance().PR.i18n( 'myroles' );
-    },
+Template.prView_body.helpers({
+
     // whether the pane is active ?
     paneActive( it ){
-        return Template.instance().PR.activeTab.get() === it.tabId ? 'show active' : '';
+        const PR = Template.currentData().PR;
+        return PR.activeTab.get() === it.tabId ? 'show active' : '';
     },
+
     // provides the HTML content of the pane
     paneContent( it ){
         return it.paneRV ? it.paneRV.get() : ( it.paneContent ? it.paneContent( it ) : '' );
     },
+
     // whether the tab is active ?
     tabActive( it ){
-        return Template.instance().PR.activeTab.get() === it.tabId ? 'active' : '';
+        const PR = Template.currentData().PR;
+        return PR.activeTab.get() === it.tabId ? 'active' : '';
     },
+
     // returns the list of tabs
     tabItems(){
-        return Template.instance().PR.tabItems;
+        const PR = Template.currentData().PR;
+        return PR.tabItems;
     },
+
     // the tab label
     tabLabel( it ){
         if( it.tabLabel ){
             return it.tabLabel( it );
         }
         if( it.tabKey ){
-            return Template.instance().PR.i18n( it.tabKey );
+            return pwixI18n.label( I18N, 'dialogs.'+it.tabKey );
         }
     },
+
     // the aria label for an active tab
     tabSelected( it ){
-        return Template.instance().PR.activeTab.get() === it.tabId ? 'true' : 'false';
-    },
+        const PR = Template.currentData().PR;
+        return PR.activeTab.get() === it.tabId ? 'true' : 'false';
+    }
 });
 
-Template.prView.events({
-
-    // remove the Blaze element from the DOM
-    'hidden.bs.modal .prView'( event, instance ){
-        $( 'body' ).removeClass( 'prRoles-prView-class' );
-        Blaze.remove( instance.view );
+Template.prView_footer.helpers({
+    // i18n
+    i18n( opts ){
+        return pwixI18n.label( I18N, opts.hash.key );
     }
 });

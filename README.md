@@ -145,7 +145,7 @@ The globally exported object.
 
 - `pwixRoles.current()`
 
-A client-only reactive data source which provides the roles of the currently logged-in user as an object:
+    A client-only reactive data source which provides the roles of the currently logged-in user as an object:
 
 ```
     - id        {String}    the current user identifier
@@ -155,11 +155,27 @@ A client-only reactive data source which provides the roles of the currently log
 
 - `pwixRoles.ready()`
 
-A client-only reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
+    A client-only reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
+
+- `pwixRoles.viewAdd( o )`
+
+    Add an additional tab to the `prView` dialog.
+
+    The to-be added tab is described by the provided object which must exhibit following keys:
+
+    - `tabLabel`: a function which will be called with a `tabItem` argument, and must return the tab label as a string
+
+    - `paneContent`: a function which will be called with a `tabItem` argument, and must return a Promise which must eventually resolves to the HTML pane content.
 
 ### Blaze components
 
 #### prView
+
+A modal dialog which shows the roles of the user distinguishing directly attributed from inherited ones.
+
+It can be configured by calling `{{> prView (args) }}`, where `args` is an object with following keys:
+
+- `title`: an optional ReactiveVar which contains the modal title, defaulting to 'My roles'
 
 #### prEdit
 
