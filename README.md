@@ -27,7 +27,7 @@ While `alanning:roles` provides primitives to execute CRUD operations on the rol
     meteor add pwix:roles
 ```
 
-### Configure
+### Definition of the roles hierarchy
 
 At initialization time, `pwix:roles` reads already defined roles from the database.
 
@@ -37,44 +37,41 @@ Nonetheless, the hierarchy of roles you plan to use should be provided to the pa
     import { pwixRoles } from 'meteor/pwix:roles';
 
     pwixRoles.configure({
-        roles: {
-            hierarchy: [
+        roles: {                                        topmost key of the hierarchy object
+            hierarchy: [                                description of the hierarchy as an array of role objects
                 {
-                    name: <role_name>,
-                    children: [
+                    name: <name1>,                      a role object must have a name which uniquely identifies the role
+                    children: [                         a role object may have zero to many children, each of them being itself a role object
                         {
-                            name: <role_name>,
-                            children: [
-                                ... and so on
+                            name: <name2>,
+                            children: [                 there is no limit to the count of recursivity levels of the children
+                                {
+                                    ...
+                                }
                             ]
                         }
+
                     ]
+                },
+                {
+                    name: <name>,
+                    children: [
+
+                    ]
+                },
+                {
+                    ...
                 }
             ],
-            aliases: [
-                ... see that later
+            aliases: [                                  one can define aliases, i.e. distinct names which are to be considered as same roles
+                [ <name1>, <name2>, ... ],
+                [ ... ]
             ]
         }
     });
 ```
 
-## What does it provide ?
-
-### `pwixRoles`
-
-The globally exported object.
-
-### Constants
-
-#### Verbosity of the package
-
-### Blaze components
-
-#### prView
-
-#### prEdit
-
-## Configuration
+## Package configuration
 
 The package's behavior can be configured through a call to the `pwixRoles.configure()` method, with just a single javascript object argument, which itself should only contains the options you want override.
 
@@ -126,60 +123,35 @@ Please note that `pwixRoles.configure()` method should be called in the same ter
 
 Remind too that Meteor packages are instanciated at application level. They are so only configurable once, or, in other words, only one instance has to be or can be configured. Addtionnal calls to `pwixRoles.configure()` will just override the previous one. You have been warned: **only the application should configure a package**.
 
-### Roles configuration
+## What does it provide ?
 
-Roles have to be declared as an object with a top single key 'roles'
-```
-    {
-        roles: {                                        mandatory topmost key of the configuration object
-            hierarchy: [                                description of the hierarchy as an array of role objects
-                {
-                    name: <name1>,                      a role object must have a name which uniquely identifies the role
-                    children: [                         a role object may have zero to many children, each of them being itself a role object
-                        {
-                            name: <name2>,
-                            children: [                 there is no limit to the count of recursivity levels of the children
-                                {
-                                    ...
-                                }
-                            ]
-                        }
+### `pwixRoles`
 
-                    ]
-                },
-                {
-                    name: <name>,
-                    children: [
-
-                    ]
-                },
-                {
-                    ...
-                }
-            ],
-            aliases: [                                  one can define aliases, i.e. distinct names which are to be considered as same roles
-                [ <name1>, <name2>, ... ],
-                [ ... ]
-            ]
-        }
-    }
-```
+The globally exported object.
 
 ### Methods
 
 - `pwixRoles.current()`
 
-A reactive data source which returns on the client the roles of the currently logged-in user as an object:
+A reactive data source which provides the roles of the currently logged-in user as an object:
 
 ```
     - id        {String}    the current user identifier
     - all       {Array}     all the roles, either directly or indirectly set
-    - direct    {Array}     only the directly attributed top roles in the hierarchy (after havng removed indirect ones)
+    - direct    {Array}     only the directly attributed top roles in the hierarchy (after having removed indirect ones)
 ```
 
 - `pwixRoles.ready()`
 
 A client-only reactive data source which becomes `true` when the package is ready to be used.
+
+### Blaze components
+
+#### prView
+
+#### prEdit
+
+### Constants
 
 ## NPM peer dependencies
 
@@ -191,9 +163,11 @@ Dependencies as of v 1.0.0:
 
 ```
     '@popperjs/core': '^2.11.6',
-    bootstrap: '^5.2.1',
-    jstree: '^3.3.12',
-    uuid: '^9.0.0'
+    'bootstrap': '^5.2.1',
+    'deep-equal': '^2.2.0',
+    'jstree': '^3.3.12',
+    'merge': '^2.1.1',
+    'uuid': '^9.0.0'
 ```
 
 Each of these dependencies should be installed at application level:

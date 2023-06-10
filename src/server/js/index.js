@@ -9,4 +9,3 @@ import './maintain.js';
 import './methods.js';
 import './publish.js';
 import './startup.js';
-import './webapp.js';
