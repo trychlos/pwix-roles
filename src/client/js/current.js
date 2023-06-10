@@ -25,7 +25,7 @@ Tracker.autorun(() => {
             console.log( 'pwix:roles set roles for current user' );
             const res = ( id ? Roles.getRolesForUser( id ) : [] ) || [];
             _current.val.all = res;
-            _current.val.direct = pwixRoles.filter( res );
+            _current.val.direct = pwixRoles._filter( res );
             _current.val.id = id;
             _current.dep.changed();
         }

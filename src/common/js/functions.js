@@ -7,20 +7,12 @@ import { Tracker } from 'meteor/tracker';
 
 import deepEqual from 'deep-equal';
 
-/**
- * @param {Object|String} user User identifier or actual user object
- * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
- */
-pwixRoles.directRolesForUser = function( user ){
-    return pwixRoles.filter( Roles.getRolesForUser( user ));
-}
-
-/**
+/*
  * Filter the provided array to remove inherited roles
  * @param {Array} array 
  * @returns {Array}
  */
-pwixRoles.filter = function( array ){
+pwixRoles._filter = function( array ){
     //console.log( 'filter in', array );
     let filtered = [];
     function f_filter( role ){
@@ -48,6 +40,14 @@ pwixRoles.filter = function( array ){
     //    throw new Error( 'error' );
     //}
     return filtered;
+}
+
+/**
+ * @param {Object|String} user User identifier or actual user object
+ * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
+ */
+pwixRoles.directRolesForUser = function( user ){
+    return pwixRoles._filter( Roles.getRolesForUser( user ));
 }
 
 /**

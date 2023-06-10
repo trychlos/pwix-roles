@@ -227,7 +227,7 @@ Template.prEdit.events({
             checked.push( id.replace( instance.PR.radical, '' ));
             return true;
         });
-        const filtered = pwixRoles.filter( checked );
+        const filtered = pwixRoles._filter( checked );
         instance.PR.attributedRoles.set( filtered );
         console.log( 'checked', checked, 'filtered', filtered );
         Meteor.call( 'pwixRoles.setUsersRoles', instance.PR.user._id, filtered );
