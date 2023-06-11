@@ -9,11 +9,11 @@ import deepEqual from 'deep-equal';
 
 /*
  * Filter the provided array to remove inherited roles
- * @param {Array} array 
+ * @param {Array} array
  * @returns {Array}
  */
 pwixRoles._filter = function( array ){
-    //console.log( 'filter in', array );
+    //console.debug( 'filter in', array );
     let filtered = [];
     function f_filter( role ){
         if( !filtered.includes( role )){
@@ -30,19 +30,50 @@ pwixRoles._filter = function( array ){
             }
         }
     }
-    const sorted = pwixRoles.sort( array );
+    const sorted = pwixRoles._sort( array );
     sorted.every(( role ) => {
         f_filter( role );
         return true;
     });
-    //console.log( 'filter out', filtered );
+    //console.debug( 'filter out', filtered );
     //if( filtered.length === 0 && array.length > 0 ){
     //    throw new Error( 'error' );
     //}
     return filtered;
-}
+};
+
+/*
+ * Sort the provided array in the hierarchy order
+ * @param {Array} array
+ * @returns {Array}
+ */
+pwixRoles._sort = function( array ){
+    let sorted = [];
+    function f_sort( o ){
+        // if the role is included in the input array, then all chilren are inherited
+        //console.debug( o );
+        if( array.includes( o.name )){
+            sorted.push( o.name );
+        } else if( o.children ){
+            o.children.every(( child ) => {
+                f_sort( child );
+                return true;
+            });
+        }
+    }
+    const h = pwixRoles._conf && pwixRoles._conf.roles && pwixRoles._conf.roles.hierarchy ? pwixRoles._conf.roles.hierarchy : [];
+    //console.debug( h );
+    h.every(( o ) => {
+        f_sort( o );
+        return true;
+    });
+    //console.debug( 'sorted', sorted );
+    return sorted;
+};
 
 /**
+ * @summary Returns the direct roles of the user
+ * @locus Anywhere
  * @param {Object|String} user User identifier or actual user object
  * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */
@@ -116,32 +147,6 @@ pwixRoles.parents = function( role ){
     });
     //console.log( 'pwixRoles.parents of', role, 'are', parents );
     return parents;
-}
-
-/**
- * Sort the provided array in the hierarchy order
- * @param {Array} array 
- * @returns {Array}
- */
-pwixRoles.sort = function( array ){
-    let sorted = [];
-    function f_sort( o ){
-        // if the role is included in the input array, then all chilren are inherited
-        if( array.includes( o.name )){
-            sorted.push( o.name );
-        } else if( o.children ){
-            o.children.every(( child ) => {
-                f_sort( child );
-                return true;
-            });
-        }
-    }
-    const h = pwixRoles._conf && pwixRoles._conf.roles && pwixRoles._conf.roles.hierarchy ? pwixRoles._conf.roles.hierarchy : [];
-    h.every(( o ) => {
-        f_sort( o );
-        return true;
-    });
-    return sorted;
 }
 
 /**

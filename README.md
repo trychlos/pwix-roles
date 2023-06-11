@@ -153,6 +153,12 @@ The globally exported object.
     - direct    {Array}     only the directly attributed top roles in the hierarchy (after having removed indirect ones)
 ```
 
+- `pwixRoles.directRolesForUser( user )`
+
+    Returns the direct roles of the user (_i.e._ only the first level of the hierarchy) as an array.
+
+    - `user`: a user identifier or a user object
+
 - `pwixRoles.ready()`
 
     A client-only reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).

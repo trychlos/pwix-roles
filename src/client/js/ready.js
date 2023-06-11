@@ -14,6 +14,7 @@ _ready = {
 // the underlying 'alanning:roles' package is said ready when the publication for the current user is ready
 Tracker.autorun(() => {
     if( Roles.subscription.ready()){
+        //console.debug( 'setting ready to true' );
         _ready.val = true,
         _ready.dep.changed();
     }

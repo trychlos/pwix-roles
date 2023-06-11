@@ -1,5 +1,9 @@
 /*
  * pwix:roles/src/client/js/current.js
+ *
+ * Roles for the current user are computed as soon as the package becomes ready on the client.
+ * But at the time it may be not yet configure()'d.
+ * So obtaining the roles hierarchy via the configuration must imply a recomputation of direct roles of the user.
  */
 
 import { Roles } from 'meteor/alanning:roles';
@@ -15,19 +19,25 @@ _current = {
     }
 };
 
+pwixRoles._client.currentRecompute = function( id ){
+    if( pwixRoles._conf.verbosity & PR_VERBOSE_CURRENT ){
+        console.log( 'pwix:roles set roles for current user' );
+    }
+    const res = ( id ? Roles.getRolesForUser( id ) : [] ) || [];
+    _current.val.all = res;
+    _current.val.direct = pwixRoles._filter( res );
+    _current.val.id = id;
+    _current.dep.changed();
+};
+
 // update the current user roles when the logged-in status changes
 //  client only as Meteor.userId() doesn't has any sense on the server
 Tracker.autorun(() => {
+    //console.debug( 'ready?', pwixRoles.ready());
     if( pwixRoles.ready()){
-        const _previous = _current.val.id;
         const id = Meteor.userId();
-        if( _previous !== id ){
-            console.log( 'pwix:roles set roles for current user' );
-            const res = ( id ? Roles.getRolesForUser( id ) : [] ) || [];
-            _current.val.all = res;
-            _current.val.direct = pwixRoles._filter( res );
-            _current.val.id = id;
-            _current.dep.changed();
+        if( _current.val.id !== id ){
+            pwixRoles._client.currentRecompute( id );
         }
     }
 });

@@ -17,6 +17,10 @@ pwixRoles.configure = function( o ){
     if( pwixRoles._conf.verbosity & PR_VERBOSE_CONFIGURE ){
         console.debug( 'pwix:roles configure() with', o, 'building', pwixRoles._conf );
     }
+
+    if( Meteor.isClient ){
+        pwixRoles._client.currentRecompute( Meteor.userId());
+    }
 }
 
 pwixRoles._conf = merge.recursive( true, pwixRoles._defaults );
