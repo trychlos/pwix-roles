@@ -38,7 +38,7 @@ function configure( api ){
     api.use( 'mongo', 'server' );
     api.use( 'pwix:i18n@1.3.0' );
     api.use( 'pwix:jstree@1.0.3' );
-    api.use( 'pwix:modal' );
+    api.use( 'pwix:modal@1.5.0' );
     api.use( 'tmeasday:check-npm-versions@1.0.2', 'server' );
     api.addFiles( 'src/client/components/prEdit/prEdit.js', 'client' );
     api.addFiles( 'src/client/components/prView/prView.js', 'client' );
