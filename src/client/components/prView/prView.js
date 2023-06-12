@@ -77,7 +77,10 @@ Template.prView.onCreated( function(){
                 html += '</p>'
             }
             return html;
-        }
+        },
+        
+        // so that we are able to cleanup this master template
+        view: self.view
     };
 
     // increment the tabs with the registered ones
@@ -172,4 +175,8 @@ Template.prView_footer.helpers({
     i18n( opts ){
         return pwixI18n.label( I18N, opts.hash.key );
     }
+});
+
+Template.prView_footer.onDestroyed( function(){
+    Blaze.remove( Template.currentData().PR.view );
 });
