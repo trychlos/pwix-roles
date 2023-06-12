@@ -20,7 +20,8 @@
 |      |            | though current could be useful on the server in below checks for example |
 |    6 | 2023- 2-10 | prEdit: checks **must also** be done server-side |
 |    7 | 2023- 6- 6 | f_DefineNewRoles() must be tolerant if roles are not configured |
-|    8 |  |  |
+|    8 | 2023- 6-12 | Have pwixRoles.i18n.namespace() to let another package add a translation to this one |
+|    9 |  |  |
 
 ---
 ## Done
