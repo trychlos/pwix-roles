@@ -4,10 +4,10 @@
 
 ### 1.0.0
 
-Release date: xxx
+Release date: 2023- 6-12
 
 - Initial release
 
 ---
 P. Wieser
-- Last updated on 2023, Feb. 2nd
+- Last updated on 2023, June 12th
