@@ -195,15 +195,48 @@ These are Meteor methods, i.e. to be `Meteor.call(...)` by the client.
 
 ### Blaze components
 
-#### prView
+#### `prView`
 
 A modal dialog which shows the roles of the user distinguishing directly attributed from inherited ones.
 
 It can be configured by calling `{{> prView (args) }}`, where `args` is an object with following keys:
 
-- `title`: an optional ReactiveVar which contains the modal title, defaulting to 'My roles'
+- `title`: an optional ReactiveVar which contains the modal title, defaulting to (localized) 'My roles'.
 
-#### prEdit
+The main tab, showing to the user only his own roles:
+
+![main tab](/maintainer/png/prView_main_512.png)
+
+An example of a tab added via `pwixRoles.viewAdd()`:
+
+![added tab](/maintainer/png/prView_add_512.png)
+
+#### `prEdit`
+
+A modal dialog which let edit user's roles.
+
+It can be configured by calling `{{> prEdit (args) }}`, where `args` is an object with following keys:
+
+- `id`: optional, the user identifier
+- `user`: optional, the user full record
+- `roles`: optional, a ReactiveVar which is expected to contain the list of currently attributed roles.
+
+Order of precedence is:
+1. id
+2. user
+3. roles
+
+If `id` is specified, this is enough and the component takes care of read the attributed roles of the identified user.
+
+Else, if `user` is specified, then the component takes care of read the attributed roles of the user.
+
+Else, if `roles` are specified, then they are edited, and updated in this var.
+
+As a side effect, if an information is given about the user (id or user itself), then the mail address is displayed in the dialog title.
+
+Example:
+
+![editing](/maintainer/png/prEdit_512.png)
 
 ### Constants
 
