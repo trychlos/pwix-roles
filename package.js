@@ -31,8 +31,8 @@ Package.onTest( function( api ){
 
 function configure( api ){
     api.versionsFrom( '1.8.1' );
-    api.use( 'alanning:roles', 'server' );
-    api.use( 'blaze-html-templates', 'client' );
+    api.use( 'alanning:roles@3.4.0', 'server' );
+    api.use( 'blaze-html-templates@2.0.0', 'client' );
     api.use( 'ecmascript' );
     api.use( 'less@4.0.0', 'client' );
     api.use( 'mongo', 'server' );

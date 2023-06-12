@@ -2,6 +2,12 @@
 
 ## ChangeLog
 
+### 1.0.1-rc
+
+Release date: 
+
+- Fix Meteor packaging, setting alanning:roles version requirement
+
 ### 1.0.0
 
 Release date: 2023- 6-12
