@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.1.3-rc
+### 1.1.3
 
-    Release date: 
+    Release date: 2023- 6-20
 
     - Remove obsolete deep-equal dependency
 
