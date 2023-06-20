@@ -31,4 +31,4 @@ pwixRoles.configure = function( o ){
     return pwixRoles._conf;
 }
 
-_.merge.recursive( pwixRoles._conf, pwixRoles._defaults );
+_.merge( pwixRoles._conf, pwixRoles._defaults );
