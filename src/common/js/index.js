@@ -2,7 +2,7 @@
  * pwix:roles/src/common/js/index.js
  */
 
-import './roles.js';
+import './global.js';
 //
 import './constants.js';
 //
