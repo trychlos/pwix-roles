@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.1.2-rc
+### 1.1.2
 
-    Release date: 
+    Release date: 2023- 6-20
 
     - Fix global object definition
 
