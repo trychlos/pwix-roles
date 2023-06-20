@@ -6,7 +6,8 @@
 
 Release date: 
 
-- 
+- Replace merge and deep-equal dependencies with lodash
+- configure() now acts both as a getter and a setter
 
 ### 1.0.1
 

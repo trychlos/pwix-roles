@@ -5,7 +5,7 @@
 import { Roles } from 'meteor/alanning:roles';
 import { Tracker } from 'meteor/tracker';
 
-import deepEqual from 'deep-equal';
+import _ from 'lodash';
 
 /*
  * Filter the provided array to remove inherited roles
@@ -221,7 +221,7 @@ pwixRoles.userIsInRoles = function( user, roles ){
     }
 
     // have a change ?
-    if( prevId !== _userIsInRoles.userId || !deepEqual( prevRoles, _userIsInRoles.usersRoles ) || !deepEqual( prevReq, _userIsInRoles.reqRoles )){
+    if( prevId !== _userIsInRoles.userId || !_.isEqual( prevRoles, _userIsInRoles.usersRoles ) || !_isEqual( prevReq, _userIsInRoles.reqRoles )){
         _userIsInRoles.dep.changed();
     }
     return ret;
