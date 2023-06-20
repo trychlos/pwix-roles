@@ -173,6 +173,10 @@ The globally exported object.
 
     - `paneContent`: a function which will be called with a `tabItem` argument, and must return a Promise which must eventually resolves to the HTML pane content.
 
+- `pwixRoles.i18n.namespace()`
+
+    Returns the i18n namespace of the package.
+
 ### Methods
 
 These are Meteor methods, i.e. to be `Meteor.call(...)` by the client.

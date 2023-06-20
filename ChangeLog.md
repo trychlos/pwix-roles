@@ -2,10 +2,11 @@
 
 ## ChangeLog
 
-### 1.0.2-rc
+### 1.1.0-rc
 
 Release date: 
 
+- Define pwixRoles.i18n.namespace() which returns the i18n namespace of the package
 - Replace merge and deep-equal dependencies with lodash
 - configure() now acts both as a getter and a setter
 
