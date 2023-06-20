@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - Remove obsolete deep-equal dependency
 
 ### 1.1.2
 
