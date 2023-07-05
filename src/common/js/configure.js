@@ -4,6 +4,8 @@
 
 import _ from 'lodash';
 
+pwixRoles._conf = {};
+
 pwixRoles._defaults = {
     roles: {},
     maintainHierarchy: true,
