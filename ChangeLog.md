@@ -2,11 +2,11 @@
 
 ## ChangeLog
 
-### 1.1.4-rc
+### 1.2.0-rc
 
     Release date: 
 
-    - 
+    - Define new pwixRoles.countByRole() publication (bumping candidate version number)
 
 ### 1.1.3
 
