@@ -5,6 +5,7 @@
 import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
 
 if( false ){
+    require( 'uuid/package.json' );
 }
 
 checkNpmVersions({
