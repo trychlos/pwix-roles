@@ -11,7 +11,7 @@
  */
 
 import { pwixI18n } from 'meteor/pwix:i18n';
-import { pwixModal } from 'meteor/pwix:modal';
+import { Modal } from 'meteor/pwix:modal';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -112,7 +112,7 @@ Template.prView.onCreated( function(){
 Template.prView.onRendered( function(){
     const self = this;
 
-    pwixModal.run({
+    Modal.run({
         mdBody: 'prView_body',
         mdFooter: 'prView_footer',
         PR: self.PR
@@ -124,7 +124,7 @@ Template.prView.onRendered( function(){
         if( self.PR.title ){
             title = self.PR.title.get();
         }
-        pwixModal.setTitle( title );
+        Modal.setTitle( title );
     });
 });
 

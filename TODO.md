@@ -20,7 +20,7 @@
 |      |            | though current could be useful on the server in below checks for example |
 |    6 | 2023- 2-10 | prEdit: checks **must also** be done server-side |
 |    7 | 2023- 6- 6 | f_DefineNewRoles() must be tolerant if roles are not configured |
-|    9 |  |  |
+|   10 |  |  |
 
 ---
 ## Done
@@ -29,6 +29,8 @@
 | ---: | :---       | :---                       |
 |    8 | 2023- 6-12 | Have pwixRoles.i18n.namespace() to let another package add a translation to this one |
 |      | 2023- 6-20 | done |
+|    9 | 2023- 7- 7 | deeeper tests of listByRole publication when a user manager is available |
+|      | 2023- 7- 8 | reactivity is validated with Accord33 users manager |
 
 ---
 P. Wieser

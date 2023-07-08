@@ -23,7 +23,7 @@
 import 'jstree/dist/jstree.min.js';
 
 import { pwixI18n } from 'meteor/pwix:i18n';
-import { pwixModal } from 'meteor/pwix:modal';
+import { Modal } from 'meteor/pwix:modal';
 
 import '../../../common/js/index.js';
 
@@ -80,7 +80,7 @@ Template.prEdit.onCreated( function(){
     self.autorun(() => {
         const email = self.PR.user ? self.PR.user.emails[0].address : null;
         const key = email ? 'title_mail' : 'title';
-        pwixModal.run({
+        Modal.run({
             mdBody: 'prEdit_body',
             mdFooter: 'prEdit_footer',
             mdTitle: pwixI18n.label( I18N, 'dialogs.'+key, email ),
@@ -245,13 +245,11 @@ Template.prEdit_footer.events({
         //console.log( 'checked', checked, 'filtered', filtered );
         Meteor.call( 'pwixRoles.setUsersRoles', PR.user._id, filtered );
         Meteor.call( 'pwixRoles.Accounts.Updated', PR.user._id );
-        pwixModal.close();
+        Modal.close();
         return false;
     }
 });
 
 Template.prEdit_footer.onDestroyed( function(){
     //console.debug( 'prEdit_footer.onDestroyed()' );
-    //console.debug( this );
-    Blaze.remove( Template.currentData().PR.view );
 });

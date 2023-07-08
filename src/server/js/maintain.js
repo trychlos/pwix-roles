@@ -27,7 +27,7 @@ function f_DefineNewRoles(){
 
     function f_msg(){
         if( !msg ){
-            if( pwixRoles._conf.verbosity & PR_VERBOSE_MAINTAIN ){
+            if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
                 console.log( 'pwix:roles/src/server/js/maintain.js defining not-yet existing roles...' );
             }
             msg = true;
@@ -57,7 +57,7 @@ function f_DefineNewRoles(){
                 //console.log( '   '+o.name+' already defined' );
             } else {
                 f_msg();
-                if( pwixRoles._conf.verbosity & PR_VERBOSE_MAINTAIN ){
+                if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
                     console.log( '   defining '+o.name );
                 }
                 Roles.createRole( o.name );
@@ -93,7 +93,7 @@ function f_DefineNewRoles(){
     }
 
     if( !msg ){
-        if( pwixRoles._conf.verbosity & PR_VERBOSE_MAINTAIN ){
+        if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
             console.log( 'pwix:roles/src/server/js/maintain.js defined roles all exist: fine.' );
         }
     }
@@ -172,12 +172,12 @@ function f_InheritanceCompleteness(){
         //console.log( o.role._id, inherited, typeof inherited, inherited.length, o.inheritedRoles, typeof o.inheritedRoles, o.inheritedRoles.length, equals );
         if( !equals ){
             if( !msg ){
-                if( pwixRoles._conf.verbosity & PR_VERBOSE_MAINTAIN ){
+                if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
                     console.log( 'pwix:roles/src/server/js/maintain.js maintaining the roles inheritage completeness...' );
                 }
                 msg = true;
             }
-            if( pwixRoles._conf.verbosity & PR_VERBOSE_MAINTAIN ){
+            if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
                 console.log( '   updating id='+o._id, o.role._id, 'user='+o.user._id );
             }
             Meteor.roleAssignment.update({ _id: o._id }, { $set: { inheritedRoles: inherited }});
@@ -187,7 +187,7 @@ function f_InheritanceCompleteness(){
         return true;
     });
     if( !msg ){
-        if( pwixRoles._conf.verbosity & PR_VERBOSE_MAINTAIN ){
+        if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
             console.log( 'pwix:roles/src/server/js/maintain.js roles inheritance is complete: fine.' );
         }
     }

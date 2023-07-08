@@ -7,6 +7,7 @@
     Release date: 
 
     - Define new pwixRoles.countByRole() publication (bumping candidate version number)
+    - Reorganize constants definitions to not pollute global space
 
 ### 1.1.3
 

@@ -9,14 +9,7 @@ Package.describe({
 Package.onUse( function( api ){
     configure( api );
     api.export([
-        'pwixRoles',
-        'PR_VERBOSE_NONE',
-        'PR_VERBOSE_CONFIGURE',
-        'PR_VERBOSE_CURRENT',
-        'PR_VERBOSE_MAINTAIN',
-        'PR_VERBOSE_READY',
-        'PR_VERBOSE_STARTUP',
-        'PR_VERBOSE_VIEWADD'
+        'pwixRoles'
     ]);
     api.mainModule( 'src/client/js/index.js', 'client' );
     api.mainModule( 'src/server/js/index.js', 'server' );

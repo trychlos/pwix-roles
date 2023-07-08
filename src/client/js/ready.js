@@ -32,7 +32,7 @@ pwixRoles.ready = function(){
 
 // trace changes
 Tracker.autorun(() => {
-    if( pwixRoles._conf.verbosity & PR_VERBOSE_READY ){
+    if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.READY ){
         console.log( 'pwixRoles.ready()', pwixRoles.ready());
     }
 });

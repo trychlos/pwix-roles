@@ -101,33 +101,33 @@ Known configuration options are:
 
     The accepted value can be:
 
-    - `PR_VERBOSE_NONE`
+    - `pwixRoles.C.Verbose.NONE`
 
         Do not display any trace log to the console
     
     or any or-ed combination of following:
 
-    - `PR_VERBOSE_CONFIGURE`
+    - `pwixRoles.C.Verbose.CONFIGURE`
 
         Trace `pwixRoles.configure()` calls and their result
 
-    - `PR_VERBOSE_CURRENT`
+    - `pwixRoles.C.Verbose.CURRENT`
 
         Emit a trace on `pwixRoles.current()` changes
 
-    - `PR_VERBOSE_MAINTAIN`
+    - `pwixRoles.C.Verbose.MAINTAIN`
 
         Trace (on the server) the operations done while maintaining the roles hierarchy at startup time.
 
-    - `PR_VERBOSE_READY`
+    - `pwixRoles.C.Verbose.READY`
 
         Emit a trace on `pwixRoles.ready()` changes
 
-    - `PR_VERBOSE_STARTUP`
+    - `pwixRoles.C.Verbose.STARTUP`
 
         Emit a trace at startup time
 
-    - `PR_VERBOSE_VIEWADD`
+    - `pwixRoles.C.Verbose.VIEWADD`
 
         Emit a trace on `pwixRoles.viewAdd()` invocations
 

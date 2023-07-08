@@ -15,7 +15,7 @@
  *      and must return a Promise which must eventually resolves to the HTML pane content
  */
 pwixRoles.viewAdd = function( o ){
-    if( pwixRoles._conf.verbosity & PR_VERBOSE_VIEWADD ){
+    if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.VIEWADD ){
         console.log( 'pwix:roles adding a view callback' );
     }
     if( !Object.keys( pwixRoles._client ).includes( 'viewCbs' )){

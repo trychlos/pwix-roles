@@ -9,7 +9,7 @@ pwixRoles._conf = {};
 pwixRoles._defaults = {
     roles: {},
     maintainHierarchy: true,
-    verbosity: PR_VERBOSE_NONE
+    verbosity: pwixRoles.C.Verbose.NONE
 };
 
 /**
@@ -23,7 +23,7 @@ pwixRoles.configure = function( o ){
     if( o && _.isObject( o )){
         _.merge( pwixRoles._conf, pwixRoles._defaults, o );
         // be verbose if asked for
-        if( pwixRoles._conf.verbosity & PR_VERBOSE_CONFIGURE ){
+        if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.CONFIGURE ){
             console.debug( 'pwix:roles configure() with', o, 'building', pwixRoles._conf );
         }
         if( Meteor.isClient ){

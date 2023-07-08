@@ -20,7 +20,7 @@ _current = {
 };
 
 pwixRoles._client.currentRecompute = function( id ){
-    if( pwixRoles._conf.verbosity & PR_VERBOSE_CURRENT ){
+    if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.CURRENT ){
         console.log( 'pwix:roles set roles for current user' );
     }
     const res = ( id ? Roles.getRolesForUser( id ) : [] ) || [];
@@ -57,7 +57,7 @@ pwixRoles.current = function(){
 
 // trace changes
 Tracker.autorun(() => {
-    if( pwixRoles._conf.verbosity & PR_VERBOSE_CURRENT ){
+    if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.CURRENT ){
         console.log( 'pwixRoles.current()', pwixRoles.current());
     }
 });

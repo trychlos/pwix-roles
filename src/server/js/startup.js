@@ -4,7 +4,7 @@
 
 // be verbose if asked for
 Meteor.startup( function(){
-    if( pwixRoles._conf.verbosity & PR_VERBOSE_CONFIGURE ){
+    if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.CONFIGURE ){
         console.debug( 'pwix:roles client.startup()' );
     }
 });
