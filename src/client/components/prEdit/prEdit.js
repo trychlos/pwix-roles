@@ -154,7 +154,8 @@ Template.prEdit_body.onRendered( function(){
     .on( 'check_node.jstree', ( event, data ) => {
         //console.log( 'check_node', event, data );
         data.node.children_d.every(( id ) => {
-            self.$( '.pr-tree' ).jstree( true ).disable_checkbox( id );
+            //self.$( '.pr-tree' ).jstree( true ).disable_checkbox( id );
+            self.$( '.pr-tree' ).jstree( true ).disable_node( id );
             return true;
         });
     })
@@ -163,18 +164,19 @@ Template.prEdit_body.onRendered( function(){
     .on( 'uncheck_node.jstree', ( event, data ) => {
         //console.log( 'check_node', event, data );
         data.node.children_d.every(( id ) => {
-            self.$( '.pr-tree' ).jstree( true ).enable_checkbox( id );
+            //self.$( '.pr-tree' ).jstree( true ).enable_checkbox( id );
+            self.$( '.pr-tree' ).jstree( true ).enable_node( id );
             return true;
         });
     })
     // 'enable_checkbox.jstree' data = { node, jsTree instance }
-    .on( 'enable_checkbox.jstree', ( event, data ) => {
-        //console.log( 'enable_checkbox', event, data );
+    .on( 'enable_node.jstree', ( event, data ) => {
+        //console.log( 'enable_node', event, data );
         self.$( '.pr-tree' ).jstree( true ).get_node( data.node.id, true ).removeClass( 'pr-disabled' );
     })
     // 'disable_checkbox.jstree' data = { node, jsTree instance }
-    .on( 'disable_checkbox.jstree', ( event, data ) => {
-        //console.log( 'disable_checkbox', event, data );
+    .on( 'disable_node.jstree', ( event, data ) => {
+        //console.log( 'disable_node', event, data );
         //console.log( self.$( '.pr-tree' ).jstree( true ).get_node( data.node.id ));
         self.$( '.pr-tree' ).jstree( true ).get_node( data.node.id, true ).addClass( 'pr-disabled' );
     });
