@@ -124,7 +124,7 @@ Template.prView.onRendered( function(){
         if( self.PR.title ){
             title = self.PR.title.get();
         }
-        Modal.setTitle( title );
+        Modal.set({ title: title });
     });
 });
 

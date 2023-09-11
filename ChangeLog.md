@@ -8,6 +8,7 @@
 
     - Define new pwixRoles.countByRole() publication (bumping candidate version number)
     - Reorganize constants definitions to not pollute global space
+    - Bump version requirements Meteor@2.13.2, pwix:i18n@1.5.2, pwix:modal@1.7.1
 
 ### 1.1.3
 

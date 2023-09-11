@@ -139,10 +139,10 @@ Meteor.publish( 'pwixRoles.countByRole', function( roles ){
                 if( rolesArray.includes( role )){
                     if( first ){
                         self.added( collectionName, role, { role: role, count: _rolesHash[role].length });
-                        console.debug( 'publish cb adding', { role: role, count: _rolesHash[role].length });
+                        //console.debug( 'publish cb adding', { role: role, count: _rolesHash[role].length });
                     } else {
                         self.changed( collectionName, role, { role: role, count: _rolesHash[role].length });
-                        console.debug( 'publish cb changing', { role: role, count: _rolesHash[role].length });
+                        //console.debug( 'publish cb changing', { role: role, count: _rolesHash[role].length });
                     }
                 }
                 return true;
@@ -151,10 +151,10 @@ Meteor.publish( 'pwixRoles.countByRole', function( roles ){
                 if( !Object.keys( _rolesHash ).includes( role )){
                     if( first ){
                         self.added( collectionName, role, { role: role, count: 0 });
-                        console.debug( 'publish cb adding', { role: role, count: 0 });
+                        //console.debug( 'publish cb adding', { role: role, count: 0 });
                     } else {
                         self.changed( collectionName, role, { role: role, count: 0 });
-                        console.debug( 'publish cb changing', { role: role, count: 0 });
+                        //console.debug( 'publish cb changing', { role: role, count: 0 });
                     }
                 }
                 return true;
