@@ -145,7 +145,7 @@ The globally exported object.
 
 - `pwixRoles.current()`
 
-    A client-only reactive data source which provides the roles of the currently logged-in user as an object:
+    A (client-only) reactive data source which provides the roles of the currently logged-in user as an object:
 
 ```
     - id        {String}    the current user identifier
@@ -161,7 +161,7 @@ The globally exported object.
 
 - `pwixRoles.ready()`
 
-    A client-only reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
+    A (client-only) reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
 
 - `pwixRoles.viewAdd( o )`
 
@@ -176,6 +176,10 @@ The globally exported object.
 - `pwixRoles.i18n.namespace()`
 
     Returns the i18n namespace of the package.
+
+Note from `Roles` documentation:
+
+    Roles functions which modify the database should not be called directly, but inside the Meteor methods.
 
 ### Methods
 

@@ -36,7 +36,7 @@ Template.prEdit.onCreated( function(){
 
     self.PR = {
         // input parms
-        user: null,
+        user: new ReactiveVar( null ),
         attributedRoles: null,
         // tree loading vars
         treeReady: new ReactiveVar( false ),
@@ -49,41 +49,52 @@ Template.prEdit.onCreated( function(){
     };
 
     // get user informations if possible
-    // if 'id' is specified, then get a user record and get the attributed roles
-    // if a 'user' is specified, fine
+    // if 'id' is specified, then get the user record
     self.autorun(() => {
         if( Template.currentData().id ){
             Meteor.call( 'pwixRoles.Accounts.User', Template.currentData().id, ( err, res ) => {
                 if( err ){
                     console.error( err );
                 } else {
-                    self.PR.user = res;
+                    self.PR.user.set( res );
                 }
             });
-        } else if( Template.currentData().user ){
-            self.PR.user = Template.currentData().user;
         }
     });
 
-    // if a 'roles' is specified, it is expected to be a reactive var with the list of vars
-    //  else create a new one
+    // get user informations if possible
+    // if a 'user' is specified, fine
+    self.autorun(() => {
+        if( Template.currentData().user ){
+            self.PR.user.set( Template.currentData().user );
+        }
+    });
+
+    // if a 'roles' is specified, it is expected to be a reactive var with the list of roles
+    //  else create a new one (expects a user has previously been set)
     self.autorun(() => {
         if( Template.currentData().roles ){
             self.PR.attributedRoles = Template.currentData().roles;
-        } else {
+        }
+    });
+
+    // if an id or a user was specified, get the roles of the user
+    self.autorun(() => {
+        const user = self.PR.user.get();
+        if( user ){
             self.PR.attributedRoles = new ReactiveVar( null );
-            self.PR.attributedRoles.set( pwixRoles.directRolesForUser( self.PR.user ));
+            self.PR.attributedRoles.set( pwixRoles.directRolesForUser( user ));
         }
     });
 
     // creates the modal
     self.autorun(() => {
-        const email = self.PR.user ? self.PR.user.emails[0].address : null;
-        const key = email ? 'title_mail' : 'title';
+        const user = self.PR.user.get();
+        const email = user ? user.emails[0].address : null;
         Modal.run({
             mdBody: 'prEdit_body',
             mdFooter: 'prEdit_footer',
-            mdTitle: pwixI18n.label( I18N, 'dialogs.'+key, email ),
+            mdTitle: pwixI18n.label( I18N, 'dialogs.'+( email ? 'title_mail' : 'title' ), email ),
             PR: self.PR
         });
     });
@@ -243,8 +254,12 @@ Template.prEdit_footer.events({
         const filtered = pwixRoles._filter( checked );
         PR.attributedRoles.set( filtered );
         //console.log( 'checked', checked, 'filtered', filtered );
-        Meteor.call( 'pwixRoles.setUsersRoles', PR.user._id, filtered );
-        Meteor.call( 'pwixRoles.Accounts.Updated', PR.user._id );
+        // update the user roles if a user was provided
+        const user = PR.user.get();
+        if( user ){
+            Meteor.call( 'pwixRoles.setUsersRoles', user._id, filtered );
+            Meteor.call( 'pwixRoles.Accounts.Updated', user._id );
+        }
         Modal.close();
         return false;
     }
