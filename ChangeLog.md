@@ -9,6 +9,10 @@
     - Define new pwixRoles.countByRole() publication (bumping candidate version number)
     - Reorganize constants definitions to not pollute global space
     - Bump version requirements Meteor@2.13.2, pwix:i18n@1.5.2, pwix:modal@1.7.1
+    - prEdit: fix clickability on disabled nodes
+    - prEdit: make sure we edit the account only if a user was provided
+    - Remove 'md-modal' mentions from the stylesheet
+    - Back to Meteor 2.9.0
 
 ### 1.1.3
 
