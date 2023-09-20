@@ -2,7 +2,7 @@
  * pwix:roles/src/client/js/ready.js
  */
 
-import { Roles } from 'meteor/alanning:roles';
+import { Roles as alRoles } from 'meteor/alanning:roles';
 import { Tracker } from 'meteor/tracker';
 
 // client only
@@ -13,7 +13,7 @@ _ready = {
 
 // the underlying 'alanning:roles' package is said ready when the publication for the current user is ready
 Tracker.autorun(() => {
-    if( Roles.subscription.ready()){
+    if( alRoles.subscription.ready()){
         //console.debug( 'setting ready to true' );
         _ready.val = true,
         _ready.dep.changed();

@@ -2,7 +2,7 @@
  * pwix:roles/src/server/js/publish.js
  */
 
-import { Roles } from 'meteor/alanning:roles';
+import { Roles as alRoles } from 'meteor/alanning:roles';
 
 // publishes the roles of the current user
 //  because it is not named, this publication is automatic (auto-publication)
@@ -201,10 +201,10 @@ Meteor.publish( 'pwixRoles.listByRole', function( roles ){
     // Until then, we don't want to send a lot of `changed` messages—hence
     // tracking the `initializing` state.
 
-    const handle = Roles.getUsersInRole( rolesArray ).observeChanges({
+    const handle = alRoles.getUsersInRole( rolesArray ).observeChanges({
         added( user_id, user_doc ){
             //console.debug( 'added', arguments );
-            const userRoles = Roles.getRolesForUser( user_id );
+            const userRoles = alRoles.getRolesForUser( user_id );
             rolesArray.every(( role ) => {
                 if( userRoles.includes( role )){
                     if( Object.keys( collectionHash ).includes( role )){

@@ -2,7 +2,7 @@
  * pwix:roles/src/common/js/functions.js
  */
 
-import { Roles } from 'meteor/alanning:roles';
+import { Roles as alRoles } from 'meteor/alanning:roles';
 import { Tracker } from 'meteor/tracker';
 
 import _ from 'lodash';
@@ -78,7 +78,7 @@ pwixRoles._sort = function( array ){
  * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */
 pwixRoles.directRolesForUser = function( user ){
-    return pwixRoles._filter( Roles.getRolesForUser( user ));
+    return pwixRoles._filter( alRoles.getRolesForUser( user ));
 }
 
 /**
@@ -210,13 +210,13 @@ pwixRoles.userIsInRoles = function( user, roles ){
         ret = ( _userIsInRoles.reqRoles.length === 0 );
 
     } else {
-        _userIsInRoles.userRoles = Roles.getRolesForUser( user );
+        _userIsInRoles.userRoles = alRoles.getRolesForUser( user );
 
         // if no role is requested, then user is always allowed
         if( _userIsInRoles.reqRoles.length === 0 ){
             ret = true;
         } else {
-            ret = Roles.userIsInRole( user, roles );
+            ret = alRoles.userIsInRole( user, roles );
         }
     }
 

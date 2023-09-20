@@ -6,7 +6,7 @@
  * So obtaining the roles hierarchy via the configuration must imply a recomputation of direct roles of the user.
  */
 
-import { Roles } from 'meteor/alanning:roles';
+import { Roles as alRoles } from 'meteor/alanning:roles';
 import { Tracker } from 'meteor/tracker';
 
 // only available on the client
@@ -23,7 +23,7 @@ pwixRoles._client.currentRecompute = function( id ){
     if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.CURRENT ){
         console.log( 'pwix:roles set roles for current user' );
     }
-    const res = ( id ? Roles.getRolesForUser( id ) : [] ) || [];
+    const res = ( id ? alRoles.getRolesForUser( id ) : [] ) || [];
     _current.val.all = res;
     _current.val.direct = pwixRoles._filter( res );
     _current.val.id = id;

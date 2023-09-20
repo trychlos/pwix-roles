@@ -177,7 +177,7 @@ The globally exported object.
 
     Returns the i18n namespace of the package.
 
-Note from `Roles` documentation:
+Note from `alanning:roles` documentation:
 
     Roles functions which modify the database should not be called directly, but inside the Meteor methods.
 
@@ -199,7 +199,7 @@ These are Meteor methods, i.e. to be `Meteor.call(...)` by the client.
 
         - `ifExists`: if true, do not throw an exception if the role does not exist
 
-    This method directy calls `Roles.addUsersToRoles()` function. It is just clearer that this is a server code.
+    This method directy calls `alanning:roles.addUsersToRoles()` function. It is just clearer that this is a server code.
 
 ### Blaze components
 

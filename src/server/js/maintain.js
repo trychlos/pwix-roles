@@ -17,7 +17,7 @@
  *      unless the to-be-cleaned role has been directly assigned to a user : logs a UPPERCASE warning!
  */
 
-import { Roles } from 'meteor/alanning:roles';
+import { Roles as alRoles } from 'meteor/alanning:roles';
 
 let rolesAllRoles = [];         // when defining new roles and when removing obsolete ones
 let rolesAssignments = [];      // when completing the inheritance and when removing obsolete ones
@@ -60,9 +60,9 @@ function f_DefineNewRoles(){
                 if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
                     console.log( '   defining '+o.name );
                 }
-                Roles.createRole( o.name );
+                alRoles.createRole( o.name );
                 if( parent ){
-                    Roles.addRolesToParent( o.name, parent );
+                    alRoles.addRolesToParent( o.name, parent );
                 }
             }
             if( o.children ){
@@ -78,7 +78,7 @@ function f_DefineNewRoles(){
     // each role is listed with its direct children; this is not a recursive tree
     // the used method makes sure we get as roles as we have defined, each with its direct children
     // as objects { _id: <role_name>, children: [ array of objects { _id: <role_name> } ] }
-    Roles.getAllRoles().fetch().every(( o ) => {
+    alRoles.getAllRoles().fetch().every(( o ) => {
         //console.log( 'Roles.getAllRoles', o );
         rolesAllRoles.push( o );
         return true;
