@@ -14,12 +14,12 @@
  *      which will be called with ( tabItem ) argument,
  *      and must return a Promise which must eventually resolves to the HTML pane content
  */
-pwixRoles.viewAdd = function( o ){
-    if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.VIEWADD ){
+Roles.viewAdd = function( o ){
+    if( Roles._conf.verbosity & Roles.C.Verbose.VIEWADD ){
         console.log( 'pwix:roles adding a view callback' );
     }
-    if( !Object.keys( pwixRoles._client ).includes( 'viewCbs' )){
-        pwixRoles._client.viewCbs = [];
+    if( !Object.keys( Roles._client ).includes( 'viewCbs' )){
+        Roles._client.viewCbs = [];
     }
-    pwixRoles._client.viewCbs.push( o );
+    Roles._client.viewCbs.push( o );
 };

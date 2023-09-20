@@ -19,13 +19,13 @@ _current = {
     }
 };
 
-pwixRoles._client.currentRecompute = function( id ){
-    if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.CURRENT ){
+Roles._client.currentRecompute = function( id ){
+    if( Roles._conf.verbosity & Roles.C.Verbose.CURRENT ){
         console.log( 'pwix:roles set roles for current user' );
     }
     const res = ( id ? alRoles.getRolesForUser( id ) : [] ) || [];
     _current.val.all = res;
-    _current.val.direct = pwixRoles._filter( res );
+    _current.val.direct = Roles._filter( res );
     _current.val.id = id;
     _current.dep.changed();
 };
@@ -33,11 +33,11 @@ pwixRoles._client.currentRecompute = function( id ){
 // update the current user roles when the logged-in status changes
 //  client only as Meteor.userId() doesn't has any sense on the server
 Tracker.autorun(() => {
-    //console.debug( 'ready?', pwixRoles.ready());
-    if( pwixRoles.ready()){
+    //console.debug( 'ready?', Roles.ready());
+    if( Roles.ready()){
         const id = Meteor.userId();
         if( _current.val.id !== id ){
-            pwixRoles._client.currentRecompute( id );
+            Roles._client.currentRecompute( id );
         }
     }
 });
@@ -50,14 +50,14 @@ Tracker.autorun(() => {
  *  - all       {Array}     all the roles, either directly or indirectly set
  *  - direct    {Array}     only the directly attributed top roles in the hierarchy (after havng removed indirect ones)
  */
-pwixRoles.current = function(){
+Roles.current = function(){
     _current.dep.depend();
     return _current.val;
 };
 
 // trace changes
 Tracker.autorun(() => {
-    if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.CURRENT ){
-        console.log( 'pwixRoles.current()', pwixRoles.current());
+    if( Roles._conf.verbosity & Roles.C.Verbose.CURRENT ){
+        console.log( 'Roles.current()', Roles.current());
     }
 });

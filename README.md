@@ -34,9 +34,9 @@ At initialization time, `pwix:roles` reads already defined roles from the databa
 Nonetheless, the hierarchy of roles you plan to use should be provided to the package at configuration time.
 
 ```
-    import { pwixRoles } from 'meteor/pwix:roles';
+    import { Roles } from 'meteor/pwix:roles';
 
-    pwixRoles.configure({
+    Roles.configure({
         roles: {                                        topmost key of the hierarchy object
             hierarchy: [                                description of the hierarchy as an array of role objects
                 {
@@ -73,7 +73,7 @@ Nonetheless, the hierarchy of roles you plan to use should be provided to the pa
 
 ## Package configuration
 
-The package's behavior can be configured through a call to the `pwixRoles.configure()` method, with just a single javascript object argument, which itself should only contains the options you want override.
+The package's behavior can be configured through a call to the `Roles.configure()` method, with just a single javascript object argument, which itself should only contains the options you want override.
 
 Known configuration options are:
 
@@ -101,49 +101,49 @@ Known configuration options are:
 
     The accepted value can be:
 
-    - `pwixRoles.C.Verbose.NONE`
+    - `Roles.C.Verbose.NONE`
 
         Do not display any trace log to the console
     
     or any or-ed combination of following:
 
-    - `pwixRoles.C.Verbose.CONFIGURE`
+    - `Roles.C.Verbose.CONFIGURE`
 
-        Trace `pwixRoles.configure()` calls and their result
+        Trace `Roles.configure()` calls and their result
 
-    - `pwixRoles.C.Verbose.CURRENT`
+    - `Roles.C.Verbose.CURRENT`
 
-        Emit a trace on `pwixRoles.current()` changes
+        Emit a trace on `Roles.current()` changes
 
-    - `pwixRoles.C.Verbose.MAINTAIN`
+    - `Roles.C.Verbose.MAINTAIN`
 
         Trace (on the server) the operations done while maintaining the roles hierarchy at startup time.
 
-    - `pwixRoles.C.Verbose.READY`
+    - `Roles.C.Verbose.READY`
 
-        Emit a trace on `pwixRoles.ready()` changes
+        Emit a trace on `Roles.ready()` changes
 
-    - `pwixRoles.C.Verbose.STARTUP`
+    - `Roles.C.Verbose.STARTUP`
 
         Emit a trace at startup time
 
-    - `pwixRoles.C.Verbose.VIEWADD`
+    - `Roles.C.Verbose.VIEWADD`
 
-        Emit a trace on `pwixRoles.viewAdd()` invocations
+        Emit a trace on `Roles.viewAdd()` invocations
 
-Please note that `pwixRoles.configure()` method should be called in the same terms both in client and server sides.
+Please note that `Roles.configure()` method should be called in the same terms both in client and server sides.
 
-Remind too that Meteor packages are instanciated at application level. They are so only configurable once, or, in other words, only one instance has to be or can be configured. Addtionnal calls to `pwixRoles.configure()` will just override the previous one. You have been warned: **only the application should configure a package**.
+Remind too that Meteor packages are instanciated at application level. They are so only configurable once, or, in other words, only one instance has to be or can be configured. Addtionnal calls to `Roles.configure()` will just override the previous one. You have been warned: **only the application should configure a package**.
 
 ## What does it provide ?
 
-### `pwixRoles`
+### `Roles`
 
 The globally exported object.
 
 ### Functions
 
-- `pwixRoles.current()`
+- `Roles.current()`
 
     A (client-only) reactive data source which provides the roles of the currently logged-in user as an object:
 
@@ -153,17 +153,17 @@ The globally exported object.
     - direct    {Array}     only the directly attributed top roles in the hierarchy (after having removed indirect ones)
 ```
 
-- `pwixRoles.directRolesForUser( user )`
+- `Roles.directRolesForUser( user )`
 
     Returns the direct roles of the user (_i.e._ only the first level of the hierarchy) as an array.
 
     - `user`: a user identifier or a user object
 
-- `pwixRoles.ready()`
+- `Roles.ready()`
 
     A (client-only) reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
 
-- `pwixRoles.viewAdd( o )`
+- `Roles.viewAdd( o )`
 
     Add an additional tab to the `prView` dialog.
 
@@ -173,7 +173,7 @@ The globally exported object.
 
     - `paneContent`: a function which will be called with a `tabItem` argument, and must return a Promise which must eventually resolves to the HTML pane content.
 
-- `pwixRoles.i18n.namespace()`
+- `Roles.i18n.namespace()`
 
     Returns the i18n namespace of the package.
 
@@ -185,7 +185,7 @@ Note from `alanning:roles` documentation:
 
 These are Meteor methods, i.e. to be `Meteor.call(...)` by the client.
 
-- `pwixRoles.addUsersToRoles( users, roles, options )`
+- `Roles.addUsersToRoles( users, roles, options )`
 
     Add roles to existing roles for each user.
 
@@ -215,7 +215,7 @@ The main tab, showing to the user only his own roles:
 
 ![main tab](/maintainer/png/prView_main_512.png)
 
-An example of a tab added via `pwixRoles.viewAdd()`:
+An example of a tab added via `Roles.viewAdd()`:
 
 ![added tab](/maintainer/png/prView_add_512.png)
 

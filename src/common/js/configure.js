@@ -4,12 +4,12 @@
 
 import _ from 'lodash';
 
-pwixRoles._conf = {};
+Roles._conf = {};
 
-pwixRoles._defaults = {
+Roles._defaults = {
     roles: {},
     maintainHierarchy: true,
-    verbosity: pwixRoles.C.Verbose.NONE
+    verbosity: Roles.C.Verbose.NONE
 };
 
 /**
@@ -19,18 +19,18 @@ pwixRoles._defaults = {
  * @param {Object} o configuration options
  * @returns {Object} the package configuration
  */
-pwixRoles.configure = function( o ){
+Roles.configure = function( o ){
     if( o && _.isObject( o )){
-        _.merge( pwixRoles._conf, pwixRoles._defaults, o );
+        _.merge( Roles._conf, Roles._defaults, o );
         // be verbose if asked for
-        if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.CONFIGURE ){
-            console.debug( 'pwix:roles configure() with', o, 'building', pwixRoles._conf );
+        if( Roles._conf.verbosity & Roles.C.Verbose.CONFIGURE ){
+            console.debug( 'pwix:roles configure() with', o, 'building', Roles._conf );
         }
         if( Meteor.isClient ){
-            pwixRoles._client.currentRecompute( Meteor.userId());
+            Roles._client.currentRecompute( Meteor.userId());
         }
     }
-    return pwixRoles._conf;
+    return Roles._conf;
 }
 
-_.merge( pwixRoles._conf, pwixRoles._defaults );
+_.merge( Roles._conf, Roles._defaults );

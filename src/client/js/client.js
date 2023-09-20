@@ -2,5 +2,5 @@
  * pwix:roles/src/client/js/client.js
  */
 
-pwixRoles._client = {
+Roles._client = {
 };

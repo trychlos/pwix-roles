@@ -64,8 +64,8 @@ Template.prView.onCreated( function(){
             }
             let count = 0;
             html += '<ul class="pr-view-roles">';
-            //console.debug( pwixRoles.current());
-            pwixRoles.userHierarchy( pwixRoles.current().direct ).every(( o ) => {
+            //console.debug( Roles.current());
+            Roles.userHierarchy( Roles.current().direct ).every(( o ) => {
                 f_display( o );
                 count += 1;
                 return true;
@@ -84,8 +84,8 @@ Template.prView.onCreated( function(){
     };
 
     // increment the tabs with the registered ones
-    if( pwixRoles._client.viewCbs ){
-        pwixRoles._client.viewCbs.every(( o ) => {
+    if( Roles._client.viewCbs ){
+        Roles._client.viewCbs.every(( o ) => {
             const uuid = uuidv4();
             let tab = {
                 tabId: 'tab-'+uuid,

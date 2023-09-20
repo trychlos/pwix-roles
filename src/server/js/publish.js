@@ -18,7 +18,7 @@ Meteor.publish( null, function(){
 
 // publishes all the roles
 //  this may be needed by an application which would wish do some sort of user's roles management
-Meteor.publish( 'pwixRoles.allAssignments', function(){
+Meteor.publish( 'Roles.allAssignments', function(){
     return Meteor.roleAssignment.find();
 });
 
@@ -122,7 +122,7 @@ function _maintainUsersPerRole( cb ){
 //       }
 //     }
 //
-Meteor.publish( 'pwixRoles.countByRole', function( roles ){
+Meteor.publish( 'Roles.countByRole', function( roles ){
 
     const self = this;
     const collectionName = 'CountByRole';
@@ -182,13 +182,13 @@ Meteor.publish( 'pwixRoles.countByRole', function( roles ){
 
 // publishes the list of users which have a role
 //  as several roles may be asked, this publication provides a 'ListByRole' collection, with one row { role, user_id } per role and user
-//  Note that this publication shares most of its code with 'pwixRoles.countByRole' publication
+//  Note that this publication shares most of its code with 'Roles.countByRole' publication
 //
 // Rationale: it seems that Roles.getUsersInRole() publishes a non-reactive cursor, as doesn't trigger neither added(), changed() nor removed()
 //  when updating the role-assignment collection.
 //  However, the removed() is triggered when we delete a user from db.users collection...
 //  So, we observe changes on both the two collections
-Meteor.publish( 'pwixRoles.listByRole', function( roles ){
+Meteor.publish( 'Roles.listByRole', function( roles ){
 
     // return ( pwiForums.server.fn.Posts.moderablesByQuery.bind( this ))( query );
 

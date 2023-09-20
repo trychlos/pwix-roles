@@ -1,7 +1,7 @@
 /*
  * pwix:roles/src/server/js/maintain.js
  *
- *  It is expected that the application has configured the pwix:roles package by calling pwixRoles.configure()
+ *  It is expected that the application has configured the pwix:roles package by calling Roles.configure()
  *  with at least an object { conf: { roles: { hierarchy: [] }}}, before Meteor.startup() time.
  *  So it is time for us to define these roles here.
  * 
@@ -27,7 +27,7 @@ function f_DefineNewRoles(){
 
     function f_msg(){
         if( !msg ){
-            if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
+            if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
                 console.log( 'pwix:roles/src/server/js/maintain.js defining not-yet existing roles...' );
             }
             msg = true;
@@ -57,7 +57,7 @@ function f_DefineNewRoles(){
                 //console.log( '   '+o.name+' already defined' );
             } else {
                 f_msg();
-                if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
+                if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
                     console.log( '   defining '+o.name );
                 }
                 alRoles.createRole( o.name );
@@ -85,15 +85,15 @@ function f_DefineNewRoles(){
     });
 
     // iterate on our roles, defining the missing ones
-    if( pwixRoles._conf && pwixRoles._conf.roles && pwixRoles._conf.roles.hierarchy && Array.isArray( pwixRoles._conf.roles.hierarchy )){
-        pwixRoles._conf.roles.hierarchy.every(( o ) => {
+    if( Roles._conf && Roles._conf.roles && Roles._conf.roles.hierarchy && Array.isArray( Roles._conf.roles.hierarchy )){
+        Roles._conf.roles.hierarchy.every(( o ) => {
             f_define( o );
             return true;
         });
     }
 
     if( !msg ){
-        if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
+        if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
             console.log( 'pwix:roles/src/server/js/maintain.js defined roles all exist: fine.' );
         }
     }
@@ -127,8 +127,8 @@ function f_InheritanceCompleteness(){
             });
         }
 
-        if( pwixRoles._conf.roles && pwixRoles._conf.roles.hierarchy ){
-            f_children( pwixRoles._conf.roles.hierarchy, name, false );
+        if( Roles._conf.roles && Roles._conf.roles.hierarchy ){
+            f_children( Roles._conf.roles.hierarchy, name, false );
         } else {
             result.push({ _id: name });
         }
@@ -172,12 +172,12 @@ function f_InheritanceCompleteness(){
         //console.log( o.role._id, inherited, typeof inherited, inherited.length, o.inheritedRoles, typeof o.inheritedRoles, o.inheritedRoles.length, equals );
         if( !equals ){
             if( !msg ){
-                if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
+                if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
                     console.log( 'pwix:roles/src/server/js/maintain.js maintaining the roles inheritage completeness...' );
                 }
                 msg = true;
             }
-            if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
+            if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
                 console.log( '   updating id='+o._id, o.role._id, 'user='+o.user._id );
             }
             Meteor.roleAssignment.update({ _id: o._id }, { $set: { inheritedRoles: inherited }});
@@ -187,7 +187,7 @@ function f_InheritanceCompleteness(){
         return true;
     });
     if( !msg ){
-        if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.MAINTAIN ){
+        if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
             console.log( 'pwix:roles/src/server/js/maintain.js roles inheritance is complete: fine.' );
         }
     }
@@ -199,7 +199,7 @@ function f_CleanupObsoleteRoles(){
 }
 
 Meteor.startup( function(){
-    if( pwixRoles._conf.maintainHierarchy ){
+    if( Roles._conf.maintainHierarchy ){
         f_DefineNewRoles();
         f_InheritanceCompleteness();
         f_CleanupObsoleteRoles();

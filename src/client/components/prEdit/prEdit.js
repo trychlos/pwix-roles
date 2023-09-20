@@ -52,7 +52,7 @@ Template.prEdit.onCreated( function(){
     // if 'id' is specified, then get the user record
     self.autorun(() => {
         if( Template.currentData().id ){
-            Meteor.call( 'pwixRoles.Accounts.User', Template.currentData().id, ( err, res ) => {
+            Meteor.call( 'Roles.Accounts.User', Template.currentData().id, ( err, res ) => {
                 if( err ){
                     console.error( err );
                 } else {
@@ -83,7 +83,7 @@ Template.prEdit.onCreated( function(){
         const user = self.PR.user.get();
         if( user ){
             self.PR.attributedRoles = new ReactiveVar( null );
-            self.PR.attributedRoles.set( pwixRoles.directRolesForUser( user ));
+            self.PR.attributedRoles.set( Roles.directRolesForUser( user ));
         }
     });
 
@@ -198,10 +198,10 @@ Template.prEdit_body.onRendered( function(){
                     });
                 }
             }
-            //console.log( pwixRoles );
+            //console.log( Roles );
             PR.creationAsked = 0;
             PR.creationDone.set( 0 );
-            pwixRoles._conf.roles.hierarchy.every(( o ) => {
+            Roles._conf.roles.hierarchy.every(( o ) => {
                 f_role( o );
                 return true;
             });
@@ -253,14 +253,14 @@ Template.prEdit_footer.events({
             checked.push( id.replace( PR.radical, '' ));
             return true;
         });
-        const filtered = pwixRoles._filter( checked );
+        const filtered = Roles._filter( checked );
         PR.attributedRoles.set( filtered );
         //console.log( 'checked', checked, 'filtered', filtered );
         // update the user roles if a user was provided
         const user = PR.user.get();
         if( user ){
-            Meteor.call( 'pwixRoles.setUsersRoles', user._id, filtered );
-            Meteor.call( 'pwixRoles.Accounts.Updated', user._id );
+            Meteor.call( 'Roles.setUsersRoles', user._id, filtered );
+            Meteor.call( 'Roles.Accounts.Updated', user._id );
         }
         Modal.close();
         return false;

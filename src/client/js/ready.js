@@ -25,14 +25,14 @@ Tracker.autorun(() => {
  * @locus Client
  * @returns {Boolean} true when the package is ready
  */
-pwixRoles.ready = function(){
+Roles.ready = function(){
     _ready.dep.depend();
     return _ready.val;
 };
 
 // trace changes
 Tracker.autorun(() => {
-    if( pwixRoles._conf.verbosity & pwixRoles.C.Verbose.READY ){
-        console.log( 'pwixRoles.ready()', pwixRoles.ready());
+    if( Roles._conf.verbosity & Roles.C.Verbose.READY ){
+        console.log( 'Roles.ready()', Roles.ready());
     }
 });

@@ -9,20 +9,20 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 
 Meteor.methods({
     // returns the count of users which have at least one of the specified roles
-    'pwixRoles.addUsersToRoles'( users, roles, options={} ){
+    'Roles.addUsersToRoles'( users, roles, options={} ){
         alRoles.addUsersToRoles( users, roles, options );
         console.log( 'pwix:roles/src/server/js/methods:addUsersToRoles()' );
     },
 
     // returns the count of users which have at least one of the specified roles
-    'pwixRoles.countUsersInRoles'( roles, options={} ){
+    'Roles.countUsersInRoles'( roles, options={} ){
         const res = alRoles.getUsersInRole( roles, options ).count();
         console.log( 'pwix:roles/src/server/js/methods:countUsersInRoles()', roles, res );
         return res;
     },
 
     // create a new role (when we do not want manage it in the hierarchy)
-    'pwixRoles.createRole'( role, options={} ){
+    'Roles.createRole'( role, options={} ){
         const res = alRoles.createRole( role, options );
         console.log( 'pwix:roles/src/server/js/methods:createRole()', res );
         return res;
@@ -30,8 +30,8 @@ Meteor.methods({
 
     // replace the user's roles with a new set
     //  this must be a method as the (not trusted) client cannot directly remove assignments without its id
-    'pwixRoles.setUsersRoles'( users, roles ){
-        const ids = pwixRoles.idsFromUsers( users );
+    'Roles.setUsersRoles'( users, roles ){
+        const ids = Roles.idsFromUsers( users );
         ids.every(( id ) => {
             Meteor.roleAssignment.remove({ 'user._id': id });
         });

@@ -2,7 +2,7 @@
  * pwix:roles/src/common/js/constants.js
  */
 
-pwixRoles.C = {
+Roles.C = {
     // verbosity levels
     Verbose: {
         NONE: 0,
