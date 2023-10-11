@@ -14,6 +14,7 @@
     - Remove 'md-modal' mentions from the stylesheet
     - Back to Meteor 2.9.0
     - pwixRoles global is renamed as Roles
+    - Make sure alanning:roles is also available on client side
 
 ### 1.1.3
 
