@@ -2,10 +2,10 @@
  * pwix:roles/src/common/js/functions.js
  */
 
+import _ from 'lodash';
+
 import { Roles as alRoles } from 'meteor/alanning:roles';
 import { Tracker } from 'meteor/tracker';
-
-import _ from 'lodash';
 
 /*
  * Filter the provided array to remove inherited roles
@@ -177,6 +177,7 @@ Roles.userHierarchy = function( roles ){
 /**
  * Check if user has specified roles.
  * A reactive data source.
+ * @locus Anywhere
  * @param {Object|String} user User identifier or actual user object
  * @param {Array|String} roles required roles as a string or an array of strings
  * @returns {Boolean} true if the user exhibits any of the required roles

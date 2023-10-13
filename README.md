@@ -163,6 +163,15 @@ The globally exported object.
 
     A (client-only) reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
 
+- `Roles.userIsInRoles( user, roles )`
+
+Whether the specified user has at least one the specified roles.
+
+    - `user`: either a user identifier or a user document
+    - `roles`: either a single role or an array of roles
+
+Returns `true` if the user has any of the specified roles.
+
 - `Roles.viewAdd( o )`
 
     Add an additional tab to the `prView` dialog.
