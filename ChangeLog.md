@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - Define getUsersInScope() function, callable from both client and server side
 
 ### 1.2.0
 

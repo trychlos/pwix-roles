@@ -2,6 +2,8 @@
  * pwix:roles/src/server/js/methods.js
  */
 
+import _ from 'lodash';
+
 import { Roles as alRoles } from 'meteor/alanning:roles';
 
 //const rolesAssignment = Mongo.Collection( 'role-assignment' );
@@ -26,6 +28,11 @@ Meteor.methods({
         const res = alRoles.createRole( role, options );
         console.log( 'pwix:roles/src/server/js/methods:createRole()', res );
         return res;
+    },
+
+    // filter roles assignments for a scope
+    'Roles.getUsersInScope'( scope ){
+        return Roles.server.getUsersInScope( scope );
     },
 
     // replace the user's roles with a new set

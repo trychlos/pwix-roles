@@ -82,6 +82,20 @@ Roles.directRolesForUser = function( user ){
 }
 
 /**
+ * @locus Anywhere
+ * @param {String} scope the scope identifier
+ * @returns {Promise} on client side, a Promise which resolves to the array result
+ * @returns {Array} on server side, an array of user identifiers which have a role in this scope
+ */
+Roles.getUsersInScope = function( scope ){
+    if( Meteor.isClient ){
+        return Meteor.callPromise( 'Roles.getUsersInScope', scope );
+    }
+    // server-side
+    return Roles.server.getUsersInScope( scope );
+}
+
+/**
  * @param {Array|Object|String} users an array of objects, or an object, or an array of strings, or a string identifier
  * @returns {Array} an array of string identifiers
  */

@@ -26,6 +26,7 @@ function configure( api ){
     api.versionsFrom( '2.9.0' );
     api.use( 'alanning:roles@3.4.0' );
     api.use( 'blaze-html-templates@2.0.0', 'client' );
+    api.use( 'deanius:promise@3.1.3', 'client' );
     api.use( 'ecmascript' );
     api.use( 'less@4.0.0', 'client' );
     api.use( 'mongo', 'server' );
