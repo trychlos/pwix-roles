@@ -7,6 +7,7 @@
     Release date: 
 
     - Define getUsersInScope() function, callable from both client and server side
+    - prView: let the caller provide its own data context
 
 ### 1.2.0
 

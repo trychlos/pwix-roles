@@ -10,6 +10,8 @@
  * - title: (opt) a ReactiveVar which contains the modal title, defaulting to 'My roles'
  */
 
+import _ from 'lodash';
+
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { Modal } from 'meteor/pwix:modal';
 
@@ -112,11 +114,12 @@ Template.prView.onCreated( function(){
 Template.prView.onRendered( function(){
     const self = this;
 
-    Modal.run({
+    const o = _.merge({
         mdBody: 'prView_body',
         mdFooter: 'prView_footer',
         PR: self.PR
-    });
+    }, Template.currentData());
+    Modal.run( o );
 
     let title = pwixI18n.label( I18N, 'dialogs.myroles' );
 
