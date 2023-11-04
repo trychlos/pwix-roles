@@ -159,6 +159,16 @@ The globally exported object.
 
     - `user`: a user identifier or a user object
 
+- `Roles.EditPanel.checked( tree )`
+
+    Parms:
+    - `tree`: the jQuery object which addresses the tree
+
+    Returns:
+    - on client side, the list of checked roles.
+
+    This is a companion function for the `prEditPanel` component, and thus a client-only function.
+
 - `Roles.getUsersInScope( scope )`
 
     Parms:

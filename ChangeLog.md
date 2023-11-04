@@ -2,12 +2,13 @@
 
 ## ChangeLog
 
-### 1.2.1-rc
+### 1.3.0-rc
 
     Release date: 
 
     - Define getUsersInScope() function, callable from both client and server side
     - prView: let the caller provide its own data context
+    - Exposes prEditPanel to be able to update the roles from inside an application view (thus bumping candidate version number)
 
 ### 1.2.0
 
