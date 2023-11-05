@@ -130,6 +130,7 @@ Template.prEditPanel.onRendered( function(){
             self.$( '.pr-tree' ).jstree( true ).disable_node( id );
             return true;
         });
+        self.$( '.pr-tree' ).trigger( 'pr-change' );
     })
     // 'uncheck_node.jstree' data = { node, selected, event, jsTree instance }
     //  triggered when we explicitely uncheck an item
@@ -140,6 +141,7 @@ Template.prEditPanel.onRendered( function(){
             self.$( '.pr-tree' ).jstree( true ).enable_node( id );
             return true;
         });
+        self.$( '.pr-tree' ).trigger( 'pr-change' );
     })
     // 'enable_checkbox.jstree' data = { node, jsTree instance }
     .on( 'enable_node.jstree', ( event, data ) => {

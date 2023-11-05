@@ -9,6 +9,7 @@
     - Define getUsersInScope() function, callable from both client and server side
     - prView: let the caller provide its own data context
     - Exposes prEditPanel to be able to update the roles from inside an application view (thus bumping candidate version number)
+    - Define the pr-change event
 
 ### 1.2.0
 

@@ -249,7 +249,17 @@ An example of a tab added via `Roles.viewAdd()`:
 
 #### `prEdit`
 
-A modal dialog which let edit user's roles.
+Display the `prEditPanel` inside of a modal dialog.
+
+As a side effect, if an information is given about the user (id or user itself), then the mail address is displayed in the dialog title.
+
+Example:
+
+![editing](/maintainer/png/prEdit_512.png)
+
+#### `prEditPanel`
+
+A panel which can be embdded into your applilcation and let edit user's roles.
 
 It can be configured by calling `{{> prEdit (args) }}`, where `args` is an object with following keys:
 
@@ -268,13 +278,7 @@ Else, if `user` is specified, then the component takes care of read the attribut
 
 Else, if `roles` are specified, then they are edited, and updated in this var.
 
-As a side effect, if an information is given about the user (id or user itself), then the mail address is displayed in the dialog title.
-
-Example:
-
-![editing](/maintainer/png/prEdit_512.png)
-
-### Constants
+The `pr-change` event is triggered each time the user changes a selection.
 
 ## NPM peer dependencies
 
