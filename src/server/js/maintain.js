@@ -34,7 +34,7 @@ function f_DefineNewRoles(){
         }
     }
 
-    // the role name is it already defined (i.e. does it exist in rolesAllRoles)
+    // is the role name already defined (i.e. does it exist in rolesAllRoles) ?
     //  flag the used roles
     function f_definedRole( name ){
         let found = false;
@@ -74,6 +74,8 @@ function f_DefineNewRoles(){
         }
     }
 
+    // f_DefineNewRoles() main code
+
     // get currently defined roles
     // each role is listed with its direct children; this is not a recursive tree
     // the used method makes sure we get as roles as we have defined, each with its direct children
@@ -83,6 +85,7 @@ function f_DefineNewRoles(){
         rolesAllRoles.push( o );
         return true;
     });
+    //console.debug( 'rolesAllRoles', rolesAllRoles );
 
     // iterate on our roles, defining the missing ones
     if( Roles._conf && Roles._conf.roles && Roles._conf.roles.hierarchy && Array.isArray( Roles._conf.roles.hierarchy )){

@@ -143,6 +143,12 @@ The globally exported object.
 
 ### Functions
 
+- `Roles.addUsersToRoles( users, roles, options )`
+
+    This directly calls the underlying `alanning:roles/addUsersToRoles()` function, just making sure it is called on the server.
+
+    Returns nothing.
+
 - `Roles.current()`
 
     A (client-only) reactive data source which provides the roles of the currently logged-in user as an object:
@@ -169,6 +175,10 @@ The globally exported object.
 
     This is a companion function for the `prEditPanel` component, and thus a client-only function.
 
+- `Roles.flat()`
+
+    Returns the configured roles hierarchy as a flat object `name` -> `{ name, children, scoped }`.
+
 - `Roles.getUsersInScope( scope )`
 
     Parms:
@@ -181,6 +191,16 @@ The globally exported object.
 - `Roles.ready()`
 
     A (client-only) reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
+
+- `Roles.removeAllRolesFromUser( user )`
+
+    Remove all currently defined roles for this user.
+
+    On the client, this function returns a Promise which eventually resolves to the result.
+
+    On the server, this function returns a Boolean result, which is `true` if all roles have been successfully deleted for this user.
+
+    The application should take care of **not** remove all roles for the currently logged-in user.
 
 - `Roles.userIsInRoles( user, roles )`
 

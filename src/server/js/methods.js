@@ -35,6 +35,11 @@ Meteor.methods({
         return Roles.server.getUsersInScope( scope );
     },
 
+    // remove all roles for the user
+    'Roles.removeAllRolesFromUser'( user ){
+        return Roles.server.removeAllRolesFromUser( user );
+    },
+
     // replace the user's roles with a new set
     //  this must be a method as the (not trusted) client cannot directly remove assignments without its id
     'Roles.setUsersRoles'( users, roles ){

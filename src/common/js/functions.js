@@ -72,6 +72,18 @@ Roles._sort = function( array ){
 };
 
 /**
+ * @summary Add roles to the users
+ * @locus Anywhere
+ * @param {Array|Object|String} users 
+ * @param {Array|String} roles
+ * @param {Object} options
+ * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
+ */
+Roles.addUsersToRoles = function( users, roles, options={} ){
+    return Meteor.isClient ? Meteor.callPromise( 'Roles.addUsersToRoles', users, roles, options ) : alRoles.addUsersToRoles( users, roles, options );
+}
+
+/**
  * @summary Returns the direct roles of the user
  * @locus Anywhere
  * @param {Object|String} user User identifier or actual user object
@@ -79,6 +91,34 @@ Roles._sort = function( array ){
  */
 Roles.directRolesForUser = function( user ){
     return Roles._filter( alRoles.getRolesForUser( user ));
+}
+
+/**
+ * @locus Anywhere
+ * @returns {Object} the configured roles hierarchy flattened as a hash of objects name -> { name, children, scoped }
+ */
+Roles.flat = function(){
+    let full = {};
+    function f_explore( o ){
+        // add the name to the full object if not already here
+        if( !Object.keys( full ).includes( o.name )){
+            full[o.name] = o;
+        }
+        // same for children
+        if( o.children ){
+            o.children.every(( child ) => {
+                f_explore( child );
+                return true;
+            });
+        }
+    }
+    const h = Roles._conf && Roles._conf.roles && Roles._conf.roles.hierarchy ? Roles._conf.roles.hierarchy : [];
+    h.every(( o ) => {
+        f_explore( o );
+        return true;
+    });
+    //console.debug( h, full );
+    return full;
 }
 
 /**
@@ -164,8 +204,15 @@ Roles.parents = function( role ){
 }
 
 /**
+ * @param {Object} user a user identifier or a user object
+ */
+Roles.removeAllRolesFromUser = function( user ){
+    return Meteor.isClient ? Meteor.callPromise( 'Roles.removeAllRolesFromUser', user ) : Roles.server.removeAllRolesFromUser( user );
+}
+
+/**
  * @param {Array} roles a list of roles
- * @returns {Array} a deep copy the original roles hierarchy in which only the input roles are kept
+ * @returns {Array} a deep copy of the original roles hierarchy in which only the input roles are kept
  */
 Roles.userHierarchy = function( roles ){
     let filtered = [];
