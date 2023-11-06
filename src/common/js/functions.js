@@ -252,6 +252,7 @@ Roles.userHierarchy = function( roles ){
  * @locus Anywhere
  * @param {Object|String} user User identifier or actual user object
  * @param {Array|String} roles required roles as a string or an array of strings
+ * @param {Object} options
  * @returns {Boolean} true if the user exhibits any of the required roles
  */
 _userIsInRoles = {
@@ -260,7 +261,7 @@ _userIsInRoles = {
     userRoles: [],
     reqRoles: []
 };
-Roles.userIsInRoles = function( user, roles ){
+Roles.userIsInRoles = function( user, roles, options={} ){
     if( !_userIsInRoles.dep ){
         _userIsInRoles.dep = new Tracker.Dependency();
         _userIsInRoles.dep.depend();
@@ -283,13 +284,13 @@ Roles.userIsInRoles = function( user, roles ){
         ret = ( _userIsInRoles.reqRoles.length === 0 );
 
     } else {
-        _userIsInRoles.userRoles = alRoles.getRolesForUser( user );
+        _userIsInRoles.userRoles = alRoles.getRolesForUser( user, options );
 
         // if no role is requested, then user is always allowed
         if( _userIsInRoles.reqRoles.length === 0 ){
             ret = true;
         } else {
-            ret = alRoles.userIsInRole( user, roles );
+            ret = alRoles.userIsInRole( user, roles, options );
         }
     }
 
