@@ -13,6 +13,7 @@
     - Define Roles.flat() new function
     - Define Roles.removeAllRolesFromUser() new function
     - Define Roles.addUsersToRoles() new function
+    - Define Roles.getRolesForUser() new function
 
 ### 1.2.0
 

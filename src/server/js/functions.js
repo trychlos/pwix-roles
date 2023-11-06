@@ -5,6 +5,36 @@
 import _ from 'lodash';
 
 Roles.server = {
+    // get roles for the users  
+    getRolesForUser( user, options ){
+        let result = [];
+        if( user ){
+            let id = null;
+            if( _.isString( user )){
+                id = user;
+            } else if( _.isObject( user ) && user._id ){
+                id = user._id;
+            }
+            if( id ){
+                Meteor.roleAssignment.find({ 'user._id': id }).fetch().every(( doc ) => {
+                    if( options.onlyScoped === true ){
+                        if(( doc.scope && options.scope && doc.scope === options.scope ) || ( !options.scope && !doc.scope )){
+                            result.push({ _id: doc.role._id, scope: doc.scope || null });
+                        }
+                    } else {
+                        result.push({ _id: doc.role._id, scope: doc.scope || null });
+                    }
+                    return true;
+                });
+            } else {
+                console.warn( 'getRolesForUser() unable to find an identifier', user );
+            }
+        } else {
+            console.warn( 'getRolesForUser() user is falsy', user );
+        }
+        return result;
+    },
+
     // get user in scope
     getUsersInScope( scope ){
         let ret = [];

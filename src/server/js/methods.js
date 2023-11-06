@@ -30,6 +30,11 @@ Meteor.methods({
         return res;
     },
 
+    // return roles for the user
+    'Roles.getRolesForUser'( user, options ){
+        return Roles.server.getRolesForUser( user, options );
+    },
+
     // filter roles assignments for a scope
     'Roles.getUsersInScope'( scope ){
         return Roles.server.getUsersInScope( scope );

@@ -179,6 +179,29 @@ The globally exported object.
 
     Returns the configured roles hierarchy as a flat object `name` -> `{ name, children, scoped }`.
 
+- `Roles.getRolesForUser( user, options )`
+
+    Returns the list of roles directly attributed (_i.e._ ignoring the inherited roles) to the user as an array of documents:
+    - `_id`: the role identifier (its name)
+    - `_scope`: the relevant scope (only if `anyScope` option is `true`).
+
+    Parms:
+    - `user`: a user document or a user identifier
+    - `options`: an options object with following keys:
+
+        - `scope`: the desired scope
+        - `onlyScoped`: if set to `true`, only returns the roles in the given `scope`
+
+    To get just global roles, set `onlyScoped` to `true` and leave the `scope` option undefined.
+
+    To get just scoped roles roles, set `onlyScoped` to `true` and a `scope`.
+
+    If `onlyScoped` is falsy, all roles will be returned.
+
+    Returns:
+    - on client side, a `Promise` which resolves to the result array
+    - on server side, the above result array.
+
 - `Roles.getUsersInScope( scope )`
 
     Parms:

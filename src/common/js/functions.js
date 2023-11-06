@@ -123,6 +123,17 @@ Roles.flat = function(){
 
 /**
  * @locus Anywhere
+ * @param {Object|String} user a user document or a user identifier
+ * @param {Object} options
+ * @returns {Promise} on client side, a Promise which resolves to the array result
+ * @returns {Array} on server side, an array of roles documents
+ */
+Roles.getRolesForUser = function( user, options={} ){
+    return Meteor.isClient ? Meteor.callPromise( 'Roles.getRolesForUser', user, options ) : Meteor.server.getRolesForUser( user, options );
+}
+
+/**
+ * @locus Anywhere
  * @param {String} scope the scope identifier
  * @returns {Promise} on client side, a Promise which resolves to the array result
  * @returns {Array} on server side, an array of user identifiers which have a role in this scope
