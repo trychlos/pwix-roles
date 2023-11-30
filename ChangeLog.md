@@ -15,6 +15,7 @@
     - Define Roles.addUsersToRoles() new function
     - Define Roles.getRolesForUser() new function
     - Fix the the prView selector in the stylesheet
+    - Roles.current() now tracks the role whatever be the scope
 
 ### 1.2.0
 

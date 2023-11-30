@@ -23,7 +23,7 @@ Roles._client.currentRecompute = function( id ){
     if( Roles._conf.verbosity & Roles.C.Verbose.CURRENT ){
         console.log( 'pwix:roles set roles for current user' );
     }
-    const res = ( id ? alRoles.getRolesForUser( id ) : [] ) || [];
+    const res = ( id ? alRoles.getRolesForUser( id, { anyScope: true }) : [] ) || [];
     _current.val.all = res;
     _current.val.direct = Roles._filter( res );
     _current.val.id = id;
