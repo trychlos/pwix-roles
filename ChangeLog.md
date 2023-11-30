@@ -14,6 +14,7 @@
     - Define Roles.removeAllRolesFromUser() new function
     - Define Roles.addUsersToRoles() new function
     - Define Roles.getRolesForUser() new function
+    - Fix the the prView selector in the stylesheet
 
 ### 1.2.0
 

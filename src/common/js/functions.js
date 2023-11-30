@@ -87,10 +87,11 @@ Roles.addUsersToRoles = function( users, roles, options={} ){
  * @summary Returns the direct roles of the user
  * @locus Anywhere
  * @param {Object|String} user User identifier or actual user object
+ * @param {Object} options
  * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */
-Roles.directRolesForUser = function( user ){
-    return Roles._filter( alRoles.getRolesForUser( user ));
+Roles.directRolesForUser = function( user, options={} ){
+    return Roles._filter( alRoles.getRolesForUser( user, options ));
 }
 
 /**

@@ -74,7 +74,7 @@ Template.prView.onCreated( function(){
             });
             html += '</ul>';
             if( !count ){
-                html = '<p class="">';
+                html = '<p class="pr-norole">';
                 html += pwixI18n.label( I18N, 'dialogs.norole' );
                 html += '</p>'
             }
