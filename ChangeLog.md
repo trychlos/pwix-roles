@@ -16,6 +16,7 @@
     - Define Roles.getRolesForUser() new function
     - Fix the the prView selector in the stylesheet
     - Roles.current() now tracks the role whatever be the scope
+    - Let a role be used several times inside of the roles hierarchy
 
 ### 1.2.0
 

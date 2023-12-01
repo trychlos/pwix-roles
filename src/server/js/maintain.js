@@ -60,7 +60,7 @@ function f_DefineNewRoles(){
                 if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
                     console.log( '   defining '+o.name );
                 }
-                alRoles.createRole( o.name );
+                alRoles.createRole( o.name, { unlessExists: true });
                 if( parent ){
                     alRoles.addRolesToParent( o.name, parent );
                 }
