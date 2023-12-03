@@ -211,6 +211,10 @@ The globally exported object.
     - on server side, the array of user identifiers of accounts which have a role in this scope
     - on client side, a `Promise` which resolves to the result array.
 
+- `Roles.isRoleScoped( role )`
+
+    Whether the specified role is scoped.
+
 - `Roles.ready()`
 
     A (client-only) reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).

@@ -17,6 +17,7 @@
     - Fix the the prView selector in the stylesheet
     - Roles.current() now tracks the role whatever be the scope
     - Let a role be used several times inside of the roles hierarchy
+    - Define new Role.isRoleScoped() function
 
 ### 1.2.0
 

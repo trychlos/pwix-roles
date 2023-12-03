@@ -8,6 +8,26 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 import { Tracker } from 'meteor/tracker';
 
 /*
+ * Enumerate the configured role hierarchy, calling the provided callback for each and every role.
+ *  Enumeration may be stopped by the callback returning false.
+ */
+Roles._enumerate = function( cb, args=null ){
+    const _enum = function( rolesArray ){
+        rolesArray.every(( role ) => {
+            const ret = cb( role, args );
+            const cont = _.isBoolean( ret ) ? ret : true;
+            if( cont !== false ){
+                if( role.children ){
+                    _enum( role.children );
+                }
+            }
+            return cont;
+        });
+    }
+    _enum( Roles._conf.roles.hierarchy );
+}
+
+/*
  * Filter the provided array to remove inherited roles
  * @param {Array} array
  * @returns {Array}
@@ -181,6 +201,23 @@ Roles.idsFromUsers = function( users ){
  */
 Roles.isParent = function( a, b ){
     return Roles.parents( b ).includes( a );
+}
+
+/**
+ * @param {String} role
+ * @returns {Boolean} true if the role is configured as scoped
+ */
+Roles.isRoleScoped = function( role ){
+    let scoped = false;
+    Roles._enumerate(( r ) => {
+        let cont = true;
+        if( r.name === role ){
+            cont = false;
+            scoped = r.scoped === true;
+        }
+        return cont;
+    });
+    return scoped;
 }
 
 /**
