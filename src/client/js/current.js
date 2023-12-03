@@ -15,7 +15,9 @@ _current = {
     val: {
         id: '',
         all: [],
-        direct: []
+        direct: [],
+        scoped: {},
+        globals: []
     }
 };
 
@@ -26,6 +28,9 @@ Roles._client.currentRecompute = function( id ){
     const res = ( id ? alRoles.getRolesForUser( id, { anyScope: true }) : [] ) || [];
     _current.val.all = res;
     _current.val.direct = Roles._filter( res );
+    const res2 = ( id ? alRoles.getRolesForUser( id, { anyScope: true, fullObjects: true }) : [] ) || [];
+    _current.val.globals = Roles._globals( res2 );
+    _current.val.scoped = Roles._scoped( res2 );
     _current.val.id = id;
     _current.dep.changed();
 };
@@ -48,7 +53,10 @@ Tracker.autorun(() => {
  * @returns {Object} with the roles of the current logged-in user, as an object with keys:
  *  - id        {String}    the current user identifier
  *  - all       {Array}     all the roles, either directly or indirectly set
- *  - direct    {Array}     only the directly attributed top roles in the hierarchy (after havng removed indirect ones)
+ *  - direct    {Array}     only the directly attributed top roles in the hierarchy (after having removed indirect ones)
+ *  - scoped    {Object}
+ *      > '<scope>':        the list of roles which hold this scope
+ *  - globals   {Array}     the list of non-scoped roles
  */
 Roles.current = function(){
     _current.dep.depend();

@@ -157,6 +157,8 @@ The globally exported object.
     - id        {String}    the current user identifier
     - all       {Array}     all the roles, either directly or indirectly set
     - direct    {Array}     only the directly attributed top roles in the hierarchy (after having removed indirect ones)
+    - scoped    {Object}    a per-scope object where each key is a scope, and the value an array of user roles which exhibit this scope
+    - globals   {Array}     the list of user roles which are not scoped
 ```
 
 - `Roles.directRolesForUser( user )`

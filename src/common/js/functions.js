@@ -24,7 +24,7 @@ Roles._enumerate = function( cb, args=null ){
             return cont;
         });
     }
-    _enum( Roles._conf.roles.hierarchy );
+    _enum( Roles._conf.roles.hierarchy || [] );
 }
 
 /*
@@ -60,6 +60,48 @@ Roles._filter = function( array ){
     //    throw new Error( 'error' );
     //}
     return filtered;
+};
+
+/*
+ * Extract from the provided array the global roles
+ * NB; in alanning:roles, when a role is scoped, all inherited roles are also scoped
+ * @param {Array} array
+ * @returns {Array}
+ */
+Roles._globals = function( array ){
+    let globals = [];
+    array.every(( o ) => {
+        if( _.isNil( o.scope )){
+            o.inheritedRoles.every(( r ) => {
+                globals.push( r._id );
+                return true;
+            });
+        }
+        return true;
+    });
+    return globals;
+};
+
+/*
+ * Extract from the provided array the roles configured as scoped
+ * NB; in alanning:roles, when a role is scoped, all inherited roles are also scoped
+ * @param {Array} array
+ * @returns {Objec} roles by scope
+ */
+Roles._scoped = function( array ){
+    let scoped = {};
+    array.every(( o ) => {
+        if( _.isString( o.scope )){
+            let roles = [];
+            o.inheritedRoles.every(( r ) => {
+                roles.push( r._id );
+                return true;
+            });
+            scoped[o.scope] = roles;
+        }
+        return true;
+    });
+    return scoped;
 };
 
 /*

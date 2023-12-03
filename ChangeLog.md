@@ -18,6 +18,7 @@
     - Roles.current() now tracks the role whatever be the scope
     - Let a role be used several times inside of the roles hierarchy
     - Define new Role.isRoleScoped() function
+    - Improve Roles.current() content, adding scoped and globals categories
 
 ### 1.2.0
 
