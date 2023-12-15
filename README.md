@@ -231,6 +231,16 @@ The globally exported object.
 
     The application should take care of **not** remove all roles for the currently logged-in user.
 
+- `Roles.removeUserAssignmentsForRoles( roles, opts )`
+
+    Remove all currently defined assignements for the specified role(s).
+
+    On the client, this function returns a Promise which eventually resolves to the result.
+
+    On the server, this function returns a Boolean result, which is `true` if all assignements have been successfully deleted for the role(s).
+
+    The application should take care of **not** remove all roles for the currently logged-in user.
+
 - `Roles.userIsInRoles( user, roles )`
 
 Whether the specified user has at least one the specified roles.

@@ -302,6 +302,15 @@ Roles.removeAllRolesFromUser = function( user ){
 }
 
 /**
+ * @param {Array|String} roles a role or an array of roles
+ * @param {Object} opts an option object with following keys:
+ *  - scope: the relevant scope, all scopes if not set
+ */
+Roles.removeUserAssignmentsForRoles = function( roles, opts ){
+    return Meteor.isClient ? Meteor.callPromise( 'Roles.removeUserAssignmentsForRoles', roles, opts ) : Roles.server.removeUserAssignmentsForRoles( roles, opts );
+}
+
+/**
  * @param {Array} roles a list of roles
  * @returns {Array} a deep copy of the original roles hierarchy in which only the input roles are kept
  */
