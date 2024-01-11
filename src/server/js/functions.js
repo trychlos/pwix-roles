@@ -84,7 +84,7 @@ Roles.server = {
                 query.scope = opts.scope;
             }
             ret = Meteor.roleAssignment.remove( query );
-            console.debug( 'removeUserAssignmentsForRoles()', 'query', query, 'ret', ret );
+            //console.debug( 'removeUserAssignmentsForRoles()', 'query', query, 'ret', ret );
             return true;
         });
         return ret;
