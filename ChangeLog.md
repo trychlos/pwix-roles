@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.3.0-rc
+### 1.3.0
 
-    Release date: 
+    Release date: 2024- 5-29
 
     - Define getUsersInScope() function, callable from both client and server side
     - prView: let the caller provide its own data context
@@ -77,4 +77,4 @@
 
 ---
 P. Wieser
-- Last updated on 2023, Oct. 11th
+- Last updated on 2024, May. 29th
