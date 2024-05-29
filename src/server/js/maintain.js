@@ -50,6 +50,7 @@ function f_DefineNewRoles(){
     }
 
     // make sure the application-defined roles are defined
+    // NB: recursive async function
     function f_define( o, parent ){
         if( o.name ){
             if( f_definedRole( o.name )){
@@ -60,16 +61,20 @@ function f_DefineNewRoles(){
                 if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
                     console.log( '   defining '+o.name );
                 }
-                alRoles.createRole( o.name, { unlessExists: true });
-                if( parent ){
-                    alRoles.addRolesToParent( o.name, parent );
-                }
-            }
-            if( o.children ){
-                o.children.every(( child ) => {
-                    f_define( child, o.name );
-                    return true;
-                });
+                alRoles.createRoleAsync( o.name, { unlessExists: true })
+                    .then(() => {
+                        if( parent ){
+                            alRoles.addRolesToParentAsync( o.name, parent );
+                        }
+                    })
+                    .then(() => {
+                        if( o.children ){
+                            o.children.every(( child ) => {
+                                f_define( child, o.name );
+                                return true;
+                            });
+                        }
+                    });
             }
         }
     }
@@ -78,13 +83,16 @@ function f_DefineNewRoles(){
 
     // get currently defined roles
     // each role is listed with its direct children; this is not a recursive tree
-    // the used method makes sure we get as roles as we have defined, each with its direct children
+    // the used method makes sure we get as many roles as we have defined, each with its direct children
     // as objects { _id: <role_name>, children: [ array of objects { _id: <role_name> } ] }
-    alRoles.getAllRoles().fetch().every(( o ) => {
-        //console.log( 'Roles.getAllRoles', o );
-        rolesAllRoles.push( o );
-        return true;
-    });
+    alRoles.getAllRoles().fetchAsync()
+        .then(( fetched ) => {
+            fetched.every(( o ) => {
+                //console.log( 'Roles.getAllRoles', o );
+                rolesAllRoles.push( o );
+                return true;
+            })
+        });
     //console.debug( 'rolesAllRoles', rolesAllRoles );
 
     // iterate on our roles, defining the missing ones
@@ -168,27 +176,30 @@ function f_InheritanceCompleteness(){
 
     // maintain the roles assignment completeness - make sure the inherited roles are complete
     let msg = false;
-    Meteor.roleAssignment.find().fetch().every(( o ) => {
-        //console.log( o );
-        const inherited = f_inherited( o.role._id );
-        const equals = f_compare( inherited, o.inheritedRoles );
-        //console.log( o.role._id, inherited, typeof inherited, inherited.length, o.inheritedRoles, typeof o.inheritedRoles, o.inheritedRoles.length, equals );
-        if( !equals ){
-            if( !msg ){
-                if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
-                    console.log( 'pwix:roles/src/server/js/maintain.js maintaining the roles inheritage completeness...' );
+    Meteor.roleAssignment.find().fetchAsync()
+        .then(( fetched ) => {
+            fetched.every(( o ) => {
+                //console.log( o );
+                const inherited = f_inherited( o.role._id );
+                const equals = f_compare( inherited, o.inheritedRoles );
+                //console.log( o.role._id, inherited, typeof inherited, inherited.length, o.inheritedRoles, typeof o.inheritedRoles, o.inheritedRoles.length, equals );
+                if( !equals ){
+                    if( !msg ){
+                        if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
+                            console.log( 'pwix:roles/src/server/js/maintain.js maintaining the roles inheritage completeness...' );
+                        }
+                        msg = true;
+                    }
+                    if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
+                        console.log( '   updating id='+o._id, o.role._id, 'user='+o.user._id );
+                    }
+                    Meteor.roleAssignment.update({ _id: o._id }, { $set: { inheritedRoles: inherited }});
+                    o.inheritedRoles = [ ...inherited ];
                 }
-                msg = true;
-            }
-            if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
-                console.log( '   updating id='+o._id, o.role._id, 'user='+o.user._id );
-            }
-            Meteor.roleAssignment.update({ _id: o._id }, { $set: { inheritedRoles: inherited }});
-            o.inheritedRoles = [ ...inherited ];
-        }
-        rolesAssignments.push( o );
-        return true;
-    });
+                rolesAssignments.push( o );
+                return true;
+            })
+        });
     if( !msg ){
         if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
             console.log( 'pwix:roles/src/server/js/maintain.js roles inheritance is complete: fine.' );

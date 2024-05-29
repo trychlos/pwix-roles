@@ -20,6 +20,8 @@
     - Define new Role.isRoleScoped() function
     - Improve Roles.current() content, adding scoped and globals categories
     - Define new Roles.removeUserAssignmentsForRoles() function
+    - Meteor 3.0 ready
+    - Deprecate deanius:promise package
 
 ### 1.2.0
 
