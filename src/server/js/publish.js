@@ -23,8 +23,9 @@ Meteor.publish( 'Roles.allAssignments', function(){
 });
 
 // this function builds and maintains the _rolesHash has with roles -> array of users
-// as a reminder, roleAssignment maintains couples ( top_role, user_id ):
+// it returns an array of the two observer Promise handles
 //
+// as a reminder, roleAssignment maintains couples ( top_role, user_id ):
 // db['role-assignment'].find()
 // { "_id" : "mFhn5AKAJ95RiedZM", "role" : { "_id" : "APP_ADMINISTRATOR" }, "scope" : null, "user" : { "_id" : "EqvmJAhNAZTBAECya" }, "inheritedRoles" : [ { "_id" : "APP_ADMINISTRATOR" }, { "_id" : "APP_WRITER" }, { "_id" : "APP_ADM_WRITER" }, { "_id" : "APP_BANDA_WRITER" }, { "_id" : "APP_DECOUVERTE_WRITER" }, { "_id" : "APP_EVEIL_WRITER" }, { "_id" : "APP_HOME_WRITER" }, { "_id" : "APP_MAIL_WRITER" }, { "_id" : "APP_NEWS_MANAGER" }, { "_id" : "APP_NEWS_WRITER" }, { "_id" : "APP_CONTENT_MANAGER" }, { "_id" : "APP_SUBSCRIPTIONS_MANAGER" }, { "_id" : "APP_USER_MANAGER" }, { "_id" : "APP_FORUMS_MANAGER" }, { "_id" : "FRS_ADMIN" }, { "_id" : "FRS_CATEGORY_MANAGER" }, { "_id" : "FRS_CATEGORY_CREATE" }, { "_id" : "FRS_CATEGORY_UPDATE" }, { "_id" : "FRS_CATEGORY_DELETE" }, { "_id" : "FRS_FORUM_MANAGER" }, { "_id" : "FRS_FORUM_CREATE" }, { "_id" : "FRS_FORUM_UPDATE" }, { "_id" : "FRS_FORUM_DELETE" }, { "_id" : "FRS_MODERATOR_MANAGER" }, { "_id" : "FRS_MODERATOR" }, { "_id" : "FRS_PUBLIC_MODERATOR" }, { "_id" : "FRS_PRIVATE_MODERATOR" }, { "_id" : "FRS_MODERATOR_ACCESS" }, { "_id" : "FRS_PRIVATE_EDIT" }, { "_id" : "FRS_PRIVATE_VIEW" }, { "_id" : "GROUP_ACCORD_BUREAU" }, { "_id" : "GROUP_ACCORD_MEMBRE" }, { "_id" : "GROUP_BANDACCORD" }, { "_id" : "GROUP_EVEIL" }, { "_id" : "GROUP_DECOUVERTE" } ] }
 // { "_id" : "uuAmYfTWzLKuzrKb6", "role" : { "_id" : "APP_WRITER" }, "scope" : null, "user" : { "_id" : "uaxdN48P9bZdBCgEk" }, "inheritedRoles" : [ { "_id" : "APP_WRITER" }, { "_id" : "APP_ADM_WRITER" }, { "_id" : "APP_BANDA_WRITER" }, { "_id" : "APP_DECOUVERTE_WRITER" }, { "_id" : "APP_EVEIL_WRITER" }, { "_id" : "APP_HOME_WRITER" }, { "_id" : "APP_MAIL_WRITER" } ] }
@@ -174,7 +175,7 @@ Meteor.publish( 'Roles.countByRole', function( roles ){
     // messages.
     this.onStop(() => {
         handles.every(( h ) => {
-            h.stop();
+            h.then(( res ) => { res.stop(); });
             return true;
         })
     });
