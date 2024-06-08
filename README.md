@@ -348,6 +348,8 @@ Instead we check npm versions of installed packages at runtime, on server startu
 Dependencies as of v 1.3.0:
 
 ```
+    '@popperjs/core': '^2.11.6',
+    'bootstrap': '^5.2.1',
     'lodash': '^4.17.0',
     'uuid': '^9.0.0'
 ```
@@ -363,4 +365,4 @@ New and updated translations are willingly accepted, and more than welcome. Just
 
 ---
 P. Wieser
-- Last updated on 2024, May. 29th
+- Last updated on 2024, Jun. 8th

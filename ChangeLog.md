@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.3.1-rc
+### 1.3.1
 
-    Release date: 
+    Release date: 2024- 6- 8
 
     - Upgrade pwix:modal dependency
     - Add missing bootstrap NPM dependency
@@ -84,4 +84,4 @@
 
 ---
 P. Wieser
-- Last updated on 2024, May. 29th
+- Last updated on 2024, Jun. 8th
