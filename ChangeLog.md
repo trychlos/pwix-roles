@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - Upgrade pwix:modal dependency
 
 ### 1.3.0
 

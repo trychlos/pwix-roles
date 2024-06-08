@@ -193,7 +193,7 @@ function f_InheritanceCompleteness(){
                     if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
                         console.log( '   updating id='+o._id, o.role._id, 'user='+o.user._id );
                     }
-                    Meteor.roleAssignment.update({ _id: o._id }, { $set: { inheritedRoles: inherited }});
+                    Meteor.roleAssignment.updateAsync({ _id: o._id }, { $set: { inheritedRoles: inherited }});
                     o.inheritedRoles = [ ...inherited ];
                 }
                 rolesAssignments.push( o );
