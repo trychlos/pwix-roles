@@ -7,6 +7,7 @@
     Release date: 
 
     - Upgrade pwix:modal dependency
+    - Add missing bootstrap NPM dependency
 
 ### 1.3.0
 
