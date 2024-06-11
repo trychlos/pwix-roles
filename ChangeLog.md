@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.4.0-rc
+### 1.4.0
 
-    Release date: 
+    Release date: 2024- 6-11
 
     - Replace bootstrap NPM dependency with a package dependency on pwix:ui-ui-bootstrap5
     - Add (missing) tracker dependency
@@ -94,4 +94,4 @@
 
 ---
 P. Wieser
-- Last updated on 2024, Jun. 8th
+- Last updated on 2024, Jun. 11th
