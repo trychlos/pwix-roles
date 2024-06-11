@@ -350,7 +350,7 @@ _userIsInRoles = {
     userRoles: [],
     reqRoles: []
 };
-Roles.userIsInRoles = function( user, roles, options={} ){
+Roles.userIsInRoles = async function( user, roles, options={} ){
     if( !_userIsInRoles.dep ){
         _userIsInRoles.dep = new Tracker.Dependency();
         _userIsInRoles.dep.depend();
@@ -373,13 +373,13 @@ Roles.userIsInRoles = function( user, roles, options={} ){
         ret = ( _userIsInRoles.reqRoles.length === 0 );
 
     } else {
-        _userIsInRoles.userRoles = alRoles.getRolesForUser( user, options );
+        _userIsInRoles.userRoles = await alRoles.getRolesForUserAsync( user, options );
 
         // if no role is requested, then user is always allowed
         if( _userIsInRoles.reqRoles.length === 0 ){
             ret = true;
         } else {
-            ret = alRoles.userIsInRole( user, roles, options );
+            ret = await alRoles.userIsInRoleAsync( user, roles, options );
         }
     }
 
@@ -387,5 +387,6 @@ Roles.userIsInRoles = function( user, roles, options={} ){
     if( prevId !== _userIsInRoles.userId || !_.isEqual( prevRoles, _userIsInRoles.usersRoles ) || !_isEqual( prevReq, _userIsInRoles.reqRoles )){
         _userIsInRoles.dep.changed();
     }
+
     return ret;
 }

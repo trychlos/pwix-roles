@@ -151,7 +151,7 @@ The globally exported object.
 
 - `Roles.current()`
 
-    A (client-only) reactive data source which provides the roles of the currently logged-in user as an object:
+    A reactive data source which provides the roles of the currently logged-in user as an object:
 
 ```
     - id        {String}    the current user identifier
@@ -160,6 +160,8 @@ The globally exported object.
     - scoped    {Object}    a per-scope object where each key is a scope, and the value an array of user roles which exhibit this scope
     - globals   {Array}     the list of user roles which are not scoped
 ```
+
+    Available on client only.
 
 - `Roles.directRolesForUser( user )`
 
@@ -219,7 +221,9 @@ The globally exported object.
 
 - `Roles.ready()`
 
-    A (client-only) reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
+    A reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
+
+    Available on client only.
 
 - `Roles.removeAllRolesFromUser( user )`
 
@@ -241,14 +245,16 @@ The globally exported object.
 
     The application should take care of **not** remove all roles for the currently logged-in user.
 
-- `Roles.userIsInRoles( user, roles )`
+- `Roles.userIsInRoles( user, roles [, opts ])`
 
-Whether the specified user has at least one the specified roles.
+    An async reactive data source which says if the specified user has at least one the specified roles.
 
     - `user`: either a user identifier or a user document
     - `roles`: either a single role or an array of roles
 
-Returns `true` if the user has any of the specified roles.
+    Returns `true` if the user has any of the specified roles.
+
+    Available both on client and server.
 
 - `Roles.viewAdd( o )`
 
