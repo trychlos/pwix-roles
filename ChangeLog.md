@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - Replace bootstrap NPM dependency with a package dependency on pwix:ui-ui-bootstrap5
 
 ### 1.3.1
 
