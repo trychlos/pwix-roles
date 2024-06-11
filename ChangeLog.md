@@ -8,6 +8,7 @@
 
     - Replace bootstrap NPM dependency with a package dependency on pwix:ui-ui-bootstrap5
     - Add (missing) tracker dependency
+    - Obsolete Roles.removeUserAssignmentsForRoles() function, replaced with Roles.removeUserAssignmentsFromRoles()
 
 ### 1.3.1
 

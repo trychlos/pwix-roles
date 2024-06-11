@@ -84,7 +84,14 @@ Roles.server = {
 
     // remove all assignments for the role(s)
     //  returns a Promise which resolves an array of the result for each role
-    removeUserAssignmentsForRoles( roles, opts ){
+    async removeUserAssignmentsForRoles( roles, opts ){
+        console.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
+        return await Roles.server.removeUserAssignmentsFromRoles( roles, opts );
+    },
+
+    // remove all assignments for the role(s)
+    //  returns a Promise which resolves to an array of the result for each role
+    async removeUserAssignmentsFromRoles( roles, opts={} ){
         let promises = [];
         const rolesArray = _.isArray( roles ) ? roles : [roles];
         rolesArray.every(( role ) => {

@@ -235,15 +235,21 @@ The globally exported object.
 
     The application should take care of **not** remove all roles for the currently logged-in user.
 
-- `Roles.removeUserAssignmentsForRoles( roles, opts )`
+- `Roles.removeUserAssignmentsFromRoles( roles, opts )`
 
-    Remove all currently defined assignements for the specified role(s).
+    An async function which removes all currently defined assignements for the specified role(s).
 
-    On the client, this function returns a Promise which eventually resolves to the result.
+    Returns an array with a result per role.
 
-    On the server, this function returns a Boolean result, which is `true` if all assignements have been successfully deleted for the role(s).
+    The application should take care of **not** remove all roles for the currently logged-in user. This is not checked by the package.
 
-    The application should take care of **not** remove all roles for the currently logged-in user.
+    Available both on client and server.
+
+- `Roles.userHierarchy( roles )`
+
+    Given a (flat) list of roles, returns the whole hierarchy of these roles plus the depending ones.
+
+    Available both on client and server.
 
 - `Roles.userIsInRoles( user, roles [, opts ])`
 

@@ -306,13 +306,24 @@ Roles.removeAllRolesFromUser = function( user ){
  * @param {Object} opts an option object with following keys:
  *  - scope: the relevant scope, all scopes if not set
  */
-Roles.removeUserAssignmentsForRoles = function( roles, opts ){
-    return Meteor.isClient ? Meteor.callPromise( 'Roles.removeUserAssignmentsForRoles', roles, opts ) : Roles.server.removeUserAssignmentsForRoles( roles, opts );
+Roles.removeUserAssignmentsForRoles = async function( roles, opts ){
+    console.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
+    return Roles.removeUserAssignmentsFromRoles( roles, opts );
+}
+
+/**
+ * @param {Array|String} roles a role or an array of roles
+ * @param {Object} opts an option object with following keys:
+ *  - scope: the relevant scope, all scopes if not set
+ */
+Roles.removeUserAssignmentsFromRoles = async function( roles, opts ){
+    return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.removeUserAssignmentsForRoles', roles, opts ) : Roles.server.removeUserAssignmentsForRoles( roles, opts ));
 }
 
 /**
  * @param {Array} roles a list of roles
  * @returns {Array} a deep copy of the original roles hierarchy in which only the input roles are kept
+ *  This let the caller get the whoel hierarchy depending of the specified roles.
  */
 Roles.userHierarchy = function( roles ){
     let filtered = [];

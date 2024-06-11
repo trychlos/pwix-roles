@@ -47,7 +47,13 @@ Meteor.methods({
 
     // remove all assignments for a role
     async 'Roles.removeUserAssignmentsForRoles'( roles, opts ){
-        return Roles.server.removeUserAssignmentsForRoles( roles, opts );
+        console.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
+        return await Roles.server.removeUserAssignmentsFromRoles( roles, opts );
+    },
+
+    // remove all assignments for a role
+    async 'Roles.removeUserAssignmentsFromRoles'( roles, opts ){
+        return await Roles.server.removeUserAssignmentsFromRoles( roles, opts );
     },
 
     // replace the user's roles with a new set
