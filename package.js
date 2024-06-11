@@ -1,6 +1,6 @@
 Package.describe({
     name: 'pwix:roles',
-    version: '1.4.0',
+    version: '1.4.1-rc',
     summary: 'An encapsulation of alanning:roles',
     git: 'https://github.com/trychlos/pwix-roles',
     documentation: 'README.md'
