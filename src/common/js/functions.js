@@ -297,8 +297,16 @@ Roles.parents = function( role ){
 /**
  * @param {Object} user a user identifier or a user object
  */
-Roles.removeAllRolesFromUser = function( user ){
-    return Meteor.isClient ? Meteor.callPromise( 'Roles.removeAllRolesFromUser', user ) : Roles.server.removeAllRolesFromUser( user );
+Roles.removeAllRolesFromUser = async function( user ){
+    console.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
+    return Roles.removeAssignedRolesFromUser( user );
+}
+
+/**
+ * @param {Object} user a user identifier or a user object
+ */
+Roles.removeAssignedRolesFromUser = async function( user ){
+    return await( Meteor.isClient ? Meteor.callAsync( 'Roles.removeAssignedRolesFromUser', user ) : Roles.server.removeAssignedRolesFromUser( user ));
 }
 
 /**

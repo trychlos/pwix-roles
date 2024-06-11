@@ -62,8 +62,15 @@ Roles.server = {
 
     // remove all roles for the user
     //  returns a Promise which resolves to true|false
-    removeAllRolesFromUser( user ){
-        let result = Promise.resolve( false );
+    async removeAllRolesFromUser( user ){
+        console.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
+        return await Roles.server.removeAssignedRolesFromUser( user );
+    },
+
+    // remove all roles for the user
+    //  returns true|false
+    async removeAssignedRolesFromUser( user ){
+        let result = false;
         if( user ){
             let id = null;
             if( _.isString( user )){
@@ -72,12 +79,12 @@ Roles.server = {
                 id = user._id;
             }
             if( id ){
-                result = Meteor.roleAssignment.removeAsync({ 'user._id': id });
+                result = await Meteor.roleAssignment.removeAsync({ 'user._id': id });
             } else {
-                console.warn( 'removeAllRolesFromUser() unable to find an identifier', user );
+                console.warn( 'removeAssignedRolesFromUser() unable to find an identifier', user );
             }
         } else {
-            console.warn( 'removeAllRolesFromUser() user is falsy', user );
+            console.warn( 'removeAssignedRolesFromUser() user is falsy', user );
         }
         return result;
     },
@@ -102,7 +109,7 @@ Roles.server = {
                 query.scope = opts.scope;
             }
             promises.push( Meteor.roleAssignment.removeAsync( query ));
-            //console.debug( 'removeUserAssignmentsForRoles()', 'query', query, 'ret', ret );
+            //console.debug( 'removeUserAssignmentsFromRoles()', 'query', query, 'ret', ret );
             return true;
         });
         return Promise.all( promises );

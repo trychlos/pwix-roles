@@ -42,7 +42,13 @@ Meteor.methods({
 
     // remove all roles for the user
     async 'Roles.removeAllRolesFromUser'( user ){
-        return Roles.server.removeAllRolesFromUser( user );
+        console.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
+        return await Roles.server.removeAssignedRolesFromUser( user );
+    },
+
+    // remove all roles for the user
+    async 'Roles.removeAssignedRolesFromUser'( user ){
+        return await Roles.server.removeAssignedRolesFromUser( user );
     },
 
     // remove all assignments for a role
