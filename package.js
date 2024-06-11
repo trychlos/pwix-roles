@@ -34,6 +34,7 @@ function configure( api ){
     api.use( 'pwix:modal@1.10.0 || 2.0.0' );
     api.use( 'pwix:ui-bootstrap5@2.0.0' );
     api.use( 'tmeasday:check-npm-versions@1.0.2 || 2.0.0-beta.0', 'server' );
+    api.use( 'tracker' );
     api.addFiles( 'src/client/components/prEdit/prEdit.js', 'client' );
     api.addFiles( 'src/client/components/prEditPanel/prEditPanel.js', 'client' );
     api.addFiles( 'src/client/components/prView/prView.js', 'client' );
