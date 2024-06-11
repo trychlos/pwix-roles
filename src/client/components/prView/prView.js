@@ -67,7 +67,7 @@ Template.prView.onCreated( function(){
             let count = 0;
             html += '<ul class="pr-view-roles">';
             //console.debug( Roles.current());
-            Roles.userHierarchy( Roles.current().direct ).every(( o ) => {
+            Roles._userHierarchy( Roles.current().direct ).every(( o ) => {
                 f_display( o );
                 count += 1;
                 return true;

@@ -10,34 +10,34 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 //console.log( Mongo );
 
 Meteor.methods({
-    // returns the count of users which have at least one of the specified roles
+    // assign the role(s) to the user(s)
     async 'Roles.addUsersToRoles'( users, roles, options={} ){
-        alRoles.addUsersToRolesAsync( users, roles, options );
-        console.log( 'pwix:roles/src/server/js/methods:addUsersToRoles()' );
+        await alRoles.addUsersToRolesAsync( users, roles, options );
+        //console.log( 'pwix:roles/src/server/js/methods:addUsersToRoles()' );
     },
 
     // returns the count of users which have at least one of the specified roles
     async 'Roles.countUsersInRoles'( roles, options={} ){
-        const res = alRoles.getUsersInRoleAsync( roles, options ).count();
+        const res = await alRoles.getUsersInRoleAsync( roles, options ).count();
         console.log( 'pwix:roles/src/server/js/methods:countUsersInRoles()', roles, res );
         return res;
     },
 
     // create a new role (when we do not want manage it in the hierarchy)
     async 'Roles.createRole'( role, options={} ){
-        const res = alRoles.createRoleAsync( role, options );
+        const res = await alRoles.createRoleAsync( role, options );
         console.log( 'pwix:roles/src/server/js/methods:createRole()', res );
         return res;
     },
 
     // return roles for the user
     async 'Roles.getRolesForUser'( user, options ){
-        return Roles.server.getRolesForUser( user, options );
+        return await Roles.server.getRolesForUser( user, options );
     },
 
     // filter roles assignments for a scope
     async 'Roles.getUsersInScope'( scope ){
-        return Roles.server.getUsersInScope( scope );
+        return await Roles.server.getUsersInScope( scope );
     },
 
     // remove all roles for the user
@@ -66,7 +66,7 @@ Meteor.methods({
     //  this must be a method as the (not trusted) client cannot directly remove assignments without its id
     async 'Roles.setUsersRoles'( users, roles ){
         let promises = [];
-        const ids = Roles.idsFromUsers( users );
+        const ids = Roles._idsFromUsers( users );
         ids.every(( id ) => {
             promises.push( Meteor.roleAssignment.removeAsync({ 'user._id': id }));
         });

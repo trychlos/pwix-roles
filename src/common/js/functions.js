@@ -39,7 +39,7 @@ Roles._filter = function( array ){
         if( !filtered.includes( role )){
             let hasParent = false;
             filtered.every(( f ) => {
-                if( Roles.isParent( f, role )){
+                if( Roles._isParent( f, role )){
                     hasParent = true;
                     return false;
                 }
@@ -81,6 +81,74 @@ Roles._globals = function( array ){
     });
     return globals;
 };
+
+/*
+ * @param {Array|Object|String} users an array of objects, or an object, or an array of strings, or a string identifier
+ * @returns {Array} an array of string identifiers
+ */
+Roles._idsFromUsers = function( users ){
+    let ids = [];
+    if( typeof users === 'string' ){
+        ids.push( users );
+    } else if( Array.isArray( users )){
+        users.every(( u ) => {
+            if( typeof u === 'string' ){
+                ids.push( u );
+            } else if( u._id ){
+                ids.push( u._id );
+            } else {
+                console.error( 'expected an _id, not found', u );
+            }
+            return true;
+        });
+    } else if( users._id ){
+        ids.push( users._id );
+    } else {
+        console.error( 'expected an _id, not found', users );
+    }
+    return ids;
+}
+
+/*
+ * @param {String} a
+ * @param {String} b
+ * @returns {Boolean} true if a is parent of b
+ */
+Roles._isParent = function( a, b ){
+    return Roles._parents( b ).includes( a );
+}
+
+/*
+ * Build an array which contains the ordered list of the parent(s) of the specified role
+ * @param {String} role 
+ * @returns {Array} the ordered parents, not including the given role
+ */
+Roles._parents = function( role ){
+    let parents = [];
+    function f_search( o ){
+        if( o.name === role ){
+            return false;
+        }
+        let found = false;
+        if( o.children ){
+            parents.push( o.name );
+            o.children.every(( child ) => {
+                found = !f_search( child );
+                if( !found ){
+                    parents.pop( o.name );
+                }
+                return !found;
+            });
+        }
+        return !found;
+    }
+    Roles._conf.roles.hierarchy.every(( o ) => {
+        parents = [];
+        return f_search( o );
+    });
+    //console.log( 'Roles._parents of', role, 'are', parents );
+    return parents;
+}
 
 /*
  * Extract from the provided array the roles configured as scoped
@@ -134,15 +202,40 @@ Roles._sort = function( array ){
 };
 
 /**
+ * @param {Array} roles a list of roles
+ * @returns {Array} a deep copy of the original roles hierarchy in which only the input roles are kept
+ *  This let the caller get the whoel hierarchy depending of the specified roles.
+ */
+Roles._userHierarchy = function( roles ){
+    let filtered = [];
+    function f_filter( o ){
+        // if we have the hierarchy object, we also have all its children
+        if( roles.includes( o.name )){
+            filtered.push( o );
+        } else if( o.children ){
+            o.children.every(( child ) => {
+                f_filter( child );
+                return true;
+            });
+        }
+    }
+    const h = Roles._conf && Roles._conf.roles && Roles._conf.roles.hierarchy ? Roles._conf.roles.hierarchy : [];
+    h.every(( o ) => {
+        f_filter( o );
+        return true;
+    });
+    return filtered
+}
+
+/**
  * @summary Add roles to the users
  * @locus Anywhere
  * @param {Array|Object|String} users 
  * @param {Array|String} roles
  * @param {Object} options
- * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */
-Roles.addUsersToRoles = function( users, roles, options={} ){
-    return Meteor.isClient ? Meteor.callPromise( 'Roles.addUsersToRoles', users, roles, options ) : alRoles.addUsersToRoles( users, roles, options );
+Roles.addUsersToRoles = async function( users, roles, options={} ){
+    return await( Meteor.isClient ? Meteor.callAsync( 'Roles.addUsersToRoles', users, roles, options ) : alRoles.addUsersToRolesAsync( users, roles, options ));
 }
 
 /**
@@ -152,8 +245,8 @@ Roles.addUsersToRoles = function( users, roles, options={} ){
  * @param {Object} options
  * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */
-Roles.directRolesForUser = function( user, options={} ){
-    return Roles._filter( alRoles.getRolesForUser( user, options ));
+Roles.directRolesForUser = async function( user, options={} ){
+    return Roles._filter( await alRoles.getRolesForUser( user, options ));
 }
 
 /**
@@ -188,61 +281,19 @@ Roles.flat = function(){
  * @locus Anywhere
  * @param {Object|String} user a user document or a user identifier
  * @param {Object} options
- * @returns {Promise} on client side, a Promise which resolves to the array result
- * @returns {Array} on server side, an array of roles documents
+ * @returns {Array} an array of roles documents
  */
-Roles.getRolesForUser = function( user, options={} ){
-    return Meteor.isClient ? Meteor.callPromise( 'Roles.getRolesForUser', user, options ) : Meteor.server.getRolesForUser( user, options );
+Roles.getRolesForUser = async function( user, options={} ){
+    return await( Meteor.isClient ? Meteor.callAsync( 'Roles.getRolesForUser', user, options ) : Meteor.server.getRolesForUser( user, options ));
 }
 
 /**
  * @locus Anywhere
  * @param {String} scope the scope identifier
- * @returns {Promise} on client side, a Promise which resolves to the array result
  * @returns {Array} on server side, an array of user identifiers which have a role in this scope
  */
-Roles.getUsersInScope = function( scope ){
-    if( Meteor.isClient ){
-        return Meteor.callPromise( 'Roles.getUsersInScope', scope );
-    }
-    // server-side
-    return Roles.server.getUsersInScope( scope );
-}
-
-/**
- * @param {Array|Object|String} users an array of objects, or an object, or an array of strings, or a string identifier
- * @returns {Array} an array of string identifiers
- */
-Roles.idsFromUsers = function( users ){
-    let ids = [];
-    if( typeof users === 'string' ){
-        ids.push( users );
-    } else if( Array.isArray( users )){
-        users.every(( u ) => {
-            if( typeof u === 'string' ){
-                ids.push( u );
-            } else if( u._id ){
-                ids.push( u._id );
-            } else {
-                console.error( 'expected an _id, not found', u );
-            }
-            return true;
-        });
-    } else if( users._id ){
-        ids.push( users._id );
-    } else {
-        console.error( 'expected an _id, not found', users );
-    }
-    return ids;
-}
-
-/**
- * @param {String} a
- * @param {String} b
- * @returns {Boolean} true if a is parent of b
- */
-Roles.isParent = function( a, b ){
-    return Roles.parents( b ).includes( a );
+Roles.getUsersInScope = async function( scope ){
+    return await( Meteor.isClient ? Meteor.callAsync( 'Roles.getUsersInScope', scope ) : Roles.server.getUsersInScope( scope ));
 }
 
 /**
@@ -260,38 +311,6 @@ Roles.isRoleScoped = function( role ){
         return cont;
     });
     return scoped;
-}
-
-/**
- * Build an array which contains the ordered list of the parent(s) of the specified role
- * @param {String} role 
- * @returns {Array} the ordered parents, not including the given role
- */
-Roles.parents = function( role ){
-    let parents = [];
-    function f_search( o ){
-        if( o.name === role ){
-            return false;
-        }
-        let found = false;
-        if( o.children ){
-            parents.push( o.name );
-            o.children.every(( child ) => {
-                found = !f_search( child );
-                if( !found ){
-                    parents.pop( o.name );
-                }
-                return !found;
-            });
-        }
-        return !found;
-    }
-    Roles._conf.roles.hierarchy.every(( o ) => {
-        parents = [];
-        return f_search( o );
-    });
-    //console.log( 'Roles.parents of', role, 'are', parents );
-    return parents;
 }
 
 /**
@@ -326,32 +345,6 @@ Roles.removeUserAssignmentsForRoles = async function( roles, opts ){
  */
 Roles.removeUserAssignmentsFromRoles = async function( roles, opts ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.removeUserAssignmentsForRoles', roles, opts ) : Roles.server.removeUserAssignmentsForRoles( roles, opts ));
-}
-
-/**
- * @param {Array} roles a list of roles
- * @returns {Array} a deep copy of the original roles hierarchy in which only the input roles are kept
- *  This let the caller get the whoel hierarchy depending of the specified roles.
- */
-Roles.userHierarchy = function( roles ){
-    let filtered = [];
-    function f_filter( o ){
-        // if we have the hierarchy object, we also have all its children
-        if( roles.includes( o.name )){
-            filtered.push( o );
-        } else if( o.children ){
-            o.children.every(( child ) => {
-                f_filter( child );
-                return true;
-            });
-        }
-    }
-    const h = Roles._conf && Roles._conf.roles && Roles._conf.roles.hierarchy ? Roles._conf.roles.hierarchy : [];
-    h.every(( o ) => {
-        f_filter( o );
-        return true;
-    });
-    return filtered
 }
 
 /**

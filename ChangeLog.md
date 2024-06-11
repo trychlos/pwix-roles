@@ -10,6 +10,7 @@
     - Add (missing) tracker dependency
     - Obsolete Roles.removeUserAssignmentsForRoles() function, replaced with Roles.removeUserAssignmentsFromRoles()
     - Obsolete Roles.removeAllRolesFromUser() function, replaced with Roles.removeAssignedRolesFromUser()
+    - Use async versions of last alanning:roles release
 
 ### 1.3.1
 

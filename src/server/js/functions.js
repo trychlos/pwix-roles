@@ -7,7 +7,7 @@ import _ from 'lodash';
 Roles.server = {
     // get roles for the user
     // return a Promise which resolves to the array of roles for the user (which may be empty)
-    getRolesForUser( user, options ){
+    async getRolesForUser( user, options ){
         let result = Promise.resolve( [] );
         if( user ){
             let id = null;
@@ -43,7 +43,7 @@ Roles.server = {
 
     // get users in scope
     // returns a Promise which resolves to the list of users in this scope, or null
-    getUsersInScope( scope ){
+    async getUsersInScope( scope ){
         let result = Promise.resolve( [] );
         if( scope && scope.length && _.isString( scope )){
             return Meteor.roleAssignment.find({ scope: scope }).fetchAsync()

@@ -145,9 +145,11 @@ The globally exported object.
 
 - `Roles.addUsersToRoles( users, roles, options )`
 
-    This directly calls the underlying `alanning:roles/addUsersToRoles()` function, just making sure it is called on the server.
+    An async function which directly calls the underlying `alanning:roles/addUsersToRoles()` function, just making sure it is called on the server.
 
     Returns nothing.
+
+    Available both on client and server.
 
 - `Roles.current()`
 
@@ -165,17 +167,18 @@ The globally exported object.
 
 - `Roles.directRolesForUser( user )`
 
-    Returns the direct roles of the user (_i.e._ only the first level of the hierarchy) as an array.
+    An async function which returns the direct roles of the user (_i.e._ only the first level of the hierarchy) as an array.
 
     - `user`: a user identifier or a user object
+
+    Available both on client and server.
 
 - `Roles.EditPanel.checked( tree )`
 
     Parms:
     - `tree`: the jQuery object which addresses the tree
 
-    Returns:
-    - on client side, the list of checked roles.
+    Returns the list of checked roles.
 
     This is a companion function for the `prEditPanel` component, and thus a client-only function.
 
@@ -183,9 +186,11 @@ The globally exported object.
 
     Returns the configured roles hierarchy as a flat object `name` -> `{ name, children, scoped }`.
 
+    Available both on client and server.
+
 - `Roles.getRolesForUser( user, options )`
 
-    Returns the list of roles directly attributed (_i.e._ ignoring the inherited roles) to the user as an array of documents:
+    An async function which returns the list of roles directly attributed (_i.e._ ignoring the inherited roles) to the user as an array of documents:
     - `_id`: the role identifier (its name)
     - `_scope`: the relevant scope (only if `anyScope` option is `true`).
 
@@ -202,22 +207,19 @@ The globally exported object.
 
     If `onlyScoped` is falsy, all roles will be returned.
 
-    Returns:
-    - on client side, a `Promise` which resolves to the result array
-    - on server side, the above result array.
+    Available both on client and server.
 
 - `Roles.getUsersInScope( scope )`
 
-    Parms:
-    - `scope`: a scope identifier
+    An async function which returns the array of user identifiers of accounts which have a role in this scope, maybe empty.
 
-    Returns:
-    - on server side, the array of user identifiers of accounts which have a role in this scope
-    - on client side, a `Promise` which resolves to the result array.
+    Available both on client and server.
 
 - `Roles.isRoleScoped( role )`
 
-    Whether the specified role is scoped.
+    Whether the specified role is defined as scoped.
+
+    Available both on client and server.
 
 - `Roles.ready()`
 
@@ -242,12 +244,6 @@ The globally exported object.
     Returns an array with a result per role.
 
     The application should take care of **not** remove all roles for the currently logged-in user. This is not checked by the package.
-
-    Available both on client and server.
-
-- `Roles.userHierarchy( roles )`
-
-    Given a (flat) list of roles, returns the whole hierarchy of these roles plus the depending ones.
 
     Available both on client and server.
 
