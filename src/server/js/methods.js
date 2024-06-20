@@ -71,5 +71,10 @@ Meteor.methods({
             promises.push( Meteor.roleAssignment.removeAsync({ 'user._id': id }));
         });
         return Promise.all( promises ).then(() => { return alRoles.addUsersToRolesAsync( users, roles ); });
+    },
+
+    // returns the used scopes
+    async 'Roles.usedScopes'(){
+        return await Roles.server.usedScopes();
     }
 });

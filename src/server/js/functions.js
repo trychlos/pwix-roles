@@ -55,7 +55,7 @@ Roles.server = {
                     });
                     return result;
                 });
-            
+
         }
         return result;
     },
@@ -113,5 +113,10 @@ Roles.server = {
             return true;
         });
         return Promise.all( promises );
+    },
+
+    // returns the list of used scopes
+    async usedScopes(){
+        return Meteor.roleAssignment.rawCollection().distinct( 'scope' );
     }
 };

@@ -120,7 +120,7 @@ Roles._isParent = function( a, b ){
 
 /*
  * Build an array which contains the ordered list of the parent(s) of the specified role
- * @param {String} role 
+ * @param {String} role
  * @returns {Array} the ordered parents, not including the given role
  */
 Roles._parents = function( role ){
@@ -230,7 +230,7 @@ Roles._userHierarchy = function( roles ){
 /**
  * @summary Add roles to the users
  * @locus Anywhere
- * @param {Array|Object|String} users 
+ * @param {Array|Object|String} users
  * @param {Array|String} roles
  * @param {Object} options
  */
@@ -339,12 +339,21 @@ Roles.removeUserAssignmentsForRoles = async function( roles, opts ){
 }
 
 /**
+ * @locus Anywhere
  * @param {Array|String} roles a role or an array of roles
  * @param {Object} opts an option object with following keys:
  *  - scope: the relevant scope, all scopes if not set
  */
 Roles.removeUserAssignmentsFromRoles = async function( roles, opts ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.removeUserAssignmentsForRoles', roles, opts ) : Roles.server.removeUserAssignmentsForRoles( roles, opts ));
+}
+
+/**
+ * @locus Anywhere
+ * @returns {Promise} which eventually resolve to an array of used scopes (most probably including the 'null' one)
+ */
+Roles.usedScopes = async function(){
+    return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.usedScopes' ) : Roles.server.usedScopes());
 }
 
 /**

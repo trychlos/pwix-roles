@@ -4,9 +4,9 @@
 
 ### 1.4.1-rc
 
-    Release date: 
+    Release date:
 
-    - 
+    - Define Roles.usedScopes() new function
 
 ### 1.4.0
 
