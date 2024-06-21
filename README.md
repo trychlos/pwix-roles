@@ -332,7 +332,7 @@ Example:
 
 #### `prEditPanel`
 
-A panel which can be embdded into your applilcation and let edit user's roles.
+A panel which can be embdded into your application and let edit user's roles.
 
 It can be configured by calling `{{> prEdit (args) }}`, where `args` is an object with following keys:
 
