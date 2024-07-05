@@ -22,9 +22,7 @@ _current = {
 };
 
 Roles._client.currentRecompute = function( id ){
-    if( Roles.configure().verbosity & Roles.C.Verbose.CURRENT ){
-        console.log( 'pwix:roles set roles for current user' );
-    }
+    _verbose( Roles.C.Verbose.CURRENT, 'pwix:roles set roles for current user' );
     const res = ( id ? alRoles.getRolesForUser( id, { anyScope: true }) : [] ) || [];
     _current.val.all = res;
     _current.val.direct = Roles._filter( res );
@@ -35,11 +33,13 @@ Roles._client.currentRecompute = function( id ){
     _current.dep.changed();
 };
 
-// update the current user roles when the logged-in status changes
-//  client only as Meteor.userId() doesn't has any sense on the server
+// the current user roles is a reactive data source
+//  - reactive to user login/logout
+//  - reactive to roles configuration
 Tracker.autorun(() => {
     //console.debug( 'ready?', Roles.ready());
     if( Roles.ready()){
+        const conf = Roles.configure();
         const id = Meteor.userId();
         if( _current.val.id !== id ){
             Roles._client.currentRecompute( id );
@@ -65,7 +65,5 @@ Roles.current = function(){
 
 // trace changes
 Tracker.autorun(() => {
-    if( Roles.configure().verbosity & Roles.C.Verbose.CURRENT ){
-        console.log( 'Roles.current()', Roles.current());
-    }
+    _verbose( Roles.C.Verbose.CURRENT, 'Roles.current()', Roles.current());
 });

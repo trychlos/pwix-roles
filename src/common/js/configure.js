@@ -28,9 +28,6 @@ Roles.configure = function( o ){
         _.merge( _conf, Roles._defaults, o );
         Roles._conf.set( _conf );
         _verbose( Roles.C.Verbose.CONFIGURE, 'pwix:roles configure() with', o );
-        if( Meteor.isClient ){
-            Roles._client.currentRecompute( Meteor.userId());
-        }
     }
     return Roles._conf.get();
 }
