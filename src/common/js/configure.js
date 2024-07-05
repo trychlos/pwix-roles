@@ -27,11 +27,7 @@ Roles.configure = function( o ){
     if( o && _.isObject( o )){
         _.merge( _conf, Roles._defaults, o );
         Roles._conf.set( _conf );
-        // be verbose if asked for
-        if( Roles._conf.verbosity & Roles.C.Verbose.CONFIGURE ){
-            //console.debug( 'pwix:roles configure() with', o, 'building', Roles._conf );
-            console.debug( 'pwix:roles configure() with', o );
-        }
+        _verbose( Roles.C.Verbose.CONFIGURE, 'pwix:roles configure() with', o );
         if( Meteor.isClient ){
             Roles._client.currentRecompute( Meteor.userId());
         }

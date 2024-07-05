@@ -11,7 +11,8 @@ Roles.C = {
         STARTUP:   0x01 << 2,
         READY:     0x01 << 3,
         CURRENT:   0x01 << 4,
-        VIEWADD:   0x01 << 5
+        VIEWADD:   0x01 << 5,
+        FUNCTIONS: 0x01 << 6
     }
 };
 

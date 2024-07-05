@@ -8,6 +8,7 @@
 
     - Define Roles.usedScopes() new function, bumping minor candidate version number
     - Roles.configure() becomes a reactive data source
+    - Introduce trace module
 
 ### 1.4.0
 

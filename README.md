@@ -131,6 +131,10 @@ Known configuration options are:
 
         Emit a trace on `Roles.viewAdd()` invocations
 
+    - `Roles.C.Verbose.FUNCTIONS`
+
+        Trace all functions calls.
+
 Please note that `Roles.configure()` method should be called in the same terms both in client and server sides.
 
 Remind too that Meteor packages are instanciated at application level. They are so only configurable once, or, in other words, only one instance has to be or can be configured. Addtionnal calls to `Roles.configure()` will just override the previous one. You have been warned: **only the application should configure a package**.
