@@ -23,7 +23,7 @@ While `alanning:roles` provides primitives to execute CRUD operations on the rol
 
 ### Installation
 
-```
+```sh
     meteor add pwix:roles
 ```
 
