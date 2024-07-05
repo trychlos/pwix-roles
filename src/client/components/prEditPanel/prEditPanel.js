@@ -6,7 +6,7 @@
  *  Parms:
  *  - id: optional, the user identifier
  *  - user: optional, the user full record
- *  - roles: optional, a reactive var which is expected to contain the list of attributed roles
+ *  - roles: optional, a reactive var which is expected to contain the array of attributed roles
  * 
  *  Order of precedence is:
  *  1. id
@@ -16,12 +16,6 @@
  *      Else, if user is identified, then the component takes care of read the attributed roles of the user.
  *      Else, if roles are specified, then they are edited, and updated in this var.
  */
-
-import 'jstree/dist/jstree.min.js';
-
-import '../../../common/js/index.js';
-
-import '../../stylesheets/pr_roles.less';
 
 import './prEditPanel.html';
 
@@ -205,4 +199,11 @@ Template.prEditPanel.onRendered( function(){
             });
         }
     });
+});
+
+Template.prEditPanel.events({
+    'pr-change .prEditPanel'( event, instance ){
+        const roles = Roles.EditPanel.checked( instance.$( '.pr-tree' ));
+        instance.$( '.prEditPanel' ).trigger( 'pr-edit-state', { roles: roles });
+    }
 });

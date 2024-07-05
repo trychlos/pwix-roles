@@ -24,11 +24,7 @@ import { pwixI18n } from 'meteor/pwix:i18n';
 import { Modal } from 'meteor/pwix:modal';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import '../../../common/js/index.js';
-
 import '../prEditPanel/prEditPanel.js';
-
-import '../../stylesheets/pr_roles.less';
 
 import './prEdit.html';
 
@@ -86,12 +82,12 @@ Template.prEdit_footer.helpers({
 Template.prEdit_footer.events({
     // save the updates
     'click .pr-submit'( event, instance ){
-        const filtered = Roles.EditPanel( instance.$( '.pr-tree' ));
+        const filtered = Roles.EditPanel.checked( instance.$( '.pr-tree' ));
         // update the user roles if a user was provided
         const user = instance.PR.user.get();
         if( user ){
-            Meteor.call( 'Roles.setUsersRoles', user._id, filtered );
-            Meteor.call( 'Roles.Accounts.Updated', user._id );
+            Meteor.callAsync( 'Roles.setUsersRoles', user._id, filtered );
+            Meteor.callAsync( 'Roles.Accounts.Updated', user._id );
         }
         Modal.close();
         return false;

@@ -294,7 +294,7 @@ Note from `alanning:roles` documentation:
 
 ### Methods
 
-These are Meteor methods, i.e. to be `Meteor.callAsync(...)` by the client.
+These are Meteor Mongo methods, i.e. to be `Meteor.callAsync(...)` by the client.
 
 - `Roles.addUsersToRoles( users, roles, options )`
 
@@ -344,11 +344,11 @@ Example:
 
 A panel which can be embdded into your application and let edit user's roles.
 
-It can be configured by calling `{{> prEdit (args) }}`, where `args` is an object with following keys:
+It can be configured by calling `{{> prEditPanel (args) }}`, where `args` is an object with following keys:
 
 - `id`: optional, the user identifier
 - `user`: optional, the user full record
-- `roles`: optional, a ReactiveVar which is expected to contain the list of currently attributed roles.
+- `roles`: optional, a ReactiveVar which is expected to contain the array of currently attributed roles.
 
 Order of precedence is:
 1. id
@@ -362,6 +362,10 @@ Else, if `user` is specified, then the component takes care of read the attribut
 Else, if `roles` are specified, then they are edited, and updated in this var.
 
 The `pr-change` event is triggered each time the user changes a selection.
+
+At every moment, the `Roles.EditPanel.checked( <jstree_selector> )` client-only companion function can be called to get the current state of selected roles.
+
+On each change, the `pr-edit-state` event is triggered, with the current list of directly selected roles.
 
 ## NPM peer dependencies
 

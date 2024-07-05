@@ -17,10 +17,6 @@ import { Modal } from 'meteor/pwix:modal';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import '../../../common/js/index.js';
-
-import '../../stylesheets/pr_roles.less';
-
 import './prView.html';
 
 Template.prView.onCreated( function(){
