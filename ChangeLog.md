@@ -7,6 +7,7 @@
     Release date:
 
     - Define Roles.usedScopes() new function, bumping minor candidate version number
+    - Roles.configure() becomes a reactive data source
 
 ### 1.4.0
 

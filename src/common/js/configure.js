@@ -4,7 +4,11 @@
 
 import _ from 'lodash';
 
-Roles._conf = {};
+import { ReactiveVar } from 'meteor/reactive-var';
+
+let _conf = {};
+
+Roles._conf = new ReactiveVar( _conf );
 
 Roles._defaults = {
     roles: {},
@@ -21,7 +25,8 @@ Roles._defaults = {
  */
 Roles.configure = function( o ){
     if( o && _.isObject( o )){
-        _.merge( Roles._conf, Roles._defaults, o );
+        _.merge( _conf, Roles._defaults, o );
+        Roles._conf.set( _conf );
         // be verbose if asked for
         if( Roles._conf.verbosity & Roles.C.Verbose.CONFIGURE ){
             //console.debug( 'pwix:roles configure() with', o, 'building', Roles._conf );
@@ -31,7 +36,8 @@ Roles.configure = function( o ){
             Roles._client.currentRecompute( Meteor.userId());
         }
     }
-    return Roles._conf;
+    return Roles._conf.get();
 }
 
-_.merge( Roles._conf, Roles._defaults );
+_.merge( _conf, Roles._defaults );
+Roles._conf.set( _conf );

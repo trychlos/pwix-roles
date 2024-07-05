@@ -32,7 +32,7 @@ Roles.ready = function(){
 
 // trace changes
 Tracker.autorun(() => {
-    if( Roles._conf.verbosity & Roles.C.Verbose.READY ){
+    if( Roles.configure().verbosity & Roles.C.Verbose.READY ){
         console.log( 'Roles.ready()', Roles.ready());
     }
 });

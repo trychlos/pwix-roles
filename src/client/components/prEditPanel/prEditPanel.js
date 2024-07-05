@@ -175,7 +175,7 @@ Template.prEditPanel.onRendered( function(){
             //console.log( Roles );
             self.PR.creationAsked = 0;
             self.PR.creationDone.set( 0 );
-            Roles._conf.roles.hierarchy.every(( o ) => {
+            Roles.configure().roles.hierarchy.every(( o ) => {
                 f_role( o );
                 return true;
             });

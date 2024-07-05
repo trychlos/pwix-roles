@@ -27,7 +27,7 @@ function f_DefineNewRoles(){
 
     function f_msg(){
         if( !msg ){
-            if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
+            if( Roles.configure().verbosity & Roles.C.Verbose.MAINTAIN ){
                 console.log( 'pwix:roles/src/server/js/maintain.js defining not-yet existing roles...' );
             }
             msg = true;
@@ -58,7 +58,7 @@ function f_DefineNewRoles(){
                 //console.log( '   '+o.name+' already defined' );
             } else {
                 f_msg();
-                if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
+                if( Roles.configure().verbosity & Roles.C.Verbose.MAINTAIN ){
                     console.log( '   defining '+o.name );
                 }
                 alRoles.createRoleAsync( o.name, { unlessExists: true })
@@ -96,15 +96,15 @@ function f_DefineNewRoles(){
     //console.debug( 'rolesAllRoles', rolesAllRoles );
 
     // iterate on our roles, defining the missing ones
-    if( Roles._conf && Roles._conf.roles && Roles._conf.roles.hierarchy && Array.isArray( Roles._conf.roles.hierarchy )){
-        Roles._conf.roles.hierarchy.every(( o ) => {
+    if( Roles._conf && Roles.configure().roles && Roles.configure().roles.hierarchy && Array.isArray( Roles.configure().roles.hierarchy )){
+        Roles.configure().roles.hierarchy.every(( o ) => {
             f_define( o );
             return true;
         });
     }
 
     if( !msg ){
-        if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
+        if( Roles.configure().verbosity & Roles.C.Verbose.MAINTAIN ){
             console.log( 'pwix:roles/src/server/js/maintain.js defined roles all exist: fine.' );
         }
     }
@@ -138,8 +138,8 @@ function f_InheritanceCompleteness(){
             });
         }
 
-        if( Roles._conf.roles && Roles._conf.roles.hierarchy ){
-            f_children( Roles._conf.roles.hierarchy, name, false );
+        if( Roles.configure().roles && Roles.configure().roles.hierarchy ){
+            f_children( Roles.configure().roles.hierarchy, name, false );
         } else {
             result.push({ _id: name });
         }
@@ -185,12 +185,12 @@ function f_InheritanceCompleteness(){
                 //console.log( o.role._id, inherited, typeof inherited, inherited.length, o.inheritedRoles, typeof o.inheritedRoles, o.inheritedRoles.length, equals );
                 if( !equals ){
                     if( !msg ){
-                        if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
+                        if( Roles.configure().verbosity & Roles.C.Verbose.MAINTAIN ){
                             console.log( 'pwix:roles/src/server/js/maintain.js maintaining the roles inheritage completeness...' );
                         }
                         msg = true;
                     }
-                    if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
+                    if( Roles.configure().verbosity & Roles.C.Verbose.MAINTAIN ){
                         console.log( '   updating id='+o._id, o.role._id, 'user='+o.user._id );
                     }
                     Meteor.roleAssignment.updateAsync({ _id: o._id }, { $set: { inheritedRoles: inherited }});
@@ -201,7 +201,7 @@ function f_InheritanceCompleteness(){
             })
         });
     if( !msg ){
-        if( Roles._conf.verbosity & Roles.C.Verbose.MAINTAIN ){
+        if( Roles.configure().verbosity & Roles.C.Verbose.MAINTAIN ){
             console.log( 'pwix:roles/src/server/js/maintain.js roles inheritance is complete: fine.' );
         }
     }
@@ -213,7 +213,7 @@ function f_CleanupObsoleteRoles(){
 }
 
 Meteor.startup( function(){
-    if( Roles._conf.maintainHierarchy ){
+    if( Roles.configure().maintainHierarchy ){
         f_DefineNewRoles();
         f_InheritanceCompleteness();
         f_CleanupObsoleteRoles();

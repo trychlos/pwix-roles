@@ -24,7 +24,7 @@ Roles._enumerate = function( cb, args=null ){
             return cont;
         });
     }
-    _enum( Roles._conf.roles.hierarchy || [] );
+    _enum( Roles.configure().roles.hierarchy || [] );
 }
 
 /*
@@ -142,7 +142,7 @@ Roles._parents = function( role ){
         }
         return !found;
     }
-    Roles._conf.roles.hierarchy.every(( o ) => {
+    Roles.configure().roles.hierarchy.every(( o ) => {
         parents = [];
         return f_search( o );
     });
@@ -191,7 +191,7 @@ Roles._sort = function( array ){
             });
         }
     }
-    const h = Roles._conf && Roles._conf.roles && Roles._conf.roles.hierarchy ? Roles._conf.roles.hierarchy : [];
+    const h = Roles._conf && Roles.configure().roles && Roles.configure().roles.hierarchy ? Roles.configure().roles.hierarchy : [];
     //console.debug( h );
     h.every(( o ) => {
         f_sort( o );
@@ -219,7 +219,7 @@ Roles._userHierarchy = function( roles ){
             });
         }
     }
-    const h = Roles._conf && Roles._conf.roles && Roles._conf.roles.hierarchy ? Roles._conf.roles.hierarchy : [];
+    const h = Roles._conf && Roles.configure().roles && Roles.configure().roles.hierarchy ? Roles.configure().roles.hierarchy : [];
     h.every(( o ) => {
         f_filter( o );
         return true;
@@ -268,7 +268,7 @@ Roles.flat = function(){
             });
         }
     }
-    const h = Roles._conf && Roles._conf.roles && Roles._conf.roles.hierarchy ? Roles._conf.roles.hierarchy : [];
+    const h = Roles._conf && Roles.configure().roles && Roles.configure().roles.hierarchy ? Roles.configure().roles.hierarchy : [];
     h.every(( o ) => {
         f_explore( o );
         return true;

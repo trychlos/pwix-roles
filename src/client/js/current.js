@@ -22,7 +22,7 @@ _current = {
 };
 
 Roles._client.currentRecompute = function( id ){
-    if( Roles._conf.verbosity & Roles.C.Verbose.CURRENT ){
+    if( Roles.configure().verbosity & Roles.C.Verbose.CURRENT ){
         console.log( 'pwix:roles set roles for current user' );
     }
     const res = ( id ? alRoles.getRolesForUser( id, { anyScope: true }) : [] ) || [];
@@ -65,7 +65,7 @@ Roles.current = function(){
 
 // trace changes
 Tracker.autorun(() => {
-    if( Roles._conf.verbosity & Roles.C.Verbose.CURRENT ){
+    if( Roles.configure().verbosity & Roles.C.Verbose.CURRENT ){
         console.log( 'Roles.current()', Roles.current());
     }
 });

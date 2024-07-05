@@ -151,6 +151,12 @@ The globally exported object.
 
     Available both on client and server.
 
+- `Roles.configure( o<Object> )`
+
+    See [above](#package-configuration).
+
+    A reactive data source.
+
 - `Roles.current()`
 
     A reactive data source which provides the roles of the currently logged-in user as an object:
@@ -284,7 +290,7 @@ Note from `alanning:roles` documentation:
 
 ### Methods
 
-These are Meteor methods, i.e. to be `Meteor.call(...)` by the client.
+These are Meteor methods, i.e. to be `Meteor.callAsync(...)` by the client.
 
 - `Roles.addUsersToRoles( users, roles, options )`
 
