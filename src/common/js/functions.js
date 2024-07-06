@@ -64,7 +64,7 @@ Roles._filter = function( array ){
 
 /*
  * Extract from the provided array the global roles
- * NB; in alanning:roles, when a role is scoped, all inherited roles are also scoped
+ * NB; both in pwix:roles and in alanning:roles, when a role is scoped, all inherited roles are also scoped
  * @param {Array} array
  * @returns {Array}
  */
@@ -204,7 +204,7 @@ Roles._sort = function( array ){
 /**
  * @param {Array} roles a list of roles
  * @returns {Array} a deep copy of the original roles hierarchy in which only the input roles are kept
- *  This let the caller get the whoel hierarchy depending of the specified roles.
+ *  This let the caller get the whole hierarchy depending of the specified roles.
  */
 Roles._userHierarchy = function( roles ){
     let filtered = [];
@@ -318,7 +318,7 @@ Roles.isRoleScoped = function( role ){
  */
 Roles.removeAllRolesFromUser = async function( user ){
     console.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
-    return Roles.removeAssignedRolesFromUser( user );
+    return await Roles.removeAssignedRolesFromUser( user );
 }
 
 /**
@@ -335,7 +335,7 @@ Roles.removeAssignedRolesFromUser = async function( user ){
  */
 Roles.removeUserAssignmentsForRoles = async function( roles, opts ){
     console.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
-    return Roles.removeUserAssignmentsFromRoles( roles, opts );
+    return await Roles.removeUserAssignmentsFromRoles( roles, opts );
 }
 
 /**
@@ -345,7 +345,7 @@ Roles.removeUserAssignmentsForRoles = async function( roles, opts ){
  *  - scope: the relevant scope, all scopes if not set
  */
 Roles.removeUserAssignmentsFromRoles = async function( roles, opts ){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.removeUserAssignmentsForRoles', roles, opts ) : Roles.server.removeUserAssignmentsForRoles( roles, opts ));
+    return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.removeUserAssignmentsFromRoles', roles, opts ) : Roles.server.removeUserAssignmentsFromRoles( roles, opts ));
 }
 
 /**

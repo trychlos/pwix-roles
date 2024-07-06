@@ -29,11 +29,13 @@ While `alanning:roles` provides primitives to execute CRUD operations on the rol
 
 ### Definition of the roles hierarchy
 
-At initialization time, `pwix:roles` reads already defined roles from the database.
+`pwix:roles` expects that the hierarchy of roles the application plan to use be provided to the package at configuration time, as a `roles.hierarchy` array fo objects with followoing keys:
 
-Nonetheless, the hierarchy of roles you plan to use should be provided to the package at configuration time.
+- `name`: the mandatory name of the role
+- `children`: the child roles as same objects (a recursive definition), defaulting to none
+- `scoped`: whether the role is scoped, defaulting to `false`. When a role is scoped, all its children are scoped too.
 
-```
+```js
     import { Roles } from 'meteor/pwix:roles';
 
     Roles.configure({
@@ -55,6 +57,7 @@ Nonetheless, the hierarchy of roles you plan to use should be provided to the pa
                 },
                 {
                     name: <name>,
+                    scoped: true,                       if a role is scoped, then all its children are scoped too
                     children: [
 
                     ]
@@ -63,7 +66,7 @@ Nonetheless, the hierarchy of roles you plan to use should be provided to the pa
                     ...
                 }
             ],
-            aliases: [                                  one can define aliases, i.e. distinct names which are to be considered as same roles
+            aliases: [                                  one can define aliases, i.e. distinct names which are to be considered as same roles (todo #1)
                 [ <name1>, <name2>, ... ],
                 [ ... ]
             ]
@@ -175,17 +178,21 @@ The globally exported object.
 
     A reactive data source.
 
+    Available both on client and server.
+
 - `Roles.current()`
 
-    A reactive data source which provides the roles of the currently logged-in user as an object:
+    A reactive data source which provides the assigned roles of the currently logged-in user as an object:
 
-```
+```js
     - id        {String}    the current user identifier
     - all       {Array}     all the roles, either directly or indirectly set
     - direct    {Array}     only the directly attributed top roles in the hierarchy (after having removed indirect ones)
     - scoped    {Object}    a per-scope object where each key is a scope, and the value an array of user roles which exhibit this scope
-    - globals   {Array}     the list of user roles which are not scoped
+    - globals   {Array}     the list of global (non-scoped) user roles
 ```
+
+    Note that this object gathers assigned roles, and that they are not filtered through the configured heirarchy. It may so happen that some assigned roles can be not defined in a new hierarchy. This is the task of the configured `maintainHierarchy` indicator to make sure that there is no difference of assigned roles and defined ones.
 
     Available on client only.
 
@@ -196,15 +203,6 @@ The globally exported object.
     - `user`: a user identifier or a user object
 
     Available both on client and server.
-
-- `Roles.EditPanel.checked( tree )`
-
-    Parms:
-    - `tree`: the jQuery object which addresses the tree
-
-    Returns the list of checked roles.
-
-    This is a companion function for the `prEditPanel` component, and thus a client-only function.
 
 - `Roles.flat()`
 
@@ -225,7 +223,7 @@ The globally exported object.
         - `scope`: the desired scope
         - `onlyScoped`: if set to `true`, only returns the roles in the given `scope`
 
-    To get just global roles, set `onlyScoped` to `true` and leave the `scope` option undefined.
+    To get just global (non-scoped) roles, set `onlyScoped` to `true` and leave the `scope` option undefined.
 
     To get just scoped roles roles, set `onlyScoped` to `true` and a `scope`.
 
@@ -248,6 +246,8 @@ The globally exported object.
 - `Roles.ready()`
 
     A reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
+
+    Note that the package considers itself as ready even if it has not yet been configured.
 
     Available on client only.
 
@@ -388,6 +388,15 @@ The caller can get the result in two ways:
 - or, starting with v 1.5.0, by listening to the `pr-edit-state` event:
 
     This event is triggered on each change, and holds a data object with the current list of directly selected roles.
+
+- `Roles.EditPanel.checked( tree )`
+
+    Parms:
+    - `tree`: the jQuery object which addresses the tree
+
+    Returns the list of checked roles.
+
+    This is a companion function for the `prEditPanel` component, and thus a client-only function.
 
 ## NPM peer dependencies
 

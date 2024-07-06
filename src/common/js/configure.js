@@ -13,7 +13,7 @@ Roles._conf = new ReactiveVar( _conf );
 Roles._defaults = {
     roles: {},
     maintainHierarchy: true,
-    verbosity: Roles.C.Verbose.NONE
+    verbosity: Roles.C.Verbose.CONFIGURE
 };
 
 /**

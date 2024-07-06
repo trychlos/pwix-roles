@@ -16,7 +16,7 @@ Roles.i18n = {
                 close: 'Fermer'
             },
             tabs: {
-                non_scoped_title: 'Rôles généraux',
+                global_title: 'Rôles globaux',
                 scoped_title: 'Rôles périmétrés'
             }
         }

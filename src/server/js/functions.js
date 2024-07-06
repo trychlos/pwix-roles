@@ -4,41 +4,15 @@
 
 import _ from 'lodash';
 
+import { Roles as alRoles } from 'meteor/alanning:roles';
+
 Roles.server = {
     // get roles for the user
-    // return a Promise which resolves to the array of roles for the user (which may be empty)
+    // https://meteor-community-packages.github.io/meteor-roles/classes/Roles.html#method_getRolesForUserAsync
     async getRolesForUser( user, options ){
-        let result = Promise.resolve( [] );
-        if( user ){
-            let id = null;
-            if( _.isString( user )){
-                id = user;
-            } else if( _.isObject( user ) && user._id ){
-                id = user._id;
-            }
-            if( id ){
-                return Meteor.roleAssignment.find({ 'user._id': id }).fetchAsync()
-                    .then(( fetched ) => {
-                        result = [];
-                        fetched.every(( doc ) => {
-                            if( options.onlyScoped === true ){
-                                if(( doc.scope && options.scope && doc.scope === options.scope ) || ( !options.scope && !doc.scope )){
-                                    result.push({ _id: doc.role._id, scope: doc.scope || null });
-                                }
-                            } else {
-                                result.push({ _id: doc.role._id, scope: doc.scope || null });
-                            }
-                            return true;
-                        });
-                        return result;
-                    });
-            } else {
-                console.warn( 'getRolesForUser() unable to find an identifier', user );
-            }
-        } else {
-            console.warn( 'getRolesForUser() user is falsy', user );
-        }
-        return result;
+        const res = await alRoles.getRolesForUserAsync( user, options );
+        //console.debug( 'res', res );
+        return res;
     },
 
     // get users in scope
