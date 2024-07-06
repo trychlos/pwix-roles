@@ -4,26 +4,18 @@
  *  Edit the roles of the specified user.
  * 
  *  Parms:
- *  - id: optional, the user identifier
- *  - user: optional, the user full record
- *  - roles: optional, a reactive var which is expected to contain the initial array of attributed roles
- * 
- *  Order of precedence is:
- *  1. id
- *  2. user
- *  3. roles
- * 
- *  If 'id' is specified, this is enough and the component takes care of read the attributed roles of the identified user.
- *  Else, if user is identified, then the component takes care of read the attributed roles of the user.
- *  Else, if roles are specified, then they are edited from this var.
- * 
- *  If none of these three parms is specified, then the edition begins with an empty state.
+ *  - `user`: optional, the user identifier or the user full document record
+ *
+ *  If the user is not specified, then the edition begins with an empty set of roles.
  */
+
+import _ from 'lodash';
 
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import '../edit_global_pane/edit_global_pane.js';
 import '../edit_scoped_pane/edit_scoped_pane.js';
+import '../pr_tree/pr_tree.js';
 
 import './prEditPanel.html';
 
@@ -37,8 +29,11 @@ Template.prEditPanel.onCreated( function(){
         scoped_div: 'pr-scoped',
         //scoped_prefix: 'prscoped_',
 
-        // initial roles or initial roles of the specified user
-        roles: new ReactiveVar( null )
+        // initial roles or initial roles of the specified user as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
+        //  (same structure than current)
+        roles: new ReactiveVar({ scoped: {}, global: { all: [], direct: [] }}),
+        userId: null,
+        handle: null
     };
 
     // when this component is created, then declare the function to get back its values
@@ -57,6 +52,55 @@ Template.prEditPanel.onCreated( function(){
             return filtered;
         }
     };
+
+    // if a user is specified, then subscribe to its assigned roles
+    self.autorun(() => {
+        const user = Template.currentData().user;
+        self.PR.userId = null;
+        if( user ){
+            if( _.isObject( user )){
+                self.PR.userId = user._id;
+            }
+            if( _.isString( user )){
+                self.PR.userId = user;
+            }
+        }
+        if( self.PR.userId ){
+            self.PR.handle = self.subscribe( 'pwix_roles_user_assignments', self.PR.userId );
+        }
+    });
+
+    // when assigned roles subscription is ready, fetch them
+    //  take a deep copy as this will be the edition starting point
+    self.autorun(() => {
+        if( self.PR.handle.ready()){
+            let roles = { scoped: {}, global: { all: [], direct: [] }};
+            const _setup = function( it, o ){
+                o.all = o.all || [];
+                o.direct = o.direct || [];
+                o.direct.push( it.role._id );
+                it.inheritedRoles.forEach(( role ) => {
+                    o.all.push( role._id );
+                });
+            };
+            Roles.getRolesForUser( self.PR.userId, { anyScope: true, fullObjects: true }).then(( res ) => {
+                res.forEach(( it ) => {
+                    if( it.scope ){
+                        roles.scoped[it.scope] = roles.scoped[it.scope] || {};
+                        _setup( it, roles.scoped[it.scope] );
+                    } else {
+                        _setup( it, roles.global );
+                    }
+                });
+                self.PR.roles.set( _.cloneDeep( roles ));
+            });
+        }
+    });
+
+    // track edited roles
+    self.autorun(() => {
+        //console.debug( 'edited roles', self.PR.roles.get());
+    });
 });
 
 Template.prEditPanel.helpers({
@@ -68,15 +112,17 @@ Template.prEditPanel.helpers({
 
     // parms specific to global (non-scoped) roles edition pane
     parmsGlobalPane(){
+        const PR = Template.instance().PR;
         return {
-            ...this,
-            global_div: Template.instance().PR.global_div,
-            global_prefix: Template.instance().PR.global_prefix
+            roles: PR.roles,
+            global_div: PR.global_div,
+            global_prefix: PR.global_prefix
         };
     },
 
     // parms for the Tabbed component when we have both non-scoped and scoped roles
     parmsTabbed(){
+        const PR = Template.instance().PR;
         return {
             tabs: [
                 {
@@ -85,9 +131,9 @@ Template.prEditPanel.helpers({
                     navLabel: pwixI18n.label( I18N, 'tabs.global_title' ),
                     paneTemplate: 'edit_global_pane',
                     paneData: {
-                        ...this,
-                        pr_div: Template.instance().PR.global_div,
-                        pr_prefix: Template.instance().PR.global_prefix
+                        roles: PR.roles,
+                        pr_div: PR.global_div,
+                        pr_prefix: PR.global_prefix
                     }
                 },
                 {
@@ -96,8 +142,8 @@ Template.prEditPanel.helpers({
                     navLabel: pwixI18n.label( I18N, 'tabs.scoped_title' ),
                     paneTemplate: 'edit_scoped_pane',
                     paneData: {
-                        ...this,
-                        pr_div: Template.instance().PR.scoped_div
+                        roles: PR.roles,
+                        pr_div: PR.scoped_div
                     }
                 }
             ]

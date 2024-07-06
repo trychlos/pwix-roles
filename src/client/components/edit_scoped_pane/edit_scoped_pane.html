@@ -2,58 +2,41 @@
     <div class="pr-edit-scoped-pane">
 
         <div class="{{ divClass }}">
-            <table class="form-table ui-w100 colpad025">
-                <thead>
-                    <tr>
-                        <th class="ui-w50">
-                            {{ i18n key="accounts.panel.role_th" }}
-                        </th>
-                        <th class="ui-w50">
-                            {{ i18n key="accounts.panel.scope_th" }}
-                        </th>
-                        <th class="mgr-buttons d-flex">
-                            <button class="btn btn-sm no-border ui-transparent">
-                                <span class="fa-solid fa-fw fa-checked"></span>
-                            </button>
-                            <button class="btn btn-sm btn-outline-primary js-plus" title="{{ i18n key="accounts.panel.add_title" }}">
-                                <span class="fa-solid fa-fw fa-plus"></span>
-                            </button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each it in editedList }}
-                        <tr data-row-id="{{ it.DYN.rowid }}">
-                            <td>
-                                <select class="form-select js-role">
-                                    <option value="NONE" {{ roleSelected it 'NONE' }} disabled>{{ i18n key="accounts.panel.role_option" }}</option>
-                                    {{#each itRole in rolesList }}
-                                        <option value="{{ itRole.name }}" {{ roleSelected it itRole }} {{ roleDisabled it itRole }}>{{ itRole.name }}</option>
-                                    {{/each}}
-                                </select>
-                            </td>
-                            <td>
-                                <select class="form-select js-scope" {{ scopeDisabled it }} >
-                                    <option value="NONE" {{ scopeSelected it 'NONE' }} disabled>{{ scopeLabel it }}</option>
-                                    {{#each itOrg in organizationsList }}
-                                        <option value="{{ itOrg.entity }}" {{ scopeSelected it itOrg }} >{{ orgLabel itOrg }}</option>
-                                    {{/each}}
-                                </select>
-                            </td>
-                            <td>
-                                <div class="mgr-buttons d-flex">
-                                    <button class="btn btn-sm no-border js-check {{ transparentIfNotValid it }}" title="{{ i18n key="accounts.panel.line_valid" }}">
-                                        <span class="fa-solid fa-fw fa-check"></span>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-primary js-minus" title="{{ i18n key="accounts.panel.remove_title" }}">
-                                        <span class="fa-solid fa-fw fa-minus"></span>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    {{/each}}
-                </tbody>
+            <table class="ui-w100 ui-mb025">
+                <tr class="ui-w100">
+                    <td class="ui-right">
+                        <button class="btn btn-sm btn-outline-primary js-plus" title="{{ i18n key="panels.add_title" }}">
+                            <span class="fa-solid fa-fw fa-plus"></span>
+                        </button>
+                    </td>
+                </tr>
             </table>
+            <div class="accordion" id="{{ accordionId }}">
+                {{#each scope in editedList }}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="header-{{ scope }}">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#body-{{ scope }}" aria-expanded="true" aria-controls="body-{{ scope }}">
+                                {{#if newScope scope }}
+                                    <select class="form-select js-scope">
+                                        <option value="NONE" selected disabled>{{ i18n key="panels.scope_select" }}</option>
+                                        {{#each it in scopesList }}
+                                            <option value="{{ it._id }}" {{ scopeEnabled it._id }}>{{ scopeLabel it }}</option>
+                                        {{/each}}
+                                    </select>
+                                    <button class="btn btn-sm ui-noborder ui-transparent"><span class="fa-solid fa-fw fa-circle"></span></button>
+                                {{else}}
+                                    {{ scopeLabel scope }}
+                                {{/if}}
+                            </button>
+                        </h2>
+                        <div id="body-{{ scope }}" class="accordion-collapse collapse show" aria-labelledby="header-{{ scope }}" data-bs-parent="#{{ accordionId }}">
+                            <div class="accordion-body">
+                                {{> pr_tree (parmsTree scope )}}
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
         </div>
 
     </div>

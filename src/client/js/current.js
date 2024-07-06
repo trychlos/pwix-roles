@@ -11,7 +11,7 @@ import { Tracker } from 'meteor/tracker';
 // only available on the client
 let _current = {
     dep: new Tracker.Dependency(),
-    handle: Meteor.subscribe( 'pwix_roles_current_assignments' ),
+    handle: Meteor.subscribe( 'pwix_roles_user_assignments', Meteor.userId()),
     val: {
         userId: null,
         scoped: {},

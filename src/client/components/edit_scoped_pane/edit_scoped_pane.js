@@ -2,54 +2,39 @@
  * /imports/client/components/edit_scoped_pane/edit_scoped_pane.js
  *
  *  Edit scoped roles.
+ *  We display the scoped roles as a list of accordions <role> <scope>
  * 
  *  Parms:
- *  - id: optional, the user identifier
- *  - user: optional, the user full record
- *  - roles: optional, a reactive var which is expected to contain the initial array of attributed roles
- * +
- *  - pr_div: the name of the main div
- * 
- *  Order of precedence is:
- *  1. id
- *  2. user
- *  3. roles
- * 
- *  If 'id' is specified, this is enough and the component takes care of read the attributed roles of the identified user.
- *  Else, if user is identified, then the component takes care of read the attributed roles of the user.
- *  Else, if roles are specified, then they are edited from this var.
- * 
- *  If none of these three parms is specified, then the edition begins with an empty state.
+ *  - roles: a ReactiveVar which contains the user roles, as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
+ *      (a deep copy of the user roles - so can be edited)
+ *  - pr_div: the class name of the main div
  */
 
 import _ from 'lodash';
 
 import { pwixI18n } from 'meteor/pwix:i18n';
+import { Mongo } from 'meteor/mongo';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Roles } from 'meteor/pwix:roles';
 
 import './edit_scoped_pane.html';
-/*
- * pwix:accounts-manager/src/client/components/edit_scoped_pane/edit_scoped_pane.js
- *
- * Parms:
- * - item: a ReactiveVar which holds the account object to edit (may be empty, but not null)
- * - isNew: true|false
- * - checker: a ReactiveVar which holds the parent Checker
- */
 
-import './edit_scoped_pane.html';
-
-const NONE = 'NONE';
+const NONE = 'NULL';
 
 Template.edit_scoped_pane.onCreated( function(){
     const self = this;
 
-    self.AM = {
-        //handle: self.subscribe( 'organizations.listAll' ),
-        // the original version of the user roles
-        userRoles: null,
+    self.PR = {
+        // the main div
+        accordionId: Random.id(),
+        // the scopes list provided by the caller
+        scopesList: new ReactiveVar( [] ),
+        // or a subcription to the used scopes
+        handle: null,
+        collection: null
+
+        /*
         // the current edition state
         edited: new ReactiveVar( [] ),
         // the full available - defined - roles
@@ -59,7 +44,7 @@ Template.edit_scoped_pane.onCreated( function(){
 
         // returns the identified index in the 'edited' array
         getRole( rowId ){
-            let roles = self.AM.edited.get();
+            let roles = self.PR.edited.get();
             found = -1;
             for( let i=0 ; i<roles.length && found<0 ; ++i ){
                 if( roles[i].DYN.rowid === rowId ){
@@ -73,7 +58,7 @@ Template.edit_scoped_pane.onCreated( function(){
         },
 
         // initialize a new editable role object
-        //  the role object is the document as returned from Roles.getRolesForUser()
+        //  the role object is a document as returned from Roles.getRolesForUser()
         //  we allocate an object with:
         //  - rowid: a random id which uniquely identify the row
         //  - doc: the { _id, scope } role object as returned from Roles.getRolesForUser() or edited
@@ -84,7 +69,7 @@ Template.edit_scoped_pane.onCreated( function(){
                 doc: { ...o },
                 DYN: {
                     rowid: 'row-'+Random.id(),
-                    scopeLabel: new ReactiveVar( pwixI18n.label( I18N, 'accounts.panel.no_role' )),
+                    scopeLabel: new ReactiveVar( pwixI18n.label( I18N, 'panels.no_role' )),
                     scopeEnabled: new ReactiveVar( false ),
                     scopeSelected: new ReactiveVar( NONE ),
                     lineValid: new ReactiveVar( false )
@@ -97,7 +82,7 @@ Template.edit_scoped_pane.onCreated( function(){
             let label = pwixI18n.label( I18N, 'accounts.panel.no_role' );
             let want_scope = false;
             if( roleObj.doc._id ){
-                const o = self.AM.availableRoles[roleObj.doc._id];
+                const o = self.PR.availableRoles[roleObj.doc._id];
                 if( o && o.scoped === true ){
                     label = pwixI18n.label( I18N, 'accounts.panel.with_scope' );
                     want_scope = true;
@@ -113,22 +98,22 @@ Template.edit_scoped_pane.onCreated( function(){
         // a new role has been selected - update the line accordingly
         //  role may be null on new row
         selectRole( rowId, roleName ){
-            const idx = self.AM.getRole( rowId );
+            const idx = self.PR.getRole( rowId );
             if( idx >= 0 ){
-                let roleObj = self.AM.edited.get()[idx];
+                let roleObj = self.PR.edited.get()[idx];
                 roleObj.doc._id = roleName;
-                self.AM.resetScope( roleObj );
-                self.AM.updateCheck( roleObj );
+                self.PR.resetScope( roleObj );
+                self.PR.updateCheck( roleObj );
             }
         },
 
         // a new scope has been selected - update the line accordingly
         selectScope( rowId, scope ){
-            const idx = self.AM.getRole( rowId );
+            const idx = self.PR.getRole( rowId );
             if( idx >= 0 ){
-                let roleObj = self.AM.edited.get()[idx];
+                let roleObj = self.PR.edited.get()[idx];
                 roleObj.doc.scope = scope;
-                self.AM.updateCheck( roleObj );
+                self.PR.updateCheck( roleObj );
             }
         },
 
@@ -146,57 +131,98 @@ Template.edit_scoped_pane.onCreated( function(){
             const roleValid = Boolean( roleObj.doc._id && roleObj.doc._id.length > 0 );
             let scopeValid = false;
             if( roleValid ){
-                scopeValid = ( self.AM.availableRoles[roleObj.doc._id].scoped === true ) ? roleObj.doc.scope !== null : roleObj.doc.scope === null;
+                scopeValid = ( self.PR.availableRoles[roleObj.doc._id].scoped === true ) ? roleObj.doc.scope !== null : roleObj.doc.scope === null;
             }
             //console.debug( roleObj, 'roleValid', roleValid, 'scopeValid', scopeValid );
             roleObj.DYN.lineValid.set( roleValid && scopeValid );
         }
+    */
     };
 
-    // get user roles as an array
-    // have a deep copy which is the starting point of the edition
-    Roles.getRolesForUser( Template.currentData().item.get())
-        .then(( res ) => {
-            self.AM.userRoles = res;
-            let edit = [];
-            res.every(( role ) => {
-                edit.push( self.AM.newRole( role ));
-                return true;
+    // maybe the scopes list is provided by the application ?
+    //  else default to already used scopes
+    self.autorun(() => {
+        const scopesFn = Roles.configure().scopesFn;
+        let list = [];
+        if( scopesFn ){
+            scopesFn().then(( res ) => {
+                res = _.isArray( res ) ? res : [res];
+                res.forEach(( it ) => {
+                    if( _.isString( it )){
+                        list.push({ _id: it });
+                    } else if( _.isObject( it ) && it._id ){
+                        list.push( it );
+                    } else {
+                        console.warn( 'expect a { _id, label } object, found', it );
+                    }
+                });
+                self.PR.scopesList.set( list );
             });
-            self.AM.edited.set( edit );
-        });
+        } else {
+            self.PR.handle = self.subscribe( 'pwix_roles_used_scopes' );
+            self.PR.collection = new Mongo.Collection( 'pwix_roles_used_scopes' );
+        }
+    });
 
+    // get the publication content
+    self.autorun(() => {
+        if( self.PR.handle && self.PR.handle.ready()){
+            self.PR.collection.find().fetchAsync().then(( fetched ) => {
+                console.debug( 'fetched', fetched );
+                self.PR.scopesList.set( fetched );
+            });
+        }
+    });
+
+    /*
     // track the edited roles
     self.autorun(() => {
-        console.debug( self.AM.editedRoles.get())
+        console.debug( self.PR.editedRoles.get())
     });
+    */
 });
 
 Template.edit_scoped_pane.onRendered( function(){
     const self = this;
 
+    /*
     // track the edited roles and advertizes listeners
     self.autorun(() => {
         let data = [];
         let ok = true;
-        self.AM.edited.get().every(( o ) => {
+        self.PR.edited.get().every(( o ) => {
             ok &&= o.DYN.lineValid.get();
             data.push( o.doc );
             return true;
         });
-        self.AM.sendPanelData( data, ok );
+        self.PR.sendPanelData( data, ok );
     });
+    */
 });
 
 Template.edit_scoped_pane.helpers({
-    // the name of the main div
-    divClass(){
-        return this.pr_div;
+    // the identifier of the accordion div, once for the whole pane
+    accordionId(){
+        return Template.instance().PR.accordionId;
     },
 
-    // the roles attributed to this user
+    // the scoped roles attributed to this user
+    //  attach to each scope object a label ReactiveVar
     editedList(){
-        return Template.instance().AM.edited.get();
+        const scopeLabelFn = Roles.configure().scopeLabelFn;
+        const scoped = this.roles.get().scoped;
+        const scopes = Object.keys( scoped );
+        scopes.forEach(( it ) => {
+            let scope = scoped[it];
+            scope.DYN = scope.DYN || {};
+            if( !scope.DYN.label ){
+                scope.DYN.label = new ReactiveVar( it );
+                if( scopeLabelFn ){
+                    scopeLabelFn( it ).then(( res ) => { scope.DYN.label.set( res || it ); });
+                }
+            }
+        });
+        return scopes;
     },
 
     // string translation
@@ -204,41 +230,58 @@ Template.edit_scoped_pane.helpers({
         return pwixI18n.label( I18N, arg.hash.key );
     },
 
+    // whether we are working on a new scope
+    newScope( scope ){
+        return scope === NONE;
+    },
+
     // list of known organizations
-    organizationsList(){
         /*
-        const APP = Template.instance().AM;
+    organizationsList(){
+        const APP = Template.instance().PR;
         if( APP.handle.ready()){
             const raw = Organizations.find().fetch();
-            const grouped = Meteor.AM.Validity.group( raw, { id: 'entity' });
+            const grouped = Meteor.PR.Validity.group( raw, { id: 'entity' });
             return grouped;
         }
-            */
         return [];
     },
+            */
 
     // closest label of the organization
+    /*
     orgLabel( it ){
-        const closest = Meteor.AM.Validity.closest( it.items )
+        const closest = Meteor.PR.Validity.closest( it.items )
         return closest.record.label;
-    },
+    },*/
 
-    // parms for prEditPanel roles edition panel
-    parmsRoles(){
+    // parms for a scoped tree for the current scoped role
+    parmsTree( scope ){
         return {
-            roles: Template.instance().AM.editedRoles
+            ...this,
+            wantScoped: true,
+            scope: scope
         };
     },
 
-    // the available roles as an array
+    // parms for prEditPanel roles edition panel
+    /*
+    parmsRoles(){
+        return {
+            roles: Template.instance().PR.editedRoles
+        };
+    },
+
+    // the available scoped roles as an array
+    //  only display those that the current user is allowed to attribute
     rolesList(){
-        return Object.values( Template.instance().AM.availableRoles );
+        return Object.values( Template.instance().PR.availableRoles );
     },
 
     // disable the global roles already selected (scoped roles may be chosen several times expecting different scopes)
     roleDisabled( roleObj, optionRole ){
         let disabled = false;
-        Template.instance().AM.edited.get().every(( o ) => {
+        Template.instance().PR.edited.get().every(( o ) => {
             if( o.doc._id === optionRole.name && optionRole.scoped !== true ){
                 disabled = true;
             }
@@ -258,21 +301,39 @@ Template.edit_scoped_pane.helpers({
             selected = ( optionRole.name === NONE );
         }
         if( selected ){
-            Template.instance().AM.selectRole( roleObj.DYN.rowid, roleObj.doc._id );
+            Template.instance().PR.selectRole( roleObj.DYN.rowid, roleObj.doc._id );
         }
         return selected ? 'selected' : '';
     },
+    */
 
     // whether the scope selection is enabled
-    scopeDisabled( it ){
-        return it.DYN.scopeEnabled.get() ? '' : 'disabled';
+    //  this is true when there is not yet any role if this scope
+    scopeEnabled( it ){
+        const scoped = this.roles.get().scoped;
+        return scoped[it] && scoped[it].all && scoped[it].all.length ? 'disabled' : '';
     },
 
-    // display a different label depending o the currently selected role
-    scopeLabel( it ){
-        return it.DYN.scopeLabel.get();
+    // the label to be displayed for the scope
+    //  scope here may be a scope identifier, or an object { _id, label }
+    scopeLabel( scope ){
+        let label = '';
+        if( _.isString( scope )){
+            label = this.roles.get().scoped[scope].DYN.label.get() || scope;
+        } else if( _.isObject( scope ) && scope._id ){
+            label = scope.label || scope;
+        } else {
+            console.warn( 'expect a string identifier or a { _id, label } object, got', scope );
+        }
+        return label;
     },
 
+    // list of scope ids
+    scopesList(){
+        return Template.instance().PR.scopesList.get();
+    }
+
+    /*
     // the scope option to be selected has been computed when the role has been selected
     scopeSelected( roleObj, itOrg ){
         const wanted = roleObj.DYN.scopeSelected.get() || NONE;
@@ -288,52 +349,61 @@ Template.edit_scoped_pane.helpers({
     transparentIfNotValid( it ){
         return it.DYN.lineValid.get() ? '' : 'x-transparent';
     }
+        */
 });
 
 Template.edit_scoped_pane.events({
     // clear the panel to initialize a new account
+    /*
     'clear-panel .c-account-roles-panel'( event, instance ){
-        instance.AM.edited.set( [] );
+        instance.PR.edited.set( [] );
     },
+    */
 
     // change the currently selected role
     //  update the label of the scope box accordingly
+    /*
     'change .js-role'( event, instance ){
         const rowId = instance.$( event.currentTarget ).closest( 'tr' ).data( 'row-id' );
         const role = instance.$( 'tr[data-row-id="'+rowId+'"]' ).find( '.js-role :selected' );
         //console.debug( 'rowId', rowId, 'role', role.val());
-        instance.AM.selectRole( rowId, role.val());
+        instance.PR.selectRole( rowId, role.val());
     },
+    */
 
     // change the currently selected scope
+    /*
     'change .js-scope'( event, instance ){
         const rowId = instance.$( event.currentTarget ).closest( 'tr' ).data( 'row-id' );
         const scope = instance.$( 'tr[data-row-id="'+rowId+'"]' ).find( '.js-scope :selected' );
-        instance.AM.selectScope( rowId, scope.val());
+        instance.PR.selectScope( rowId, scope.val());
     },
+    */
 
-    // add a new line to enter a new role
+    // add a new accordion to enter into a new scope (and a new tree of roles)
     'click .js-plus'( event, instance ){
-        let roles = instance.AM.edited.get();
-        roles.push( instance.AM.newRole({ _id: null, scope: null }));
-        instance.AM.edited.set( roles );
+        let roles = this.roles.get();
+        roles.scoped[NONE] = { all: [], direct: [] };
+        this.roles.set( roles );
         return false;
     },
 
+    /*
     // remove the current role
     'click .js-minus'( event, instance ){
         const rowId = instance.$( event.currentTarget ).closest( 'tr' ).data( 'row-id' );
-        const idx = instance.AM.getRole( rowId );
+        const idx = instance.PR.getRole( rowId );
         if( idx >= 0 ){
-            let roles = instance.AM.edited.get();
+            let roles = instance.PR.edited.get();
             roles.splice( idx, 1 );
-            instance.AM.edited.set( roles );
+            instance.PR.edited.set( roles );
         }
         return false;
     },
+    */
 
     // select/unselect a role
-    'pr-edit-state .c-account-roles-panel'( event, instance, data ){
+    'pr-change .pr-edit-scoped-pane'( event, instance, data ){
         console.debug( event, data );
     }
 });

@@ -16,6 +16,16 @@ Roles.i18n = {
                 save: 'Save',
                 close: 'Close'
             },
+            panels: {
+                add_title: 'Add a scoped role',
+                line_valid: 'Whether this line is valid',
+                no_role: 'No selected role',
+                remove_title: 'Remove this role',
+                role_option: 'Select a role',
+                role_th: 'Role',
+                scope_select: 'Select a scope',
+                scope_th: 'Scope'
+            },
             tabs: {
                 global_title: 'Global roles',
                 scoped_title: 'Scoped roles'

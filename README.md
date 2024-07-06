@@ -112,6 +112,21 @@ Known configuration options are:
 
     Defaults to `true`.
 
+- `scopeLabelFn`
+
+    An async function which will be called with a scope identifier argument, and is expected to return the label attached to the scope.
+
+    This function defaults to null. When null, or if the function returns null, the package will just use the scope identifier as the label.
+
+- `scopesFn`
+
+    An async function which will be called without argument, and is expected to return the list of managed scopes as an array of:
+
+    - ids as string
+    - or { _id: <id>, label: <label> } objects.
+
+    This function defaults to null. When null, the package will try to take known scopes from used scopes.
+
 - `verbosity`
 
     Define the expected verbosity level.
@@ -197,6 +212,8 @@ The globally exported object.
     Note that this object gathers assigned roles, and that they are not filtered through the configured hierarchy. It may so happen that some assigned roles can be not defined in a new hierarchy. This is the task of the configured `maintainHierarchy` indicator to make sure that there is no difference between assigned roles and defined ones.
 
     Available on client only.
+
+    Note that the description of the `current()` object is changed in v 1.5.0 to better host global and scopes roles.
 
 - `Roles.directRolesForUser( user )`
 
@@ -362,24 +379,11 @@ A panel which can be embdded into your application and let edit user's roles.
 
 It can be configured by calling `{{> prEditPanel (args) }}`, where `args` is an object with following keys:
 
-- `id`: optional, the user identifier
-- `user`: optional, the user full record
-- `roles`: optional, a ReactiveVar which is expected to contain the array of currently attributed roles.
+- `user`: optional, the user identifier or the user full document record
 
-Order of precedence is:
-1. id
-2. user
-3. roles
+If the user is not specified or not identified, then the edition begins with an empty set of roles.
 
-If `id` is specified, this is enough and the component takes care of read the attributed roles of the identified user.
-
-Else, if `user` is specified, then the component takes care of read the attributed roles of the user.
-
-Else, if `roles` are specified, then they are edited from this var.
-
-If none of these three parms is specified, then the edition begins with an empty state.
-
-The caller can get the result in two ways:
+The caller can get the result back in two ways:
 
 - either by listening at the `pr-change` event:
 

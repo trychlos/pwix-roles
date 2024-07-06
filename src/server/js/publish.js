@@ -4,16 +4,50 @@
 
 import { Roles as alRoles } from 'meteor/alanning:roles';
 
-// publishes the roles of the current user
-//  because it is not named, this publication is automatic (auto-publication)
-//  the package becomes ready when this publication itself is ready
-//  see https://atmospherejs.com/alanning/roles#installing
-Meteor.publish( 'pwix_roles_current_assignments', function(){
-    if( this.userId ){
-        return Meteor.roleAssignment.find({ 'user._id': this.userId });
+// publishes the roles of the specified user
+Meteor.publish( 'pwix_roles_user_assignments', function( userId ){
+    if( userId ){
+        return Meteor.roleAssignment.find({ 'user._id': userId });
     } else {
         this.ready()
     }
+});
+
+// publishes the used scopes
+//  this acts as a default if the application doesn't provide its own list of managed scopes
+Meteor.publish( 'pwix_roles_used_scopes', function(){
+    const self = this;
+    const collectionName = 'pwix_roles_used_scopes';
+    let scopes = {};
+
+    // `observeChanges` only returns after the initial `added` callbacks have run.
+    // Until then, we don't want to send a lot of `changed` messages
+    // hence tracking the `initializing` state.
+    let initializing = true;
+
+    const observer = Meteor.roleAssignment.find({ scope: { $ne: null }}).observeChangesAsync({
+        added( item ){
+            scopes[item.scope] = scopes[item.scope] || 0;
+            scopes[item.scope] += 1;
+            if( scopes[item.scope] === 1 ){
+                self.added( collectionName, item.scope );
+            }
+        },
+        removed( oldItem ){
+            scopes[oldItem.scope] -= 1;
+            if( !scopes[oldItem.scope] ){
+                self.removed( collectionName, scopes[oldItem.scope] );
+            }
+        }
+    });
+
+    initializing = false;
+
+    self.ready();
+
+    self.onStop( function(){
+        observer.then(( handle ) => { handle.stop(); });
+    });
 });
 
 // publishes all the roles

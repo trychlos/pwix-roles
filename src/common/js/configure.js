@@ -13,6 +13,8 @@ Roles._conf = new ReactiveVar( _conf );
 Roles._defaults = {
     roles: {},
     maintainHierarchy: true,
+    scopeLabelFn: null,
+    scopesFn: null,
     verbosity: Roles.C.Verbose.CONFIGURE
 };
 

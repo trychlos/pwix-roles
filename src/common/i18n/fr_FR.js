@@ -15,6 +15,10 @@ Roles.i18n = {
                 save: 'Enregistrer',
                 close: 'Fermer'
             },
+            panels: {
+                role_th: 'Rôle',
+                scope_th: 'Périmètre',
+            },
             tabs: {
                 global_title: 'Rôles globaux',
                 scoped_title: 'Rôles périmétrés'
