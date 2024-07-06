@@ -14,6 +14,10 @@ Roles.i18n = {
                 cancel: 'Annuler',
                 save: 'Enregistrer',
                 close: 'Fermer'
+            },
+            tabs: {
+                non_scoped_title: 'Rôles généraux',
+                scoped_title: 'Rôles périmétrés'
             }
         }
     }

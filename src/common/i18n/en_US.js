@@ -15,6 +15,10 @@ Roles.i18n = {
                 cancel: 'Cancel',
                 save: 'Save',
                 close: 'Close'
+            },
+            tabs: {
+                non_scoped_title: 'None-scoped roles',
+                scoped_title: 'Scoped roles'
             }
         }
     }

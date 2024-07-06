@@ -1,7 +1,15 @@
 <template name="prEditPanel">
     <div class="prEditPanel">
 
-        <div class="pr-tree"></div>
+        {{#if haveScopes }}
+
+            {{> Tabbed (parmsTabbed) }}
+
+        {{else}}
+
+            {{> edit_non_scoped_pane }}
+
+        {{/if}}
 
     </div>
 </template>

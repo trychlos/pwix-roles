@@ -71,6 +71,20 @@ Nonetheless, the hierarchy of roles you plan to use should be provided to the pa
     });
 ```
 
+### Scoped vs. non-scoped roles
+
+As soon as an application needs roles, it needs an application administrator. So, as far as Roles is concerned, there is always at least one non-scoped roles.
+
+An application may too want manage scoped roles, whatever be - from Roles point of view - the exact scope semantic.
+
+Roles considers that scopes are dynamic, and cannot be all known. At any moment, it is so only possible to attribute to a user a scoped role for an existing scope.
+
+From scope point of view, several strategies are possible:
+
+- in an accounts manager, we can attribute to every user scoped roles to existing scopes (as soon, at least, as we are able to have a list of these scopes)
+
+- at the scope domain level, we can managed users permissions by attributing them scoped roles.
+
 ## Package configuration
 
 The package's behavior can be configured through a call to the `Roles.configure()` method, with just a single javascript object argument, which itself should only contains the options you want override.
@@ -359,13 +373,21 @@ If `id` is specified, this is enough and the component takes care of read the at
 
 Else, if `user` is specified, then the component takes care of read the attributed roles of the user.
 
-Else, if `roles` are specified, then they are edited, and updated in this var.
+Else, if `roles` are specified, then they are edited from this var.
 
-The `pr-change` event is triggered each time the user changes a selection.
+If none of these three parms is specified, then the edition begins with an empty state.
 
-At every moment, the `Roles.EditPanel.checked( <jstree_selector> )` client-only companion function can be called to get the current state of selected roles.
+The caller can get the result in two ways:
 
-On each change, the `pr-edit-state` event is triggered, with the current list of directly selected roles.
+- either by listening at the `pr-change` event:
+
+    This event is triggered each time the user changes a selection
+
+    At every moment, the `Roles.EditPanel.checked( <jstree_selector> )` client-only companion function can be called to get the current state of selected roles.
+
+- or, starting with v 1.5.0, by listening to the `pr-edit-state` event:
+
+    This event is triggered on each change, and holds a data object with the current list of directly selected roles.
 
 ## NPM peer dependencies
 

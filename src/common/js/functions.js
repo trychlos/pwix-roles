@@ -350,6 +350,21 @@ Roles.removeUserAssignmentsFromRoles = async function( roles, opts ){
 
 /**
  * @locus Anywhere
+ * @returns {Array} array of scoped roles (children are not returned here but are scoped per definition)
+ */
+Roles.scopedRoles = function(){
+    let scoped = [];
+    Roles._enumerate(( r ) => {
+        if( r.scoped === true ){
+            scoped.push( r );
+        }
+        return true;
+    });
+    return scoped;
+}
+
+/**
+ * @locus Anywhere
  * @returns {Promise} which eventually resolve to an array of used scopes (most probably including the 'null' one)
  */
 Roles.usedScopes = async function(){

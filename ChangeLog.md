@@ -10,6 +10,7 @@
     - Roles.configure() becomes a reactive data source
     - Introduce trace module
     - Introduce 'pr-edit-state' new event
+    - Define Roles.scopedRoles() new function
 
 ### 1.4.0
 
