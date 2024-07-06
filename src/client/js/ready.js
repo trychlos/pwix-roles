@@ -11,7 +11,8 @@ _ready = {
     val: false
 };
 
-// the underlying 'alanning:roles' package is said ready when the publication for the current user is ready
+// the underlying 'alanning:roles' package is said ready when all existing roles are available on the client side
+//  https://meteor-community-packages.github.io/meteor-roles/classes/Roles.html#property_subscription
 Tracker.autorun(() => {
     if( alRoles.subscription.ready()){
         //console.debug( 'setting ready to true' );
@@ -32,5 +33,5 @@ Roles.ready = function(){
 
 // trace changes
 Tracker.autorun(() => {
-    _verbose( Roles.C.Verbose.READY, 'Roles.ready()', Roles.ready());
+    _verbose( Roles.C.Verbose.READY, 'pwix:roles ready()', Roles.ready());
 });

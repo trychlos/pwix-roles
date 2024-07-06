@@ -166,7 +166,7 @@ The globally exported object.
 
 - `Roles.addUsersToRoles( users, roles, options )`
 
-    An async function which directly calls the underlying `alanning:roles/addUsersToRoles()` function, just making sure it is called on the server.
+    An async function which directly calls the underlying `alanning:roles/addUsersToRolesAsync()` function, just making sure it is called on the server.
 
     Returns nothing.
 
@@ -185,14 +185,16 @@ The globally exported object.
     A reactive data source which provides the assigned roles of the currently logged-in user as an object:
 
 ```js
-    - id        {String}    the current user identifier
-    - all       {Array}     all the roles, either directly or indirectly set
-    - direct    {Array}     only the directly attributed top roles in the hierarchy (after having removed indirect ones)
-    - scoped    {Object}    a per-scope object where each key is a scope, and the value an array of user roles which exhibit this scope
-    - globals   {Array}     the list of global (non-scoped) user roles
+    - userId    {String}    the current user identifier
+    - scoped    {Object}    a per-scope object where each key is a scope, and the value is an object with following keys:
+        - direct    {Array}     an array of directly (not inherited) assigned scoped roles
+        - all       {Array}     an array of all allowed scoepd roles (i.e. directly assigned+inherited)
+    - global    {Object}
+        - direct    {Array}     an array of directly (not inherited) assigned scoped roles
+        - all       {Array}     an array of all allowed scoepd roles (i.e. directly assigned+inherited)
 ```
 
-    Note that this object gathers assigned roles, and that they are not filtered through the configured heirarchy. It may so happen that some assigned roles can be not defined in a new hierarchy. This is the task of the configured `maintainHierarchy` indicator to make sure that there is no difference of assigned roles and defined ones.
+    Note that this object gathers assigned roles, and that they are not filtered through the configured hierarchy. It may so happen that some assigned roles can be not defined in a new hierarchy. This is the task of the configured `maintainHierarchy` indicator to make sure that there is no difference between assigned roles and defined ones.
 
     Available on client only.
 
@@ -385,18 +387,15 @@ The caller can get the result in two ways:
 
     At every moment, the `Roles.EditPanel.checked( <jstree_selector> )` client-only companion function can be called to get the current state of selected roles.
 
-- or, starting with v 1.5.0, by listening to the `pr-edit-state` event:
+- or, starting with v 1.5.0, by listening to the `pr-global-state` event:
 
     This event is triggered on each change, and holds a data object with the current list of directly selected roles.
 
-- `Roles.EditPanel.checked( tree )`
+- `Roles.EditPanel.global()`
 
-    Parms:
-    - `tree`: the jQuery object which addresses the tree
+    Returns the list of selected global roles.
 
-    Returns the list of checked roles.
-
-    This is a companion function for the `prEditPanel` component, and thus a client-only function.
+    As a companion function for the `prEditPanel` component, this is a client-only function.
 
 ## NPM peer dependencies
 

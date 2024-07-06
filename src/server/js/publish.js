@@ -8,7 +8,7 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 //  because it is not named, this publication is automatic (auto-publication)
 //  the package becomes ready when this publication itself is ready
 //  see https://atmospherejs.com/alanning/roles#installing
-Meteor.publish( null, function(){
+Meteor.publish( 'pwix_roles_current_assignments', function(){
     if( this.userId ){
         return Meteor.roleAssignment.find({ 'user._id': this.userId });
     } else {

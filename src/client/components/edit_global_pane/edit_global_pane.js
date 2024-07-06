@@ -1,7 +1,7 @@
 /*
  * /imports/client/components/edit_global_pane/edit_global_pane.js
  *
- *  Edit non-scoped roles.
+ *  Edit global (non-scoped) roles.
  * 
  *  Parms:
  *  - id: optional, the user identifier
@@ -246,7 +246,7 @@ Template.edit_global_pane.helpers({
 
 Template.edit_global_pane.events({
     'pr-change .pr-edit-global-pane'( event, instance ){
-        const roles = Roles.EditPanel.checked( instance.$( '.pr-tree' ));
-        instance.$( event.currentTarget ).trigger( 'pr-edit-state', { roles: roles });
+        const roles = Roles.EditPanel.checked();
+        instance.$( event.currentTarget ).trigger( 'pr-global-state', { roles: roles });
     }
 });

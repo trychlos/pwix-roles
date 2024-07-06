@@ -1,7 +1,60 @@
 <template name="edit_scoped_pane">
     <div class="pr-edit-scoped-pane">
 
-        <div class="pr-tree"></div>
+        <div class="{{ divClass }}">
+            <table class="form-table ui-w100 colpad025">
+                <thead>
+                    <tr>
+                        <th class="ui-w50">
+                            {{ i18n key="accounts.panel.role_th" }}
+                        </th>
+                        <th class="ui-w50">
+                            {{ i18n key="accounts.panel.scope_th" }}
+                        </th>
+                        <th class="mgr-buttons d-flex">
+                            <button class="btn btn-sm no-border ui-transparent">
+                                <span class="fa-solid fa-fw fa-checked"></span>
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary js-plus" title="{{ i18n key="accounts.panel.add_title" }}">
+                                <span class="fa-solid fa-fw fa-plus"></span>
+                            </button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each it in editedList }}
+                        <tr data-row-id="{{ it.DYN.rowid }}">
+                            <td>
+                                <select class="form-select js-role">
+                                    <option value="NONE" {{ roleSelected it 'NONE' }} disabled>{{ i18n key="accounts.panel.role_option" }}</option>
+                                    {{#each itRole in rolesList }}
+                                        <option value="{{ itRole.name }}" {{ roleSelected it itRole }} {{ roleDisabled it itRole }}>{{ itRole.name }}</option>
+                                    {{/each}}
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select js-scope" {{ scopeDisabled it }} >
+                                    <option value="NONE" {{ scopeSelected it 'NONE' }} disabled>{{ scopeLabel it }}</option>
+                                    {{#each itOrg in organizationsList }}
+                                        <option value="{{ itOrg.entity }}" {{ scopeSelected it itOrg }} >{{ orgLabel itOrg }}</option>
+                                    {{/each}}
+                                </select>
+                            </td>
+                            <td>
+                                <div class="mgr-buttons d-flex">
+                                    <button class="btn btn-sm no-border js-check {{ transparentIfNotValid it }}" title="{{ i18n key="accounts.panel.line_valid" }}">
+                                        <span class="fa-solid fa-fw fa-check"></span>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary js-minus" title="{{ i18n key="accounts.panel.remove_title" }}">
+                                        <span class="fa-solid fa-fw fa-minus"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
 
     </div>
 </template>

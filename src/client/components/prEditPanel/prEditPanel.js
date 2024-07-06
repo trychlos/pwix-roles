@@ -20,6 +20,8 @@
  *  If none of these three parms is specified, then the edition begins with an empty state.
  */
 
+import { ReactiveVar } from 'meteor/reactive-var';
+
 import '../edit_global_pane/edit_global_pane.js';
 import '../edit_scoped_pane/edit_scoped_pane.js';
 
@@ -33,7 +35,10 @@ Template.prEditPanel.onCreated( function(){
         global_div: 'pr-global',
         global_prefix: 'prglobal_',
         scoped_div: 'pr-scoped',
-        //scoped_prefix: 'prscoped_'
+        //scoped_prefix: 'prscoped_',
+
+        // initial roles or initial roles of the specified user
+        roles: new ReactiveVar( null )
     };
 
     // when this component is created, then declare the function to get back its values
@@ -41,7 +46,7 @@ Template.prEditPanel.onCreated( function(){
         /**
          * @returns {Array} the list of roles checked in the prEditPanel
          */
-        checked(){
+        global(){
             let checked = [];
             self.$( '.'+self.PR.global_div ).jstree( true ).get_checked_descendants( '#' ).every(( id ) => {
                 checked.push( id.replace( self.PR.global_prefix, '' ));
