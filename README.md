@@ -444,6 +444,8 @@ The caller can get the result back in two ways:
 
     As a companion function for the `prEditPanel` component, this is a client-only function.
 
+Note: without explicitely requiring it, `pwix:roles` is able to take advantage of `pwix:forms` to display a status indicator on the scoped pane. This let the user have a visual indication of whether the current scope/roles group will be saved or not.
+
 ## NPM peer dependencies
 
 Starting with v 1.0.0, and in accordance with advices from [the Meteor Guide](https://guide.meteor.com/writing-atmosphere-packages.html#peer-npm-dependencies), we no more hardcode NPM dependencies in the `Npm.depends` clause of the `package.js`.

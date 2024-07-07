@@ -28,6 +28,7 @@ Template.prEditPanel.onCreated( function(){
         global_prefix: 'prglobal_',
         scoped_div: 'pr-scoped',
         scoped_prefix: 'prscoped_',
+        scoped_none: 'NONE',
 
         // initial roles or initial roles of the specified user as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
         //  (same structure than current)
@@ -66,20 +67,23 @@ Template.prEditPanel.onCreated( function(){
             };
             const scoped = Roles.EditPanel.scoped();
             Object.keys( scoped ).forEach(( scope ) => {
-                roles.scoped[scope] = {
-                    direct: scoped[scope]
-                };
+                if( scope && scope !== self.PR.scoped_none ){
+                    roles.scoped[scope] = {
+                        direct: scoped[scope]
+                    };
+                }
             });
             return roles;
         },
         /**
          * @returns {Object} where keys are the scopes, and values an array of direct roles
+         *  NB: this also returns the checked roles for a new 'NONE' scope
+         *  this is needed for UI management, but take care of not assigning this pseudo-scope to the user.
          */
         scoped(){
             let checked = {};
             self.$( '.scoped-item' ).each( function(){
                 const scope = $( this ).find( '.js-scope' ).val();
-                checked[scope] = [];
                 let locals = [];
                 $( this ).find( '.'+self.PR.scoped_div ).jstree( true ).get_checked_descendants( '#' ).every(( id ) => {
                     locals.push( id.replace( self.PR.scoped_prefix, '' ));
@@ -182,7 +186,8 @@ Template.prEditPanel.helpers({
                     paneData: {
                         roles: PR.roles,
                         pr_div: PR.scoped_div,
-                        pr_prefix: PR.scoped_prefix
+                        pr_prefix: PR.scoped_prefix,
+                        pr_none: PR.scoped_none
                     }
                 }
             ]

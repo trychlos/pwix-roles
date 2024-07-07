@@ -8,6 +8,8 @@
  *  - roles: a ReactiveVar which contains the user roles, as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
  *      (a deep copy of the user roles - so can be edited)
  *  - pr_div: the class name of the main div
+ *  - pr_prefix: the prifx to be added to tree checkboxes
+ *  - pr_none: a special identifier for new scope
  */
 
 import _ from 'lodash';
@@ -20,8 +22,6 @@ import { Roles } from 'meteor/pwix:roles';
 
 import './edit_scoped_pane.html';
 
-const NONE = 'NULL';
-
 Template.edit_scoped_pane.onCreated( function(){
     const self = this;
 
@@ -30,6 +30,8 @@ Template.edit_scoped_pane.onCreated( function(){
         accordionId: Random.id(),
         // whether the plus button is enabled
         enabledPlus: new ReactiveVar( true ),
+        // whether we have the pwix:forms package
+        haveForms: new ReactiveVar( false ),
 
         // does our edited roles already target the given scope identifier ?
         //  returns the scope
@@ -46,13 +48,15 @@ Template.edit_scoped_pane.onCreated( function(){
         },
 
         // a new scope has been selected - update the roles list accordingly
-        changeScope( id, newScope ){
+        changeScope( event, id, newScope ){
             const roles = Template.currentData().roles.get();
             const oldScope = self.PR.byId( id );
             if( oldScope ){
                 roles.scoped[newScope] = roles.scoped[oldScope];
                 delete roles.scoped[oldScope];
                 Template.currentData().roles.set( roles );
+                // and avertize of the change
+                self.$( event.currentTarget ).trigger( 'pr-change' );
             } else {
                 console.warn( 'identifier not found', id );
             }
@@ -61,15 +65,32 @@ Template.edit_scoped_pane.onCreated( function(){
         // a new scope is created
         //  attach to each scope object a label ReactiveVar and an invariant identifier
         newScope( key=null, value=null ){
-            key = key || NONE;
+            key = key || Template.currentData().pr_none;
             value = value || { all: [], direct: [] };
             value.DYN = value.DYN || {};
             if( !value.DYN.id ){
                 // make sure the identifier begins with a letter
                 value.DYN.id = 'pr'+Random.id();
             }
+            if( !value.DYN.checkStatus && self.PR.haveForms.get()){
+                value.DYN.checkStatus = new ReactiveVar( null );
+            }
             return { key: key, value: value };
         },
+
+        // update the check status indicator
+        setCheckStatus( scope, direct ){
+            let status = 'NONE';
+            if( scope && scope != Template.currentData().pr_none ){
+                status = direct.length ? 'VALID' : 'UNCOMPLETE';
+            } else {
+                status = 'UNCOMPLETE';
+            }
+            const o = Template.currentData().roles.get().scoped[scope];
+            if( o && o.DYN && o.DYN.checkStatus ){
+                o.DYN.checkStatus.set( Package['pwix:forms'].Forms.CheckStatus.C[status] );
+            }
+        }
 
         /*
         // the current edition state
@@ -180,6 +201,11 @@ Template.edit_scoped_pane.onCreated( function(){
     self.autorun(() => {
         //console.debug( Template.currentData().roles.get().scoped );
     });
+
+    // do we have the pwix:forms package
+    self.autorun(() => {
+        self.PR.haveForms.set( Package['pwix:forms'] && Package['pwix:forms'].Forms );
+    });
 });
 
 Template.edit_scoped_pane.onRendered( function(){
@@ -188,7 +214,7 @@ Template.edit_scoped_pane.onRendered( function(){
     // disable the 'plus' button while we have an unset scope
     self.autorun(() => {
         const scoped = Template.currentData().roles.get().scoped;
-        const haveNone = Object.keys( scoped ).includes( NONE );
+        const haveNone = Object.keys( scoped ).includes( Template.currentData().pr_none );
         self.PR.enabledPlus.set( !haveNone );
     });
 
@@ -213,6 +239,12 @@ Template.edit_scoped_pane.helpers({
         return items;
     },
 
+    // whether the pwix:forms package is present
+    //  if yes then we will display a check status indicator
+    haveForms(){
+        return Template.instance().PR.haveForms.get();
+    },
+
     // string translation
     i18n( arg ){
         return pwixI18n.label( I18N, arg.hash.key );
@@ -221,12 +253,12 @@ Template.edit_scoped_pane.helpers({
     // whether we are working on a new scope
     newScope( it ){
         const scope = Template.instance().PR.byId( it );
-        return scope === NONE;
+        return scope === this.pr_none;
     },
 
     // a helper to not hardcode the label in the html
     none(){
-        return NONE;
+        return this.pr_none;
     },
 
     // whether the scope selection is enabled
@@ -237,9 +269,19 @@ Template.edit_scoped_pane.helpers({
     },
 
     // the label to be displayed for the scope in the select box
-    //  it is object from scopesList, with or without a label
+    //  it is an object from scopesList, with or without a label
     optionLabel( it ){
         return Roles._scopes.label( it );
+    },
+
+    // parms for the check status indicator
+    //  only present if pwix:forms is loaded
+    parmsCheckStatus( it ){
+        const scope = Template.instance().PR.byId( it );
+        const o = this.roles.get().scoped[scope];
+        return {
+            statusRv: o.DYN.checkStatus
+        };
     },
 
     // parms for adding a new scope
@@ -291,7 +333,7 @@ Template.edit_scoped_pane.events({
         const $parent = instance.$( event.currentTarget ).closest( '.accordion-header' );
         const id = $parent.prop( 'id' ).replace( /^header-/, '' );
         const newScope = $parent.find( '.js-scope :selected' ).val();
-        instance.PR.changeScope( id, newScope );
+        instance.PR.changeScope( event, id, newScope );
         // keep the accordion opened
         //$parent.next( 'accordion-collapse' ).addClass( 'show' );
     },
@@ -302,6 +344,7 @@ Template.edit_scoped_pane.events({
         const res = instance.PR.newScope();
         roles.scoped[res.key] = res.value;
         this.roles.set( roles );
+        instance.PR.setCheckStatus( res.key, res.value.direct );
         return false;
     },
 
@@ -319,7 +362,16 @@ Template.edit_scoped_pane.events({
     },
     */
 
-    // select/unselect a role
+    // update the check status indicator (if any)
+    'pr-change .scoped-item'( event, instance, data ){
+        const $parent = instance.$( event.currentTarget ).find( '.accordion-header' );
+        const id = $parent.prop( 'id' ).replace( /^header-/, '' );
+        const scope = instance.PR.byId( id );
+        const roles = Roles.EditPanel.scoped();
+        instance.PR.setCheckStatus( scope, roles[scope] );
+    },
+
+    // select/unselect a role and/or change a scope
     'pr-change .pr-edit-scoped-pane'( event, instance, data ){
         const roles = Roles.EditPanel.scoped();
         instance.$( event.currentTarget ).trigger( 'pr-scoped-state', { roles: roles });
