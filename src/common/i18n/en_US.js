@@ -17,7 +17,8 @@ Roles.i18n = {
                 close: 'Close'
             },
             panels: {
-                add_title: 'Add a scoped role',
+                add_button: 'New scope',
+                add_title: 'Add a new scope perimeter able to host roles',
                 line_valid: 'Whether this line is valid',
                 no_role: 'No selected role',
                 remove_title: 'Remove this role',

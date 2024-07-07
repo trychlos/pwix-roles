@@ -8,6 +8,7 @@ import './ready.js';
 //
 import './client.js';
 import './current.js';
+import './scopes.js';
 import './startup.js';
 import './view_add.js';
 //

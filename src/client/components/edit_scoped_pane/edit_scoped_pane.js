@@ -12,8 +12,8 @@
 
 import _ from 'lodash';
 
+import { PlusButton } from 'meteor/pwix:plus-button';
 import { pwixI18n } from 'meteor/pwix:i18n';
-import { Mongo } from 'meteor/mongo';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Roles } from 'meteor/pwix:roles';
@@ -28,11 +28,48 @@ Template.edit_scoped_pane.onCreated( function(){
     self.PR = {
         // the main div
         accordionId: Random.id(),
-        // the scopes list provided by the caller
-        scopesList: new ReactiveVar( [] ),
-        // or a subcription to the used scopes
-        handle: null,
-        collection: null
+        // whether the plus button is enabled
+        enabledPlus: new ReactiveVar( true ),
+
+        // does our edited roles already target the given scope identifier ?
+        //  returns the scope
+        byId( id ){
+            let scope = null;
+            const scoped = Template.currentData().roles.get().scoped;
+            Object.keys( scoped ).every(( it ) => {
+                if( scoped[it].DYN.id === id ){
+                    scope = it;
+                }
+                return scope === null;
+            });
+            return scope;
+        },
+
+        // a new scope has been selected - update the roles list accordingly
+        changeScope( id, newScope ){
+            const roles = Template.currentData().roles.get();
+            const oldScope = self.PR.byId( id );
+            if( oldScope ){
+                roles.scoped[newScope] = roles.scoped[oldScope];
+                delete roles.scoped[oldScope];
+                Template.currentData().roles.set( roles );
+            } else {
+                console.warn( 'identifier not found', id );
+            }
+        },
+
+        // a new scope is created
+        //  attach to each scope object a label ReactiveVar and an invariant identifier
+        newScope( key=null, value=null ){
+            key = key || NONE;
+            value = value || { all: [], direct: [] };
+            value.DYN = value.DYN || {};
+            if( !value.DYN.id ){
+                // make sure the identifier begins with a letter
+                value.DYN.id = 'pr'+Random.id();
+            }
+            return { key: key, value: value };
+        },
 
         /*
         // the current edition state
@@ -107,16 +144,6 @@ Template.edit_scoped_pane.onCreated( function(){
             }
         },
 
-        // a new scope has been selected - update the line accordingly
-        selectScope( rowId, scope ){
-            const idx = self.PR.getRole( rowId );
-            if( idx >= 0 ){
-                let roleObj = self.PR.edited.get()[idx];
-                roleObj.doc.scope = scope;
-                self.PR.updateCheck( roleObj );
-            }
-        },
-
         // send panel data
         sendPanelData( data, ok ){
             self.$( '.c-account-roles-panel' ).trigger( 'panel-data', {
@@ -139,65 +166,34 @@ Template.edit_scoped_pane.onCreated( function(){
     */
     };
 
-    // maybe the scopes list is provided by the application ?
-    //  else default to already used scopes
+    // the scope identifier cannot be a node identifier has it can be null when new, or be modified
+    //  so allocate a new internal identifier which will be used in the HTML code
     self.autorun(() => {
-        const scopesFn = Roles.configure().scopesFn;
-        let list = [];
-        if( scopesFn ){
-            scopesFn().then(( res ) => {
-                res = _.isArray( res ) ? res : [res];
-                res.forEach(( it ) => {
-                    if( _.isString( it )){
-                        list.push({ _id: it });
-                    } else if( _.isObject( it ) && it._id ){
-                        list.push( it );
-                    } else {
-                        console.warn( 'expect a { _id, label } object, found', it );
-                    }
-                });
-                self.PR.scopesList.set( list );
-            });
-        } else {
-            self.PR.handle = self.subscribe( 'pwix_roles_used_scopes' );
-            self.PR.collection = new Mongo.Collection( 'pwix_roles_used_scopes' );
-        }
+        const scoped = Template.currentData().roles.get().scoped;
+        Object.keys( scoped ).forEach(( it ) => {
+            const res = self.PR.newScope( it, scoped[it] );
+            scoped[it] = res.value;
+        });
     });
 
-    // get the publication content
+    // track the current scoped roles
     self.autorun(() => {
-        if( self.PR.handle && self.PR.handle.ready()){
-            self.PR.collection.find().fetchAsync().then(( fetched ) => {
-                console.debug( 'fetched', fetched );
-                self.PR.scopesList.set( fetched );
-            });
-        }
+        console.debug( Template.currentData().roles.get().scoped );
     });
-
-    /*
-    // track the edited roles
-    self.autorun(() => {
-        console.debug( self.PR.editedRoles.get())
-    });
-    */
 });
 
 Template.edit_scoped_pane.onRendered( function(){
     const self = this;
 
-    /*
-    // track the edited roles and advertizes listeners
+    // disable the 'plus' button while we have an unset scope
     self.autorun(() => {
-        let data = [];
-        let ok = true;
-        self.PR.edited.get().every(( o ) => {
-            ok &&= o.DYN.lineValid.get();
-            data.push( o.doc );
-            return true;
-        });
-        self.PR.sendPanelData( data, ok );
+        const scoped = Template.currentData().roles.get().scoped;
+        const haveNone = Object.keys( scoped ).includes( NONE );
+        self.PR.enabledPlus.set( !haveNone );
     });
-    */
+
+    // open the first accordion (if any)
+    self.$( '.pr-edit-scoped-pane .accordion-collapse' ).first().addClass( 'show' );
 });
 
 Template.edit_scoped_pane.helpers({
@@ -207,22 +203,14 @@ Template.edit_scoped_pane.helpers({
     },
 
     // the scoped roles attributed to this user
-    //  attach to each scope object a label ReactiveVar
+    //  we iterate on our internal invariant identifier
     editedList(){
-        const scopeLabelFn = Roles.configure().scopeLabelFn;
+        let items = [];
         const scoped = this.roles.get().scoped;
-        const scopes = Object.keys( scoped );
-        scopes.forEach(( it ) => {
-            let scope = scoped[it];
-            scope.DYN = scope.DYN || {};
-            if( !scope.DYN.label ){
-                scope.DYN.label = new ReactiveVar( it );
-                if( scopeLabelFn ){
-                    scopeLabelFn( it ).then(( res ) => { scope.DYN.label.set( res || it ); });
-                }
-            }
+        Object.keys( scoped ).forEach(( it ) => {
+            items.push( scoped[it].DYN.id );
         });
-        return scopes;
+        return items;
     },
 
     // string translation
@@ -231,125 +219,52 @@ Template.edit_scoped_pane.helpers({
     },
 
     // whether we are working on a new scope
-    newScope( scope ){
+    newScope( it ){
+        const scope = Template.instance().PR.byId( it );
         return scope === NONE;
     },
 
-    // list of known organizations
-        /*
-    organizationsList(){
-        const APP = Template.instance().PR;
-        if( APP.handle.ready()){
-            const raw = Organizations.find().fetch();
-            const grouped = Meteor.PR.Validity.group( raw, { id: 'entity' });
-            return grouped;
-        }
-        return [];
+    // a helper to not hardcode the label in the html
+    none(){
+        return NONE;
     },
-            */
-
-    // closest label of the organization
-    /*
-    orgLabel( it ){
-        const closest = Meteor.PR.Validity.closest( it.items )
-        return closest.record.label;
-    },*/
-
-    // parms for a scoped tree for the current scoped role
-    parmsTree( scope ){
-        return {
-            ...this,
-            wantScoped: true,
-            scope: scope
-        };
-    },
-
-    // parms for prEditPanel roles edition panel
-    /*
-    parmsRoles(){
-        return {
-            roles: Template.instance().PR.editedRoles
-        };
-    },
-
-    // the available scoped roles as an array
-    //  only display those that the current user is allowed to attribute
-    rolesList(){
-        return Object.values( Template.instance().PR.availableRoles );
-    },
-
-    // disable the global roles already selected (scoped roles may be chosen several times expecting different scopes)
-    roleDisabled( roleObj, optionRole ){
-        let disabled = false;
-        Template.instance().PR.edited.get().every(( o ) => {
-            if( o.doc._id === optionRole.name && optionRole.scoped !== true ){
-                disabled = true;
-            }
-            return disabled === false;
-        });
-        return disabled ? 'disabled' : '';
-    },
-
-    // whether this role must be initially selected
-    //  if the initial roles list is empty or this is a new role row, then select NONE
-    //  else select the corresponding item
-    roleSelected( roleObj, optionRole ){
-        let selected = false;
-        if( roleObj.doc._id ){
-            selected = ( optionRole.name === roleObj.doc._id );
-        } else {
-            selected = ( optionRole.name === NONE );
-        }
-        if( selected ){
-            Template.instance().PR.selectRole( roleObj.DYN.rowid, roleObj.doc._id );
-        }
-        return selected ? 'selected' : '';
-    },
-    */
 
     // whether the scope selection is enabled
     //  this is true when there is not yet any role if this scope
-    scopeEnabled( it ){
-        const scoped = this.roles.get().scoped;
-        return scoped[it] && scoped[it].all && scoped[it].all.length ? 'disabled' : '';
+    optionEnabled( it ){
+        const scope = Template.instance().PR.byId( it._id );
+        return scope ? 'disabled' : '';
     },
 
-    // the label to be displayed for the scope
-    //  scope here may be a scope identifier, or an object { _id, label }
-    scopeLabel( scope ){
-        let label = '';
-        if( _.isString( scope )){
-            label = this.roles.get().scoped[scope].DYN.label.get() || scope;
-        } else if( _.isObject( scope ) && scope._id ){
-            label = scope.label || scope;
-        } else {
-            console.warn( 'expect a string identifier or a { _id, label } object, got', scope );
-        }
-        return label;
+    // the label to be displayed for the scope in the select box
+    //  it is object from scopesList, with or without a label
+    optionLabel( it ){
+        return Roles._scopes.label( it );
+    },
+
+    // parms for adding a new scope
+    parmsPlusButton(){
+        return {
+            enabled: Template.instance().PR.enabledPlus,
+            label: pwixI18n.label( I18N, 'panels.add_button' ),
+            shape: PlusButton.C.Shape.RECTANGLE,
+            title: pwixI18n.label( I18N, 'panels.add_title' ),
+        };
+    },
+
+    // parms for a scoped tree for the current scoped role
+    parmsTree( it ){
+        return {
+            ...this,
+            wantScoped: true,
+            scope: Template.instance().PR.byId( it )
+        };
     },
 
     // list of scope ids
     scopesList(){
-        return Template.instance().PR.scopesList.get();
+        return Object.keys( Roles._scopes.labels.all());
     }
-
-    /*
-    // the scope option to be selected has been computed when the role has been selected
-    scopeSelected( roleObj, itOrg ){
-        const wanted = roleObj.DYN.scopeSelected.get() || NONE;
-        if( wanted === NONE ){
-            selected = itOrg === NONE;
-        } else {
-            selected = ( itOrg.entity === wanted );
-        }
-        return selected ? 'selected' : '';
-    },
-
-    // display a check if the line is valid
-    transparentIfNotValid( it ){
-        return it.DYN.lineValid.get() ? '' : 'x-transparent';
-    }
-        */
 });
 
 Template.edit_scoped_pane.events({
@@ -372,18 +287,20 @@ Template.edit_scoped_pane.events({
     */
 
     // change the currently selected scope
-    /*
     'change .js-scope'( event, instance ){
-        const rowId = instance.$( event.currentTarget ).closest( 'tr' ).data( 'row-id' );
-        const scope = instance.$( 'tr[data-row-id="'+rowId+'"]' ).find( '.js-scope :selected' );
-        instance.PR.selectScope( rowId, scope.val());
+        const $parent = instance.$( event.currentTarget ).closest( '.accordion-header' );
+        const id = $parent.prop( 'id' ).replace( /^header-/, '' );
+        const newScope = $parent.find( '.js-scope :selected' ).val();
+        instance.PR.changeScope( id, newScope );
+        // keep the accordion opened
+        //$parent.next( 'accordion-collapse' ).addClass( 'show' );
     },
-    */
 
     // add a new accordion to enter into a new scope (and a new tree of roles)
     'click .js-plus'( event, instance ){
         let roles = this.roles.get();
-        roles.scoped[NONE] = { all: [], direct: [] };
+        const res = instance.PR.newScope();
+        roles.scoped[res.key] = res.value;
         this.roles.set( roles );
         return false;
     },

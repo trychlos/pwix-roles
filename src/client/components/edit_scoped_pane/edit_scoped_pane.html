@@ -2,36 +2,28 @@
     <div class="pr-edit-scoped-pane">
 
         <div class="{{ divClass }}">
-            <table class="ui-w100 ui-mb025">
-                <tr class="ui-w100">
-                    <td class="ui-right">
-                        <button class="btn btn-sm btn-outline-primary js-plus" title="{{ i18n key="panels.add_title" }}">
-                            <span class="fa-solid fa-fw fa-plus"></span>
-                        </button>
-                    </td>
-                </tr>
-            </table>
+            <div class="js-plus">
+                {{> plusButton (parmsPlusButton) }}
+            </div>
             <div class="accordion" id="{{ accordionId }}">
-                {{#each scope in editedList }}
+                {{! 'it' is an internal invariant scope object identifier }}
+                {{#each it in editedList }}
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="header-{{ scope }}">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#body-{{ scope }}" aria-expanded="true" aria-controls="body-{{ scope }}">
-                                {{#if newScope scope }}
+                        <h2 class="accordion-header" id="header-{{ it }}">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#body-{{ it }}" aria-expanded="true" aria-controls="body-{{ it }}">
+                                <div class="accordion-header-content">
                                     <select class="form-select js-scope">
-                                        <option value="NONE" selected disabled>{{ i18n key="panels.scope_select" }}</option>
-                                        {{#each it in scopesList }}
-                                            <option value="{{ it._id }}" {{ scopeEnabled it._id }}>{{ scopeLabel it }}</option>
+                                        <option value="{{ none }}" selected disabled>{{ i18n key="panels.scope_select" }}</option>
+                                        {{#each scope in scopesList }}
+                                            <option value="{{ scope._id }}" {{ optionEnabled scope }}>{{ optionLabel scope }}</option>
                                         {{/each}}
                                     </select>
-                                    <button class="btn btn-sm ui-noborder ui-transparent"><span class="fa-solid fa-fw fa-circle"></span></button>
-                                {{else}}
-                                    {{ scopeLabel scope }}
-                                {{/if}}
+                                </div>
                             </button>
                         </h2>
-                        <div id="body-{{ scope }}" class="accordion-collapse collapse show" aria-labelledby="header-{{ scope }}" data-bs-parent="#{{ accordionId }}">
+                        <div id="body-{{ it }}" class="accordion-collapse collapse" aria-labelledby="header-{{ it }}" data-bs-parent="#{{ accordionId }}">
                             <div class="accordion-body">
-                                {{> pr_tree (parmsTree scope )}}
+                                {{> pr_tree (parmsTree it )}}
                             </div>
                         </div>
                     </div>

@@ -31,12 +31,6 @@ Template.pr_tree.onCreated( function(){
         tree_nodes_waiting: {},
         tree_done_rv: new ReactiveVar( false ),
 
-        //treeReady: new ReactiveVar( false ),
-        treeDone: new ReactiveVar( false ),
-        creationAsked: 0,
-        creationDone: new ReactiveVar( 0 ),
-        creationEnded: new ReactiveVar( false ),
-
         // we have explicitely checked an item
         //  data = { node, selected, event, jsTree instance }
         tree_checkbox_check( data ){
@@ -84,7 +78,7 @@ Template.pr_tree.onCreated( function(){
         //  and run the creation of waiting children
         //  data = { node, parent, position, jsTree instance }
         tree_create_done( data ){
-            const role = data.node.original.doc.role;
+            const role = data.node.original.doc;
             self.PR.tree_nodes_created[ role.name ] = data.node;
             delete self.PR.tree_nodes_asked[ role.name ];
             if( Object.keys( self.PR.tree_nodes_waiting ).includes( role.name )){
@@ -110,7 +104,7 @@ Template.pr_tree.onCreated( function(){
                 "text": role.name,
                 "children": [],
                 "icon": false,
-                "doc": { role: role, parent: parent }
+                "doc": role
             });
         },
 
@@ -202,40 +196,42 @@ Template.pr_tree.onRendered( function(){
     //  displaying the roles hierarchy that the current user is allowed to give to someone else
     self.autorun(() => {
         const $tree = self.PR.$tree.get();
-        if( $tree && self.PR.tree_ready()){
+        if( $tree && self.PR.tree_ready() && !self.PR.tree_done()){
             // reset the tree
+            /*
             console.debug( 'resetting the tree' );
+            console.debug( self.PR.tree_nodes_created );
             $tree.jstree( true ).delete_node( Object.values( self.PR.tree_nodes_created ));
             self.PR.tree_nodes_created = {};
             self.PR.tree_nodes_waiting = {};
+            //self.PR.tree_done( false );
+            */
             // and rebuild
             const wantScoped = Template.currentData().wantScoped === true;
             let promises = [];
             // display the role and its children if:
             //  - role is global or scoped depending of wantScoped
-            //  - the current user has it
-            async function f_role( role, parent=null ){
+            //  - the current user has it which means he is allowed to give it
+            async function f_role( role, parent=null, scoped=false ){
                 Roles.userIsInRoles( Meteor.userId(), role.name ).then(( res ) => {
                     if( res ){
-                        if(( wantScoped && role.scoped === true ) || ( !wantScoped && !role.scoped )){
+                        if(( wantScoped && ( role.scoped === true || scoped === true )) || ( !wantScoped && !role.scoped && !scoped )){
                             self.PR.tree_create_ask.bind( self )( role, parent );
                         }
                         if( role.children ){
                             role.children.forEach(( it ) => {
-                                promises.push( f_role( it, role ));
+                                promises.push( f_role( it, role, role.scoped || scoped ));
                             });
                         }
                     }
                 });
             }
             //console.log( Roles );
-            self.PR.creationAsked = 0;
-            self.PR.creationDone.set( 0 );
             Roles.configure().roles.hierarchy.forEach(( it ) => {
                 promises.push( f_role( it ));
             });
             Promise.allSettled( promises ).then(() => {
-                self.PR.creationEnded.set( true );
+                // nothing to do here
             });
         }
     });
