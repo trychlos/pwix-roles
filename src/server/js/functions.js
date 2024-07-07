@@ -96,6 +96,7 @@ Roles.server = {
             await Roles.server.removeAssignedRolesFromUser( user );
             await alRoles.setUserRolesAsync( user, roles.global.direct, { anyScope: true });
             Object.keys( roles.scoped ).forEach( async ( it ) => {
+                console.debug( 'scope', it, 'roles', roles.scoped[it].direct );
                 await alRoles.setUserRolesAsync( user, roles.scoped[it].direct, { scope: it });
             });
             await Meteor.users.updateAsync({ _id: user_id }, { $set: {

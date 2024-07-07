@@ -53,9 +53,9 @@ Template.prEditPanel.onCreated( function(){
         },
         /**
          * @returns {Object} an object with following keys:
-         *  - scoped    {Object}    a per-scope object where each key is a scope, and the value is an object with following keys:
+         *  - scoped        {Object}    a per-scope object where each key is a scope, and the value is an object with following keys:
          *      - direct    {Array}     an array of directly (not inherited) assigned scoped roles
-         *  - global    {Object}
+         *  - global        {Object}
          *      - direct    {Array}     an array of directly (not inherited) assigned scoped roles
          */
         roles(){
@@ -83,7 +83,7 @@ Template.prEditPanel.onCreated( function(){
         scoped(){
             let checked = {};
             self.$( '.scoped-item' ).each( function(){
-                const scope = $( this ).find( '.js-scope' ).val();
+                const scope = $( this ).find( '.js-scope :selected' ).val();
                 let locals = [];
                 $( this ).find( '.'+self.PR.scoped_div ).jstree( true ).get_checked_descendants( '#' ).every(( id ) => {
                     locals.push( id.replace( self.PR.scoped_prefix, '' ));

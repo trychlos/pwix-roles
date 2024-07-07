@@ -228,6 +228,11 @@ Template.edit_scoped_pane.helpers({
         return Template.instance().PR.accordionId;
     },
 
+    // a class attributed by the caller
+    divClass(){
+        return this.pr_div;
+    },
+
     // the scoped roles attributed to this user
     //  we iterate on our internal invariant identifier
     editedList(){
@@ -262,10 +267,9 @@ Template.edit_scoped_pane.helpers({
     },
 
     // whether the scope selection is enabled
-    //  this is true when there is not yet any role if this scope
-    optionEnabled( it ){
-        const scope = Template.instance().PR.byId( it._id );
-        return scope ? 'disabled' : '';
+    //  this is true while the scope has not been already selected
+    optionEnabled( scope ){
+        return this.roles.get().scoped[scope] ? 'disabled' : '';
     },
 
     // the label to be displayed for the scope in the select box
@@ -279,6 +283,7 @@ Template.edit_scoped_pane.helpers({
     parmsCheckStatus( it ){
         const scope = Template.instance().PR.byId( it );
         const o = this.roles.get().scoped[scope];
+        console.debug( 'scope', scope, 'o', o );
         return {
             statusRv: o.DYN.checkStatus
         };
@@ -334,8 +339,6 @@ Template.edit_scoped_pane.events({
         const id = $parent.prop( 'id' ).replace( /^header-/, '' );
         const newScope = $parent.find( '.js-scope :selected' ).val();
         instance.PR.changeScope( event, id, newScope );
-        // keep the accordion opened
-        //$parent.next( 'accordion-collapse' ).addClass( 'show' );
     },
 
     // add a new accordion to enter into a new scope (and a new tree of roles)
@@ -348,10 +351,9 @@ Template.edit_scoped_pane.events({
         return false;
     },
 
-    /*
-    // remove the current role
+    // remove the current scope and all its roles
     'click .js-minus'( event, instance ){
-        const rowId = instance.$( event.currentTarget ).closest( 'tr' ).data( 'row-id' );
+        const $parent = instance.$( event.currentTarget ).closest( '.scoped-item' ).data( 'row-id' );
         const idx = instance.PR.getRole( rowId );
         if( idx >= 0 ){
             let roles = instance.PR.edited.get();
@@ -360,7 +362,6 @@ Template.edit_scoped_pane.events({
         }
         return false;
     },
-    */
 
     // update the check status indicator (if any)
     'pr-change .scoped-item'( event, instance, data ){
@@ -368,6 +369,7 @@ Template.edit_scoped_pane.events({
         const id = $parent.prop( 'id' ).replace( /^header-/, '' );
         const scope = instance.PR.byId( id );
         const roles = Roles.EditPanel.scoped();
+        console.debug( 'scope', scope, 'roles', roles );
         instance.PR.setCheckStatus( scope, roles[scope] );
     },
 
