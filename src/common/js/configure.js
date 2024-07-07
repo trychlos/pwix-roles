@@ -15,6 +15,7 @@ Roles._defaults = {
     maintainHierarchy: true,
     scopeLabelFn: null,
     scopesFn: null,
+    scopesPub: null,
     verbosity: Roles.C.Verbose.CONFIGURE
 };
 

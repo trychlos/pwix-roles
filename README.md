@@ -127,6 +127,17 @@ Known configuration options are:
 
     This function defaults to null. When null, the package will try to take known scopes from used scopes.
 
+- `scopesPub`
+
+    The name of a publication which is expected to publish the list of managed scopes as an array of:
+
+    - ids as string
+    - or { _id: <id>, label: <label> } objects
+
+    in a collection of the same name.
+
+    This name defaults to null. When null, the package will try to take known scopes from used scopes.
+
 - `verbosity`
 
     Define the expected verbosity level.

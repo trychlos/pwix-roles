@@ -12,6 +12,7 @@
     - Introduce 'pr-global-state' new event
     - Define Roles.scopedRoles() new function
     - Add missing pwix:ui-utils and ui-fontawesome6 dependencies
+    - Add scopeLabelFn, scopesFn and scopesPub configuration parameters to get known scopes
 
 ### 1.4.0
 
