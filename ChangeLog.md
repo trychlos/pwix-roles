@@ -13,6 +13,7 @@
     - Define Roles.scopedRoles() new function
     - Add missing pwix:ui-utils and ui-fontawesome6 dependencies
     - Add scopeLabelFn, scopesFn and scopesPub configuration parameters to get known scopes
+    - Define Roles.EditPanel.global(), .scoped() and .roles() function to get back the edition results
 
 ### 1.4.0
 

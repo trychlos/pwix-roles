@@ -8,14 +8,14 @@
             <div class="accordion" id="{{ accordionId }}">
                 {{! 'it' is an internal invariant scope object identifier }}
                 {{#each it in editedList }}
-                    <div class="accordion-item">
+                    <div class="accordion-item scoped-item">
                         <h2 class="accordion-header" id="header-{{ it }}">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#body-{{ it }}" aria-expanded="true" aria-controls="body-{{ it }}">
                                 <div class="accordion-header-content">
                                     <select class="form-select js-scope">
                                         <option value="{{ none }}" selected disabled>{{ i18n key="panels.scope_select" }}</option>
                                         {{#each scope in scopesList }}
-                                            <option value="{{ scope._id }}" {{ optionEnabled scope }}>{{ optionLabel scope }}</option>
+                                            <option value="{{ scope }}" {{ optionEnabled scope }}>{{ optionLabel scope }}</option>
                                         {{/each}}
                                     </select>
                                 </div>

@@ -178,7 +178,7 @@ Template.edit_scoped_pane.onCreated( function(){
 
     // track the current scoped roles
     self.autorun(() => {
-        console.debug( Template.currentData().roles.get().scoped );
+        //console.debug( Template.currentData().roles.get().scoped );
     });
 });
 
@@ -321,6 +321,7 @@ Template.edit_scoped_pane.events({
 
     // select/unselect a role
     'pr-change .pr-edit-scoped-pane'( event, instance, data ){
-        console.debug( event, data );
+        const roles = Roles.EditPanel.scoped();
+        instance.$( event.currentTarget ).trigger( 'pr-scoped-state', { roles: roles });
     }
 });

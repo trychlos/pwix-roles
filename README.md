@@ -408,7 +408,27 @@ The caller can get the result back in two ways:
 
 - `Roles.EditPanel.global()`
 
-    Returns the list of selected global roles.
+    Returns the list of selected direct global roles (without the inherited ones).
+
+    As a companion function for the `prEditPanel` component, this is a client-only function.
+
+- `Roles.EditPanel.scoped()`
+
+    Returns an object where keys are the scopes, and values an array of their selected direct roles (without the inherited ones).
+
+    As a companion function for the `prEditPanel` component, this is a client-only function.
+
+- `Roles.EditPanel.roles()`
+
+    Returns the full result of the edition as an object:
+
+```js
+    - scoped    {Object}    a per-scope object where each key is a scope, and the value is an object with following keys:
+        - direct    {Array}     an array of directly (not inherited) assigned scoped roles
+    - global    {Object}
+        - direct    {Array}     an array of directly (not inherited) assigned scoped roles
+```
+
 
     As a companion function for the `prEditPanel` component, this is a client-only function.
 

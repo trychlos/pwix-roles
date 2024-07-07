@@ -81,12 +81,13 @@ Tracker.autorun(() => {
  * A reactive data source.
  * @locus Client
  * @returns {Object} with the roles of the current logged-in user, as an object with keys:
- *  - id        {String}    the current user identifier
- *  - all       {Array}     all the assigned roles, either directly or indirectly set
- *  - direct    {Array}     only the directly attributed top roles in the hierarchy (after having removed indirect ones)
- *  - scoped    {Object}
- *      > '<scope>':        the list of roles which hold this scope
- *  - globals   {Array}     the list of non-scoped roles
+ *  - userId    {String}    the current user identifier
+ *  - scoped    {Object}    a per-scope object where each key is a scope, and the value is an object with following keys:
+ *      - direct    {Array}     an array of directly (not inherited) assigned scoped roles
+ *      - all       {Array}     an array of all allowed scoepd roles (i.e. directly assigned+inherited)
+ *  - global    {Object}
+ *      - direct    {Array}     an array of directly (not inherited) assigned scoped roles
+ *      - all       {Array}     an array of all allowed scoepd roles (i.e. directly assigned+inherited)
  */
 Roles.current = function(){
     _current.dep.depend();

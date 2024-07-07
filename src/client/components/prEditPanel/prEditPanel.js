@@ -27,7 +27,7 @@ Template.prEditPanel.onCreated( function(){
         global_div: 'pr-global',
         global_prefix: 'prglobal_',
         scoped_div: 'pr-scoped',
-        //scoped_prefix: 'prscoped_',
+        scoped_prefix: 'prscoped_',
 
         // initial roles or initial roles of the specified user as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
         //  (same structure than current)
@@ -39,7 +39,7 @@ Template.prEditPanel.onCreated( function(){
     // when this component is created, then declare the function to get back its values
     Roles.EditPanel = {
         /**
-         * @returns {Array} the list of roles checked in the prEditPanel
+         * @returns {Array} the list of global roles checked in the prEditPanel
          */
         global(){
             let checked = [];
@@ -48,8 +48,46 @@ Template.prEditPanel.onCreated( function(){
                 return true;
             });
             const filtered = Roles._filter( checked );
-            //console.log( 'checked', checked, 'filtered', filtered );
             return filtered;
+        },
+        /**
+         * @returns {Object} an object with following keys:
+         *  - scoped    {Object}    a per-scope object where each key is a scope, and the value is an object with following keys:
+         *      - direct    {Array}     an array of directly (not inherited) assigned scoped roles
+         *  - global    {Object}
+         *      - direct    {Array}     an array of directly (not inherited) assigned scoped roles
+         */
+        roles(){
+            let roles = {
+                global: {
+                    direct: Roles.EditPanel.global()
+                },
+                scoped: {}
+            };
+            const scoped = Roles.EditPanel.scoped();
+            Object.keys( scoped ).forEach(( scope ) => {
+                roles.scoped[scope] = {
+                    direct: scoped[scope]
+                };
+            });
+            return roles;
+        },
+        /**
+         * @returns {Object} where keys are the scopes, and values an array of direct roles
+         */
+        scoped(){
+            let checked = {};
+            self.$( '.scoped-item' ).each( function(){
+                const scope = $( this ).find( '.js-scope' ).val();
+                checked[scope] = [];
+                let locals = [];
+                $( this ).find( '.'+self.PR.scoped_div ).jstree( true ).get_checked_descendants( '#' ).every(( id ) => {
+                    locals.push( id.replace( self.PR.scoped_prefix, '' ));
+                    return true;
+                });
+                checked[scope] = Roles._filter( locals );
+            });
+            return checked;
         }
     };
 
@@ -143,7 +181,8 @@ Template.prEditPanel.helpers({
                     paneTemplate: 'edit_scoped_pane',
                     paneData: {
                         roles: PR.roles,
-                        pr_div: PR.scoped_div
+                        pr_div: PR.scoped_div,
+                        pr_prefix: PR.scoped_prefix
                     }
                 }
             ]
