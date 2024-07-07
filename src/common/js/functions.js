@@ -365,6 +365,15 @@ Roles.scopedRoles = function(){
 
 /**
  * @locus Anywhere
+ * @param {String|Object} user the user identifier or the user document
+ * @param {Object} roles the roles to be set as an object { global: { direct[] }, scoped: { <scope>: { direct: [] }}}
+ */
+Roles.setUserRoles = async function( user, roles ){
+    return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.setUserRoles', user, roles ) : Roles.server.setUserRoles( user, roles ));
+}
+
+/**
+ * @locus Anywhere
  * @returns {Promise} which eventually resolve to an array of used scopes (most probably including the 'null' one)
  */
 Roles.usedScopes = async function(){

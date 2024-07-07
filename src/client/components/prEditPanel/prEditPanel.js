@@ -111,7 +111,7 @@ Template.prEditPanel.onCreated( function(){
     // when assigned roles subscription is ready, fetch them
     //  take a deep copy as this will be the edition starting point
     self.autorun(() => {
-        if( self.PR.handle.ready()){
+        if( self.PR.handle && self.PR.handle.ready()){
             let roles = { scoped: {}, global: { all: [], direct: [] }};
             const _setup = function( it, o ){
                 o.all = o.all || [];

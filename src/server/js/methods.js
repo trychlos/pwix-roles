@@ -19,14 +19,14 @@ Meteor.methods({
     // returns the count of users which have at least one of the specified roles
     async 'Roles.countUsersInRoles'( roles, options={} ){
         const res = await alRoles.getUsersInRoleAsync( roles, options ).count();
-        console.log( 'pwix:roles/src/server/js/methods:countUsersInRoles()', roles, res );
+        //console.log( 'pwix:roles/src/server/js/methods:countUsersInRoles()', roles, res );
         return res;
     },
 
     // create a new role (when we do not want manage it in the hierarchy)
     async 'Roles.createRole'( role, options={} ){
         const res = await alRoles.createRoleAsync( role, options );
-        console.log( 'pwix:roles/src/server/js/methods:createRole()', res );
+        //console.log( 'pwix:roles/src/server/js/methods:createRole()', res );
         return res;
     },
 
@@ -63,14 +63,8 @@ Meteor.methods({
     },
 
     // replace the user's roles with a new set
-    //  this must be a method as the (not trusted) client cannot directly remove assignments without its id
-    async 'Roles.setUsersRoles'( users, roles ){
-        let promises = [];
-        const ids = Roles._idsFromUsers( users );
-        ids.every(( id ) => {
-            promises.push( Meteor.roleAssignment.removeAsync({ 'user._id': id }));
-        });
-        return Promise.all( promises ).then(() => { return alRoles.addUsersToRolesAsync( users, roles ); });
+    async 'Roles.setUserRoles'( user, roles ){
+        return await Roles.server.setUserRoles( user, roles, Meteor.userId());
     },
 
     // returns the used scopes

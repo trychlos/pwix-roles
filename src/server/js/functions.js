@@ -89,8 +89,26 @@ Roles.server = {
         return Promise.all( promises );
     },
 
+    // replace the roles of the user
+    async setUserRoles( user, roles, userId=0 ){
+        const user_id = _.isString( user ) ? user : ( user._id ? user._id : null );
+        if( user_id ){
+            await Roles.server.removeAssignedRolesFromUser( user );
+            await alRoles.setUserRolesAsync( user, roles.global.direct, { anyScope: true });
+            Object.keys( roles.scoped ).forEach( async ( it ) => {
+                await alRoles.setUserRolesAsync( user, roles.scoped[it].direct, { scope: it });
+            });
+            await Meteor.users.updateAsync({ _id: user_id }, { $set: {
+                updatedAt: new Date(),
+                updatedBy: userId
+            }});
+        } else {
+            console.warn( 'unable to get a user identifier from provided user argument', user );
+        }
+    },
+
     // returns the list of used scopes
     async usedScopes(){
-        return Meteor.roleAssignment.rawCollection().distinct( 'scope' );
+        return await Meteor.roleAssignment.rawCollection().distinct( 'scope' );
     }
 };

@@ -301,6 +301,18 @@ The globally exported object.
 
     Available both on client and server.
 
+- `Roles.setUserRoles( user, roles )`
+
+    An async function which replaces all currently defined roles for the specified user.
+
+    `user` may be a user identifier or a user document
+
+    `roles` is an object { global: { direct: [], scoped: { <scope>: { direct: [] }}}}
+
+    The application should take care of **not** remove all roles for the currently logged-in user. This is not checked by the package.
+
+    Available both on client and server.
+
 - `Roles.usedScopes()`
 
     An async function which returns an array of used scopes. This array will most probably at least include the 'null' scope.
