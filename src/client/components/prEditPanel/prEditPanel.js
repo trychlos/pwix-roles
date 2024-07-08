@@ -73,12 +73,13 @@ Template.prEditPanel.onCreated( function(){
                     };
                 }
             });
+            //console.debug( 'roles', roles );
             return roles;
         },
         /**
          * @returns {Object} where keys are the scopes, and values an array of direct roles
          *  NB: this also returns the checked roles for a new 'NONE' scope
-         *  this is needed for UI management, but take care of not assigning this pseudo-scope to the user.
+         *  this is needed for UI management, but you have to take care of not assigning this pseudo-scope to the user.
          */
         scoped(){
             let checked = {};
@@ -91,6 +92,7 @@ Template.prEditPanel.onCreated( function(){
                 });
                 checked[scope] = Roles._filter( locals );
             });
+            //console.debug( 'scoped()', checked );
             return checked;
         }
     };

@@ -93,19 +93,37 @@ Roles.server = {
     async setUserRoles( user, roles, userId=0 ){
         const user_id = _.isString( user ) ? user : ( user._id ? user._id : null );
         if( user_id ){
-            await Roles.server.removeAssignedRolesFromUser( user );
-            await alRoles.setUserRolesAsync( user, roles.global.direct, { anyScope: true });
-            Object.keys( roles.scoped ).forEach( async ( it ) => {
-                console.debug( 'scope', it, 'roles', roles.scoped[it].direct );
-                await alRoles.setUserRolesAsync( user, roles.scoped[it].direct, { scope: it });
-            });
-            await Meteor.users.updateAsync({ _id: user_id }, { $set: {
-                updatedAt: new Date(),
-                updatedBy: userId
-            }});
+            return Roles.server.removeAssignedRolesFromUser( user )
+                .then(( res ) => {
+                    console.debug( 'removeAssignedRolesFromUser', res );
+                    return alRoles.setUserRolesAsync( user, roles.global.direct, { anyScope: true });
+                })
+                .then(( res ) => {
+                    console.debug( 'alRoles.setUserRolesAsync', res );
+                    let promises = [];
+                    Object.keys( roles.scoped ).forEach( async ( it ) => {
+                        console.debug( 'scope', it, 'roles', roles.scoped[it].direct );
+                        promises.push( alRoles.setUserRolesAsync( user, roles.scoped[it].direct, { scope: it }));
+                    });
+                    return Promise.allSettled( promises );
+                })
+                .then(( res ) => {
+                    console.debug( 'allSettled', res );
+                    return Meteor.users.updateAsync({ _id: user_id }, { $set: {
+                        updatedAt: new Date(),
+                        updatedBy: userId
+                    }});
+                })
+                .then(( res ) => {
+                    console.debug( 'users.updateAsync', res );
+                })
+                .catch(( e ) => {
+                    console.warn( 'catched', e );
+                });
         } else {
             console.warn( 'unable to get a user identifier from provided user argument', user );
         }
+        return null;
     },
 
     // returns the list of used scopes

@@ -283,7 +283,6 @@ Template.edit_scoped_pane.helpers({
     parmsCheckStatus( it ){
         const scope = Template.instance().PR.byId( it );
         const o = this.roles.get().scoped[scope];
-        console.debug( 'scope', scope, 'o', o );
         return {
             statusRv: o.DYN.checkStatus
         };
@@ -369,7 +368,6 @@ Template.edit_scoped_pane.events({
         const id = $parent.prop( 'id' ).replace( /^header-/, '' );
         const scope = instance.PR.byId( id );
         const roles = Roles.EditPanel.scoped();
-        console.debug( 'scope', scope, 'roles', roles );
         instance.PR.setCheckStatus( scope, roles[scope] );
     },
 
