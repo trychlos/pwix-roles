@@ -14,6 +14,7 @@
 
 import _ from 'lodash';
 
+import { Bootbox } from 'meteor/pwix:bootbox';
 import { PlusButton } from 'meteor/pwix:plus-button';
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { Random } from 'meteor/random';
@@ -78,113 +79,39 @@ Template.edit_scoped_pane.onCreated( function(){
             return { key: key, value: value };
         },
 
+        // after user confirmation, remove a scope and its roles
+        removeScope( event, id ){
+            const scope = self.PR.byId( id );
+            if( scope ){
+                const dataContext = Template.currentData();
+                Bootbox.confirm({
+                    message: pwixI18n.label( I18N, 'panels.remove_scope_confirm', Roles._scopes.label( scope )),
+                    title: pwixI18n.label( I18N, 'panels.remove_scope_title' )
+                }, ( res ) => {
+                    if( res ){
+                        const roles = dataContext.roles.get();
+                        delete roles.scoped[scope];
+                        dataContext.roles.set( roles );
+                        // and avertize of the change (on the pane only)
+                        self.$( '.pr-edit-scoped-pane' ).trigger( 'pr-change' );
+                    }
+                });
+            } else {
+                console.warn( 'identifier not found', id );
+            }
+        },
+
         // update the check status indicator
         setCheckStatus( scope, direct ){
-            let status = 'NONE';
-            if( scope && scope != Template.currentData().pr_none ){
-                status = direct.length ? 'VALID' : 'UNCOMPLETE';
-            } else {
-                status = 'UNCOMPLETE';
+            let status = 'UNCOMPLETE';
+            if( scope && scope != Template.currentData().pr_none && direct.length ){
+                status = 'VALID';
             }
             const o = Template.currentData().roles.get().scoped[scope];
             if( o && o.DYN && o.DYN.checkStatus ){
                 o.DYN.checkStatus.set( Package['pwix:forms'].Forms.CheckStatus.C[status] );
             }
         }
-
-        /*
-        // the current edition state
-        edited: new ReactiveVar( [] ),
-        // the full available - defined - roles
-        availableRoles: _.cloneDeep( Roles.flat()),
-        // the edited roles
-        editedRoles: new ReactiveVar( [] ),
-
-        // returns the identified index in the 'edited' array
-        getRole( rowId ){
-            let roles = self.PR.edited.get();
-            found = -1;
-            for( let i=0 ; i<roles.length && found<0 ; ++i ){
-                if( roles[i].DYN.rowid === rowId ){
-                    found = i;
-                }
-            }
-            if( found < 0 ){
-                console.warn( 'role not found', rowId );
-            }
-            return found;
-        },
-
-        // initialize a new editable role object
-        //  the role object is a document as returned from Roles.getRolesForUser()
-        //  we allocate an object with:
-        //  - rowid: a random id which uniquely identify the row
-        //  - doc: the { _id, scope } role object as returned from Roles.getRolesForUser() or edited
-        //      _id and scope are null for an unitialized row
-        //  - DYN: some dyn variables
-        newRole( o ){
-            return {
-                doc: { ...o },
-                DYN: {
-                    rowid: 'row-'+Random.id(),
-                    scopeLabel: new ReactiveVar( pwixI18n.label( I18N, 'panels.no_role' )),
-                    scopeEnabled: new ReactiveVar( false ),
-                    scopeSelected: new ReactiveVar( NONE ),
-                    lineValid: new ReactiveVar( false )
-                }
-            }
-        },
-
-        // a new role has been selected - reset the scope select box accordingly
-        resetScope( roleObj ){
-            let label = pwixI18n.label( I18N, 'accounts.panel.no_role' );
-            let want_scope = false;
-            if( roleObj.doc._id ){
-                const o = self.PR.availableRoles[roleObj.doc._id];
-                if( o && o.scoped === true ){
-                    label = pwixI18n.label( I18N, 'accounts.panel.with_scope' );
-                    want_scope = true;
-                } else {
-                    label = pwixI18n.label( I18N, 'accounts.panel.without_scope' );
-                }
-            }
-            roleObj.DYN.scopeEnabled.set( want_scope );
-            roleObj.DYN.scopeLabel.set( label );
-            roleObj.DYN.scopeSelected.set( want_scope && roleObj.doc.scope ? roleObj.doc.scope : NONE );
-        },
-
-        // a new role has been selected - update the line accordingly
-        //  role may be null on new row
-        selectRole( rowId, roleName ){
-            const idx = self.PR.getRole( rowId );
-            if( idx >= 0 ){
-                let roleObj = self.PR.edited.get()[idx];
-                roleObj.doc._id = roleName;
-                self.PR.resetScope( roleObj );
-                self.PR.updateCheck( roleObj );
-            }
-        },
-
-        // send panel data
-        sendPanelData( data, ok ){
-            self.$( '.c-account-roles-panel' ).trigger( 'panel-data', {
-                emitter: 'roles',
-                data: data,
-                ok: ok
-            });
-        },
-
-        // check the line when both role and scope are valid
-        updateCheck( roleObj ){
-            const roleValid = Boolean( roleObj.doc._id && roleObj.doc._id.length > 0 );
-            let scopeValid = false;
-            if( roleValid ){
-                scopeValid = ( self.PR.availableRoles[roleObj.doc._id].scoped === true ) ? roleObj.doc.scope !== null : roleObj.doc.scope === null;
-            }
-            //console.debug( roleObj, 'roleValid', roleValid, 'scopeValid', scopeValid );
-            roleObj.DYN.lineValid.set( roleValid && scopeValid );
-        }
-    */
     };
 
     // the scope identifier cannot be a node identifier has it can be null when new, or be modified
@@ -199,7 +126,7 @@ Template.edit_scoped_pane.onCreated( function(){
 
     // track the current scoped roles
     self.autorun(() => {
-        //console.debug( Template.currentData().roles.get().scoped );
+        console.debug( Template.currentData().roles.get().scoped );
     });
 
     // do we have the pwix:forms package
@@ -274,18 +201,23 @@ Template.edit_scoped_pane.helpers({
 
     // the label to be displayed for the scope in the select box
     //  it is an object from scopesList, with or without a label
-    optionLabel( it ){
-        return Roles._scopes.label( it );
+    optionLabel( scope ){
+        return Roles._scopes.label( scope );
+    },
+
+    // the label to be displayed for the scope in the select box
+    //  it is an object from scopesList, with or without a label
+    optionSelected( scope, it ){
+        const roleScope = Template.instance().PR.byId( it );
+        return scope === roleScope ? 'selected' : '';
     },
 
     // parms for the check status indicator
     //  only present if pwix:forms is loaded
     parmsCheckStatus( it ){
-        const scope = Template.instance().PR.byId( it );
-        const o = this.roles.get().scoped[scope];
-        return {
-            statusRv: o.DYN.checkStatus
-        };
+        const scope = it ? Template.instance().PR.byId( it ) : null;
+        const o = scope ? this.roles.get().scoped[scope] : null;
+        return o ? { statusRv: o.DYN.checkStatus } : {};
     },
 
     // parms for adding a new scope
@@ -321,17 +253,6 @@ Template.edit_scoped_pane.events({
     },
     */
 
-    // change the currently selected role
-    //  update the label of the scope box accordingly
-    /*
-    'change .js-role'( event, instance ){
-        const rowId = instance.$( event.currentTarget ).closest( 'tr' ).data( 'row-id' );
-        const role = instance.$( 'tr[data-row-id="'+rowId+'"]' ).find( '.js-role :selected' );
-        //console.debug( 'rowId', rowId, 'role', role.val());
-        instance.PR.selectRole( rowId, role.val());
-    },
-    */
-
     // change the currently selected scope
     'change .js-scope'( event, instance ){
         const $parent = instance.$( event.currentTarget ).closest( '.accordion-header' );
@@ -352,13 +273,9 @@ Template.edit_scoped_pane.events({
 
     // remove the current scope and all its roles
     'click .js-minus'( event, instance ){
-        const $parent = instance.$( event.currentTarget ).closest( '.scoped-item' ).data( 'row-id' );
-        const idx = instance.PR.getRole( rowId );
-        if( idx >= 0 ){
-            let roles = instance.PR.edited.get();
-            roles.splice( idx, 1 );
-            instance.PR.edited.set( roles );
-        }
+        const $parent = instance.$( event.currentTarget ).closest( '.scoped-item' ).find( '.accordion-header' );
+        const id = $parent.prop( 'id' ).replace( /^header-/, '' );
+        instance.PR.removeScope( event, id );
         return false;
     },
 

@@ -29,6 +29,7 @@ function configure( api ){
     api.use( 'ecmascript' );
     api.use( 'less@4.0.0', 'client' );
     api.use( 'mongo', 'server' );
+    api.use( 'pwix:bootbox@1.5.0' );
     api.use( 'pwix:i18n@1.5.7' );
     api.use( 'pwix:jstree@1.0.6' );
     api.use( 'pwix:modal@1.10.0 || 2.0.0' );

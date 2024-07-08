@@ -19,7 +19,7 @@
                                     <select class="form-select js-scope">
                                         <option value="{{ none }}" selected disabled>{{ i18n key="panels.scope_select" }}</option>
                                         {{#each scope in scopesList }}
-                                            <option value="{{ scope }}" {{ optionEnabled scope }}>{{ optionLabel scope }}</option>
+                                            <option value="{{ scope }}" {{ optionSelected scope it }} {{ optionEnabled scope }}>{{ optionLabel scope }}</option>
                                         {{/each}}
                                     </select>
                                 </div>
