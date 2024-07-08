@@ -10,9 +10,15 @@ Roles.server = {
     // get roles for the user
     // https://meteor-community-packages.github.io/meteor-roles/classes/Roles.html#method_getRolesForUserAsync
     async getRolesForUser( user, options ){
-        const res = await alRoles.getRolesForUserAsync( user, options );
-        //console.debug( 'res', res );
-        return res;
+        let result = null;
+        try {
+            result = await alRoles.getRolesForUserAsync( user, options );
+        }
+        catch( e ){
+            console.error( 'getRolesForUser', e );
+            result = false;
+        }
+        return result;
     },
 
     // get users in scope
@@ -44,21 +50,30 @@ Roles.server = {
     // remove all roles for the user
     //  returns true|false
     async removeAssignedRolesFromUser( user ){
-        let result = false;
-        if( user ){
-            let id = null;
-            if( _.isString( user )){
-                id = user;
-            } else if( _.isObject( user ) && user._id ){
-                id = user._id;
-            }
-            if( id ){
-                result = await Meteor.roleAssignment.removeAsync({ 'user._id': id });
+        let result = true;
+        try {
+            if( user ){
+                let id = null;
+                if( _.isString( user )){
+                    id = user;
+                } else if( _.isObject( user ) && user._id ){
+                    id = user._id;
+                }
+                if( id ){
+                    const countDeleted = await Meteor.roleAssignment.removeAsync({ 'user._id': id });
+                    //console.debug( 'removeAssignedRolesFromUser', user, countDeleted );
+                } else {
+                    console.warn( 'removeAssignedRolesFromUser() unable to find an identifier', user );
+                    result = false;
+                }
             } else {
-                console.warn( 'removeAssignedRolesFromUser() unable to find an identifier', user );
+                console.warn( 'removeAssignedRolesFromUser() user is falsy', user );
+                result = false;
             }
-        } else {
-            console.warn( 'removeAssignedRolesFromUser() user is falsy', user );
+        }
+        catch( e ) {
+            console.error( 'removeAssignedRolesFromUser', e );
+            result = false;
         }
         return result;
     },
@@ -86,44 +101,35 @@ Roles.server = {
             //console.debug( 'removeUserAssignmentsFromRoles()', 'query', query, 'ret', ret );
             return true;
         });
-        return Promise.all( promises );
+        return Promise.allSettled( promises );
     },
 
     // replace the roles of the user
+    //  return true|false
     async setUserRoles( user, roles, userId=0 ){
-        const user_id = _.isString( user ) ? user : ( user._id ? user._id : null );
-        if( user_id ){
-            return Roles.server.removeAssignedRolesFromUser( user )
-                .then(( res ) => {
-                    console.debug( 'removeAssignedRolesFromUser', res );
-                    return alRoles.setUserRolesAsync( user, roles.global.direct, { anyScope: true });
-                })
-                .then(( res ) => {
-                    console.debug( 'alRoles.setUserRolesAsync', res );
-                    let promises = [];
-                    Object.keys( roles.scoped ).forEach( async ( it ) => {
-                        console.debug( 'scope', it, 'roles', roles.scoped[it].direct );
-                        promises.push( alRoles.setUserRolesAsync( user, roles.scoped[it].direct, { scope: it }));
-                    });
-                    return Promise.allSettled( promises );
-                })
-                .then(( res ) => {
-                    console.debug( 'allSettled', res );
-                    return Meteor.users.updateAsync({ _id: user_id }, { $set: {
-                        updatedAt: new Date(),
-                        updatedBy: userId
-                    }});
-                })
-                .then(( res ) => {
-                    console.debug( 'users.updateAsync', res );
-                })
-                .catch(( e ) => {
-                    console.warn( 'catched', e );
-                });
-        } else {
-            console.warn( 'unable to get a user identifier from provided user argument', user );
+        let result = true;
+        try {
+            const user_id = _.isString( user ) ? user : ( user._id ? user._id : null );
+            if( user_id ){
+                await Roles.server.removeAssignedRolesFromUser( user )
+                await alRoles.setUserRolesAsync( user, roles.global.direct, { anyScope: true });
+                await Promise.allSettled( Object.keys( roles.scoped ).map( async ( it ) => {
+                    await alRoles.setUserRolesAsync( user, roles.scoped[it].direct, { scope: it });
+                }));
+                await Meteor.users.rawCollection().updateOne({ _id: user_id }, { $set: {
+                    updatedAt: new Date(),
+                    updatedBy: userId
+                }});
+            } else {
+                console.warn( 'unable to get a user identifier from provided user argument', user );
+                result = false;
+            }
         }
-        return null;
+        catch( e ){
+            console.error( 'setUserRoles', e );
+            result = false;
+        }
+        return result;
     },
 
     // returns the list of used scopes
