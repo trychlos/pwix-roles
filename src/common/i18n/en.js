@@ -1,11 +1,11 @@
 /*
- * pwix:roles/src/common/i18n/en_US.js
+ * pwix:roles/src/common/i18n/en.js
  */
 
 Roles.i18n = {
     ...Roles.i18n,
     ...{
-        en_US: {
+        en: {
             dialogs: {
                 title: 'Edit user\'s roles',
                 title_mail: 'Edit roles for %s',

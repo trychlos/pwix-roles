@@ -1,11 +1,11 @@
 /*
- * pwix:roles/src/common/js/strings.js
+ * pwix:roles/src/common/i18n/fr.js
  */
 
 Roles.i18n = {
     ...Roles.i18n,
     ...{
-        fr_FR: {
+        fr: {
             dialogs: {
                 title: 'Rôles de l\'utilisateur',
                 title_mail: 'Rôles de %s',
