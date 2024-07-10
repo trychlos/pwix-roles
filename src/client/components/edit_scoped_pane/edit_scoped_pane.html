@@ -7,50 +7,56 @@
             </div>
         </div>
 
-        <div class="accordion" id="{{ accordionId }}">
-            {{! 'it' is an internal invariant scope object identifier }}
-            {{#each it in editedList }}
-                <div class="scoped-item">
-                    <div class="accordion-item scoped-accordion">
+        {{#if haveScoped }}
+            <div class="accordion" id="{{ accordionId }}">
+                {{! 'it' is an internal invariant scope object identifier }}
+                {{#each it in editedList }}
+                    <div class="scoped-item">
+                        <div class="accordion-item scoped-accordion">
 
-                        <h2 class="accordion-header" id="header-{{ it }}">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#body-{{ it }}" aria-expanded="true" aria-controls="body-{{ it }}">
-                                <div class="ui-w100 ui-mr1">
-                                    <select class="form-select js-scope">
-                                        <option value="{{ none }}" selected disabled>{{ i18n key="panels.scope_select" }}</option>
-                                        {{#each scope in scopesList }}
-                                            <option value="{{ scope }}" {{ optionSelected scope it }} {{ optionEnabled scope }}>{{ optionLabel scope }}</option>
-                                        {{/each}}
-                                    </select>
+                            <h2 class="accordion-header" id="header-{{ it }}">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#body-{{ it }}" aria-expanded="true" aria-controls="body-{{ it }}">
+                                    <div class="ui-w100 ui-mr1">
+                                        <select class="form-select js-scope">
+                                            <option value="{{ none }}" selected disabled>{{ i18n key="panels.scope_select" }}</option>
+                                            {{#each scope in scopesList }}
+                                                <option value="{{ scope }}" {{ optionSelected scope it }} {{ optionEnabled scope }}>{{ optionLabel scope }}</option>
+                                            {{/each}}
+                                        </select>
+                                    </div>
+                                </button>
+                            </h2>
+
+                            <div id="body-{{ it }}" class="accordion-collapse collapse" aria-labelledby="header-{{ it }}" data-bs-parent="#{{ accordionId }}">
+                                <div class="accordion-body">
+                                    {{> pr_tree (parmsTree it )}}
                                 </div>
-                            </button>
-                        </h2>
-
-                        <div id="body-{{ it }}" class="accordion-collapse collapse" aria-labelledby="header-{{ it }}" data-bs-parent="#{{ accordionId }}">
-                            <div class="accordion-body">
-                                {{> pr_tree (parmsTree it )}}
                             </div>
                         </div>
+                        <div class="scoped-right">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <div class="scoped-td">
+                                            {{#if haveForms }}
+                                                {{> FormsCheckStatusIndicator (parmsCheckStatus it) }}
+                                            {{/if}}
+                                            <button class="btn btn-sm btn-outline-primary js-minus" title="{{ i18n key="panels.remove_title" }}">
+                                                <span class="fa-solid fa-fw fa-minus"></span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
-                    <div class="scoped-right">
-                        <table>
-                            <tr>
-                                <td>
-                                    <div class="scoped-td">
-                                        {{#if haveForms }}
-                                            {{> FormsCheckStatusIndicator (parmsCheckStatus it) }}
-                                        {{/if}}
-                                        <button class="btn btn-sm btn-outline-primary js-minus" title="{{ i18n key="panels.remove_title" }}">
-                                            <span class="fa-solid fa-fw fa-minus"></span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            {{/each}}
-        </div>
+                {{/each}}
+            </div>
+        {{else}}
+            <div class="pr-no-scoped">
+                {{i18n key="panels.edit_no_scope" }}
+            </div>
+        {{/if}}
 
     </div>
 </template>

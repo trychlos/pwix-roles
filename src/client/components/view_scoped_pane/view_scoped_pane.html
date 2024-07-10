@@ -1,29 +1,35 @@
 <template name="view_scoped_pane">
     <div class="pr-view-scoped-pane {{ divClass }}">
 
-        <div class="accordion" id="{{ accordionId }}">
-            {{! 'it' is an internal invariant scope object identifier }}
-            {{#each it in editedList }}
-                <div class="scoped-item">
-                    <div class="accordion-item scoped-accordion">
+        {{#if haveScoped }}
+            <div class="accordion" id="{{ accordionId }}">
+                {{! 'it' is an internal invariant scope object identifier }}
+                {{#each it in editedList }}
+                    <div class="scoped-item">
+                        <div class="accordion-item scoped-accordion">
 
-                        <h2 class="accordion-header" id="header-{{ it }}">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#body-{{ it }}" aria-expanded="true" aria-controls="body-{{ it }}">
-                                <div class="ui-w100 ui-mr1">
-                                    {{ scopeLabel it }}
+                            <h2 class="accordion-header" id="header-{{ it }}">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#body-{{ it }}" aria-expanded="true" aria-controls="body-{{ it }}">
+                                    <div class="ui-w100 ui-mr1">
+                                        {{ scopeLabel it }}
+                                    </div>
+                                </button>
+                            </h2>
+
+                            <div id="body-{{ it }}" class="accordion-collapse collapse" aria-labelledby="header-{{ it }}" data-bs-parent="#{{ accordionId }}">
+                                <div class="accordion-body">
+                                    {{> pr_tree (parmsTree it )}}
                                 </div>
-                            </button>
-                        </h2>
-
-                        <div id="body-{{ it }}" class="accordion-collapse collapse" aria-labelledby="header-{{ it }}" data-bs-parent="#{{ accordionId }}">
-                            <div class="accordion-body">
-                                {{> pr_tree (parmsTree it )}}
                             </div>
                         </div>
                     </div>
-                </div>
-            {{/each}}
-        </div>
+                {{/each}}
+            </div>
+        {{else}}
+            <div class="pr-no-scoped">
+                {{i18n key="panels.view_no_scope" }}
+            </div>
+        {{/if}}
 
     </div>
 </template>

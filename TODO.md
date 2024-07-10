@@ -13,7 +13,7 @@
 |    1 | 2023- 2- 2 | have aliases |
 |    3 | 2023- 2- 2 | implement f_CleanupObsoleteRoles at startup |
 |    6 | 2023- 2-10 | prEdit: checks **must also** be done server-side |
-|   13 |  |  |
+|   14 |  |  |
 
 ---
 ## Done
@@ -43,6 +43,8 @@
 |      | 2024- 7-10 | done for prView |
 |   12 | 2024- 7- 6 | en_US and fr_FR should be renamed to more generalized en and fr |
 |      | 2024- 7- 8 | done |
+|   13 | 2024- 7-10 | have a message saying there is no scoped role |
+|      | 2024- 7-10 | done |
 
 ---
 P. Wieser

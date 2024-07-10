@@ -151,6 +151,7 @@ function _maintainUsersPerRole( cb ){
 
 // publishes the count of users which have a role
 //  as several roles may be asked, this publication provides a 'CountByRole' collection, with one row { role, count } per role
+//  this is used by pwix:startup-app-admin, so when there is not yet any connected user -> so we cannot protect that and this is public
 //
 // Roles.getUsersInRole() provides records as ( user_id, user_doc ):
 // [Arguments] {
@@ -170,7 +171,7 @@ Meteor.publish( 'Roles.countByRole', function( roles ){
     let initialized = false;
     let first = true;
 
-    // this callback republish the whole set on each modification
+    // this callback re-publish the whole set on each modification
     //  this provides to the client rows something as: { _id: 'APP_ADMIN', role: 'APP_ADMIN', count: 1 }
 
     const _publish = function(){
@@ -210,13 +211,9 @@ Meteor.publish( 'Roles.countByRole', function( roles ){
     this.ready();
 
     // Stop observing the cursor when the client unsubscribes. Stopping a
-    // subscription automatically takes care of sending the client any `removed`
-    // messages.
+    // subscription automatically takes care of sending the client any `removed` messages.
     this.onStop(() => {
-        handles.every(( h ) => {
-            h.then(( res ) => { res.stop(); });
-            return true;
-        })
+        handles.forEach(( h ) => { h.then(( res ) => { res.stop(); }); });
     });
 });
 
@@ -228,6 +225,9 @@ Meteor.publish( 'Roles.countByRole', function( roles ){
 //  when updating the role-assignment collection.
 //  However, the removed() is triggered when we delete a user from db.users collection...
 //  So, we observe changes on both the two collections
+//
+// as of 2024- 7-10 this is not used by any application nor any package  -just comment it out at the moment
+/*
 Meteor.publish( 'Roles.listByRole', function( roles ){
 
     // return ( pwiForums.server.fn.Posts.moderablesByQuery.bind( this ))( query );
@@ -291,3 +291,4 @@ Meteor.publish( 'Roles.listByRole', function( roles ){
     // messages.
     this.onStop(() => handle.stop());
 });
+*/

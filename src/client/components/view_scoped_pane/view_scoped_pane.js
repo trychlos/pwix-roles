@@ -100,6 +100,11 @@ Template.view_scoped_pane.helpers({
         return items;
     },
 
+    // whether the user already has any scoped role
+    haveScoped(){
+        return Object.keys( this.roles.get().scoped ).length > 0;
+    },
+
     // string translation
     i18n( arg ){
         return pwixI18n.label( I18N, arg.hash.key );
