@@ -222,8 +222,10 @@ Template.pr_tree.onRendered( function(){
     //  displaying the roles hierarchy that the current user is allowed to give to someone else
     self.autorun(() => {
         const $tree = self.PR.$tree.get();
+        const roles = Template.currentData().roles.get();
         if( $tree && self.PR.tree_ready() && !self.PR.tree_done()){
             const wantScoped = Template.currentData().wantScoped === true;
+            // be reactive to roles changes
             let promises = [];
             // display the role and its children if:
             //  - role is global or scoped depending of wantScoped
@@ -253,6 +255,7 @@ Template.pr_tree.onRendered( function(){
 
     // at the end of the nodes creation, update the display
     self.autorun(() => {
+        const roles = Template.currentData().roles.get();
         if( self.PR.tree_done()){
             const $tree = self.PR.$tree.get();
             $tree.jstree( true ).show_checkboxes();
@@ -263,13 +266,13 @@ Template.pr_tree.onRendered( function(){
             if( wantScoped ){
                 const scope = Template.currentData().scope;
                 if( scope ){
-                    Template.currentData().roles.get().scoped[scope].direct.forEach(( role ) => {
+                    roles.scoped[scope].direct.forEach(( role ) => {
                         const id = radical+role;
                         $tree.jstree( true ).check_node( id );
                     });
                 }
             } else {
-                Template.currentData().roles.get().global.direct.forEach(( role ) => {
+                roles.global.direct.forEach(( role ) => {
                     const id = radical+role;
                     $tree.jstree( true ).check_node( id );
                 });

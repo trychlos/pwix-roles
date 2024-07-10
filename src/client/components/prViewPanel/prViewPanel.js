@@ -51,7 +51,7 @@ Template.prViewPanel.onCreated( function(){
                 self.PR.userId = user;
             }
         } else {
-            self.PR.userId =Meteor.userId();
+            self.PR.userId = Meteor.userId();
         }
         if( self.PR.userId ){
             self.PR.handle = self.subscribe( 'pwix_roles_user_assignments', self.PR.userId );
@@ -71,8 +71,8 @@ Template.prViewPanel.onCreated( function(){
                     o.all.push( role._id );
                 });
             };
-            Roles.getRolesForUser( self.PR.userId, { anyScope: true, fullObjects: true }).then(( res ) => {
-                res.forEach(( it ) => {
+            Meteor.roleAssignment.find({ 'user._id': self.PR.userId }).fetchAsync().then(( fetched ) => {
+                fetched.forEach(( it ) => {
                     if( it.scope ){
                         roles.scoped[it.scope] = roles.scoped[it.scope] || {};
                         _setup( it, roles.scoped[it.scope] );
@@ -83,6 +83,11 @@ Template.prViewPanel.onCreated( function(){
                 self.PR.roles.set( _.cloneDeep( roles ));
             });
         }
+    });
+
+    // track the changes in the roles
+    self.autorun(() => {
+        //console.debug( self.PR.roles.get());
     });
 });
 

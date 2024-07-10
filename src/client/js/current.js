@@ -6,12 +6,14 @@
  * So obtaining the roles hierarchy via the configuration must imply a recomputation of direct roles of the user.
  */
 
+import _ from 'lodash';
+
 import { Tracker } from 'meteor/tracker';
 
 // only available on the client
 let _current = {
     dep: new Tracker.Dependency(),
-    handle: Meteor.subscribe( 'pwix_roles_user_assignments', Meteor.userId()),
+    handle: null,
     val: {
         userId: null,
         scoped: {},
@@ -21,58 +23,61 @@ let _current = {
         }
     },
     currentClear(){
+        _current.handle = null;
+        _current.val.userId = null;
         _current.val.scoped = {};
         _current.val.global = {
             all: [],
             direct: []
         };
     },
-    async currentRecompute( userId ){
-        _verbose( Roles.C.Verbose.CURRENT, 'pwix:roles recomputing current object' );
-        const _setup = function( it, o ){
-            o.all = o.all || [];
-            o.direct = o.direct || [];
-            o.direct.push( it.role._id );
+    doSetup( it, o ){
+        o.direct.push( it.role._id );
+        if( it.inheritedRoles && _.isArray( it.inheritedRoles )){
             it.inheritedRoles.forEach(( role ) => {
                 o.all.push( role._id );
             });
-        };
-        return Roles.getRolesForUser( userId, { anyScope: true, fullObjects: true }).then(( res ) => {
-            let scoped = {};
-            let global = {};
-            res.forEach(( it ) => {
-                if( it.scope ){
-                    scoped[it.scope] = scoped[it.scope] || {};
-                    _setup( it, scoped[it.scope] );
-                } else {
-                    _setup( it, global );
-                }
-            });
-            _current.val.scoped = scoped;
-            _current.val.global = global;
-        });
+        }
     }
 };
+
+// re-subscribe when userId changes
+Tracker.autorun(() => {
+    const userId = Meteor.userId();
+    if( userId !== _current.val.userId ){
+        _current.currentClear();
+        if( userId ){
+            _current.handle = Meteor.subscribe( 'pwix_roles_user_assignments', userId );
+            _current.val.userId = userId;
+        }
+    }
+});
+
+// track subscription ready
+Tracker.autorun(() => {
+    //console.debug( 'handle ready', _current.handle.ready());
+});
 
 // the current user roles is a reactive data source
 //  - reactive to user login/logout
 //  - reactive to user roles assignments changes
 Tracker.autorun(() => {
-    //console.debug( 'ready?', Roles.ready());
     if( Roles.ready() && _current.handle.ready()){
         const userId = Meteor.userId();
-        if( userId !== _current.val.userId ){
-            _verbose( Roles.C.Verbose.CURRENT, 'pwix:roles userId changes to', userId );
-            if( userId ){
-                _current.currentRecompute( userId ).then(() => {
-                    _current.val.userId = userId;
-                    _current.dep.changed();
+        if( userId === _current.val.userId ){
+            Meteor.roleAssignment.find({ 'user._id': userId }).fetchAsync().then(( fetched ) => {
+                _current.val.scoped = {};
+                _current.val.global = { all: [], direct: [] };
+                fetched.forEach(( it ) => {
+                    if( it.scope ){
+                        _current.val.scoped[it.scope] = _current.val.scoped[it.scope] || { all: [], direct: [] };
+                        _current.doSetup( it, _current.val.scoped[it.scope] );
+                    } else {
+                        _current.doSetup( it, _current.val.global );
+                    }
                 });
-            } else {
-                _current.currentClear();
-                _current.val.userId = null;
                 _current.dep.changed();
-            }
+            });
         }
     }
 });
