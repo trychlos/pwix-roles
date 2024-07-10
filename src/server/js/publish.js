@@ -150,7 +150,7 @@ function _maintainUsersPerRole( cb ){
 }
 
 // publishes the count of users which have a role
-//  as several roles may be asked, this publication provides a 'CountByRole' collection, with one row { role, count } per role
+//  as several roles may be asked, this publication provides a 'pwix_roles_count_by_roles' collection, with one row { role, count } per role
 //  this is used by pwix:startup-app-admin, so when there is not yet any connected user -> so we cannot protect that and this is public
 //
 // Roles.getUsersInRole() provides records as ( user_id, user_doc ):
@@ -163,10 +163,10 @@ function _maintainUsersPerRole( cb ){
 //       }
 //     }
 //
-Meteor.publish( 'Roles.countByRole', function( roles ){
+Meteor.publish( 'pwix_roles_count_by_roles', function( roles ){
 
     const self = this;
-    const collectionName = 'CountByRole';
+    const collectionName = 'pwix_roles_count_by_roles';
     const rolesArray = Array.isArray( roles ) ? roles : [ roles ];
     let initialized = false;
     let first = true;

@@ -16,6 +16,7 @@
     - Define Roles.EditPanel.global(), .scoped() and .roles() function to get back the edition results
     - Define Roles.setUserRoles() new function
     - Obsolete and remove Roles.allAssignments publication
+    - Roles.countByRole publication is renamed to pwix_roles_count_by_roles for consistency, and publishes in a collection of the same name
 
 ### 1.4.0
 
