@@ -15,6 +15,7 @@
     - Add scopeLabelFn, scopesFn and scopesPub configuration parameters to get known scopes
     - Define Roles.EditPanel.global(), .scoped() and .roles() function to get back the edition results
     - Define Roles.setUserRoles() new function
+    - Obsolete and remove Roles.allAssignments publication
 
 ### 1.4.0
 

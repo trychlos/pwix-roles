@@ -4,18 +4,29 @@
 
 import { Roles as alRoles } from 'meteor/alanning:roles';
 
-// publishes the roles of the specified user
-Meteor.publish( 'pwix_roles_user_assignments', function( userId ){
-    if( userId ){
-        return Meteor.roleAssignment.find({ 'user._id': userId });
-    } else {
-        this.ready()
+// publishes the roles of the specified user (or of all users)
+//  requires at least a connected user
+Meteor.publish( 'pwix_roles_user_assignments', function( userId=null ){
+    if( !this.userId ){
+        this.ready();
+        return false;
     }
+    let selector = {};
+    if( userId ){
+        selector['user._id'] = userId;
+    }
+    return Meteor.roleAssignment.find( selector );
 });
 
 // publishes the used scopes
 //  this acts as a default if the application doesn't provide its own list of managed scopes
+//  requires at least a connected user
 Meteor.publish( 'pwix_roles_used_scopes', function(){
+    if( !this.userId ){
+        this.ready();
+        return false;
+    }
+
     const self = this;
     const collectionName = 'pwix_roles_used_scopes';
     let scopes = {};
@@ -48,12 +59,6 @@ Meteor.publish( 'pwix_roles_used_scopes', function(){
     self.onStop( function(){
         observer.then(( handle ) => { handle.stop(); });
     });
-});
-
-// publishes all the roles
-//  this may be needed by an application which would wish do some sort of user's roles management
-Meteor.publish( 'Roles.allAssignments', function(){
-    return Meteor.roleAssignment.find();
 });
 
 // this function builds and maintains the _rolesHash has with roles -> array of users
