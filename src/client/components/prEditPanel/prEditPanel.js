@@ -1,5 +1,5 @@
 /*
- * /imports/client/components/prEditPanel/prEditPanel.js
+ * pwix:roles/src/client/components/prEditPanel/prEditPanel.js
  *
  *  Edit the roles of the specified user.
  * 
@@ -159,8 +159,8 @@ Template.prEditPanel.helpers({
         const PR = Template.instance().PR;
         return {
             roles: PR.roles,
-            global_div: PR.global_div,
-            global_prefix: PR.global_prefix
+            pr_div: PR.global_div,
+            pr_prefix: PR.global_prefix
         };
     },
 

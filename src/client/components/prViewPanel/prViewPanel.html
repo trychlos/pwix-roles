@@ -1,0 +1,15 @@
+<template name="prViewPanel">
+    <div class="prViewPanel">
+
+        {{#if haveScopes }}
+
+            {{> Tabbed (parmsTabbed) }}
+
+        {{else}}
+
+            {{> view_global_pane (parmsGlobalPane) }}
+
+        {{/if}}
+
+    </div>
+</template>

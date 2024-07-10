@@ -7,14 +7,16 @@ Roles.i18n = {
     ...{
         fr: {
             dialogs: {
-                title: 'Rôles de l\'utilisateur',
-                title_mail: 'Rôles de %s',
+                cancel: 'Annuler',
+                close: 'Fermer',
+                edit_title: 'Rôles de l\'utilisateur',
+                edit_title_mail: 'Rôles de %s',
                 myroles: 'Mes rôles',
                 norole: 'Vous n\'avez aucun rôle particulier en ce moment.',
                 roles_tab: 'Rôles',
-                cancel: 'Annuler',
                 save: 'Enregistrer',
-                close: 'Fermer'
+                view_title: 'Visualisation des rôles',
+                view_title_mail: 'Visualisation des rôles de %s',
             },
             panels: {
                 add_button: 'Nouveau périmètre',

@@ -389,6 +389,7 @@ Roles.usedScopes = async function(){
  * @param {Object} options
  * @returns {Boolean} true if the user exhibits any of the required roles
  */
+/*
 _userIsInRoles = {
     dep: null,
     userId: null,
@@ -435,3 +436,14 @@ Roles.userIsInRoles = async function( user, roles, options={} ){
 
     return ret;
 }
+    */
+
+Roles.userIsInRoles = async function( user, roles, options={} ){
+    let result = false;
+    let userId = _.isString( user ) ? user : ( _.isObject( user ) && user._id ? user._id : null );
+    if( userId ){
+        result = await alRoles.userIsInRoleAsync( user, roles, options );
+    }
+    return result;
+}
+

@@ -13,8 +13,6 @@
 |    1 | 2023- 2- 2 | have aliases |
 |    3 | 2023- 2- 2 | implement f_CleanupObsoleteRoles at startup |
 |    6 | 2023- 2-10 | prEdit: checks **must also** be done server-side |
-|   11 | 2023-12- 3 | prView/prEdit should display the 'scoped' attribute |
-|      | 2024- 7- 7 | done for prEdit |
 |   13 |  |  |
 
 ---
@@ -40,6 +38,9 @@
 |      | 2023- 7- 8 | reactivity is validated with Accord33 users manager |
 |   10 | 2023-12- 3 | prEdit doesn't manage several hierarchies |
 |      | 2024- 7- 6 | yes, it does (though I don't really understand the use case as APP_ADMIN should be nonetheless allowed to all actions) -> fixed |
+|   11 | 2023-12- 3 | prView/prEdit should display the 'scoped' attribute |
+|      | 2024- 7- 7 | done for prEdit |
+|      | 2024- 7-10 | done for prView |
 |   12 | 2024- 7- 6 | en_US and fr_FR should be renamed to more generalized en and fr |
 |      | 2024- 7- 8 | done |
 

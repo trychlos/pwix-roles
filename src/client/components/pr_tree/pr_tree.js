@@ -1,5 +1,5 @@
 /*
- * /imports/client/components/pr_tree/pr_tree.js
+ * pwix:roles/src/client/components/pr_tree/pr_tree.js
  *
  *  A component which presents a hierarchy of roles.
  *  This component is meant to be included:
@@ -15,6 +15,7 @@
  *      (a deep copy of the initial roles - so can be edited)
  *  - pr_div: the class name of the main div
  *  - pr_prefix: the prefix of the checkbox nodes
+ *  - pr_edit: whether we want be able to edit, defaulting to true
  */
 
 import './pr_tree.html';
@@ -30,20 +31,23 @@ Template.pr_tree.onCreated( function(){
         tree_nodes_created: {},
         tree_nodes_waiting: {},
         tree_done_rv: new ReactiveVar( false ),
+        tree_dataset_rv: new ReactiveVar( false ),
 
-        // we have explicitely checked an item
+        // whether the tree is readonly
+        readOnly: new ReactiveVar( false ),
+
+        // we have explicitely or programatically checked an item (but cascade doesn't come here)
         //  data = { node, selected, event, jsTree instance }
         tree_checkbox_check( data ){
             const $tree = self.PR.$tree.get();
             data.node.children_d.every(( id ) => {
-                //$tree.jstree( true ).disable_checkbox( id );
                 $tree.jstree( true ).disable_node( id );
                 return true;
             });
             $tree.trigger( 'pr-change' );
         },
 
-        // we have explicitely unchecked an item
+        // we have explicitely or programatically unchecked an item (but cascade doesn't come here)
         //  data = { node, selected, event, jsTree instance }
         tree_checkbox_uncheck( data ){
             const $tree = self.PR.$tree.get();
@@ -108,6 +112,14 @@ Template.pr_tree.onCreated( function(){
             });
         },
 
+        // getter/setter: whether the initial data has been set in the tree (whether checkboxes are checked)
+        tree_dataset( set ){
+            if( set === true || set === false ){
+                self.PR.tree_dataset_rv.set( set );
+            }
+            return self.PR.tree_dataset_rv.get();
+        },
+
         // getter/setter: whether the creation of the tree is done
         tree_done( done ){
             if( done === true || done === false ){
@@ -124,6 +136,16 @@ Template.pr_tree.onCreated( function(){
             return self.PR.tree_ready_rv.get();
         },
     };
+
+    // setup the edition flag
+    self.autorun(() => {
+        self.PR.readOnly.set( Template.currentData().pr_edit === false );
+    });
+
+    // track the received roles
+    self.autorun(() => {
+        //console.debug( Template.currentData().roles.get());
+    });
 });
 
 Template.pr_tree.onRendered( function(){
@@ -156,6 +178,7 @@ Template.pr_tree.onRendered( function(){
                 },
                 plugins: [
                     'checkbox',
+                    'conditionalselect',
                     'wholerow'
                 ],
                 checkbox: {
@@ -163,6 +186,9 @@ Template.pr_tree.onRendered( function(){
                     cascade: 'down',
                     whole_node: true,
                     tie_selection: false
+                },
+                conditionalselect( node, event ){
+                    return !self.PR.readOnly.get();
                 }
             })
             // 'ready.jstree' data = jsTree instance
@@ -197,32 +223,21 @@ Template.pr_tree.onRendered( function(){
     self.autorun(() => {
         const $tree = self.PR.$tree.get();
         if( $tree && self.PR.tree_ready() && !self.PR.tree_done()){
-            // reset the tree
-            /*
-            console.debug( 'resetting the tree' );
-            console.debug( self.PR.tree_nodes_created );
-            $tree.jstree( true ).delete_node( Object.values( self.PR.tree_nodes_created ));
-            self.PR.tree_nodes_created = {};
-            self.PR.tree_nodes_waiting = {};
-            //self.PR.tree_done( false );
-            */
-            // and rebuild
             const wantScoped = Template.currentData().wantScoped === true;
             let promises = [];
             // display the role and its children if:
             //  - role is global or scoped depending of wantScoped
             //  - the current user has it which means he is allowed to give it
             async function f_role( role, parent=null, scoped=false ){
-                Roles.userIsInRoles( Meteor.userId(), role.name ).then(( res ) => {
-                    if( res ){
-                        if(( wantScoped && ( role.scoped === true || scoped === true )) || ( !wantScoped && !role.scoped && !scoped )){
-                            self.PR.tree_create_ask.bind( self )( role, parent );
-                        }
-                        if( role.children ){
-                            role.children.forEach(( it ) => {
-                                promises.push( f_role( it, role, role.scoped || scoped ));
-                            });
-                        }
+                Roles.userIsInRoles( Meteor.userId(), role.name, { anyScope: true }).then(( res ) => {
+                    //console.debug( role.name, res );
+                    if( res && (( wantScoped && ( role.scoped === true || scoped === true )) || ( !wantScoped && !role.scoped && !scoped ))){
+                        self.PR.tree_create_ask.bind( self )( role, parent );
+                    }
+                    if( role.children ){
+                        role.children.forEach(( it ) => {
+                            promises.push( f_role( it, role, role.scoped || scoped ));
+                        });
                     }
                 });
             }
@@ -259,6 +274,7 @@ Template.pr_tree.onRendered( function(){
                     $tree.jstree( true ).check_node( id );
                 });
             }
+            self.PR.tree_dataset( true );
         }
     });
 });
@@ -267,12 +283,5 @@ Template.pr_tree.helpers({
     // name of the main class
     divClass(){
         return this.pr_div;
-    }
-});
-
-Template.pr_tree.events({
-    'pr-change .pr-edit-global-pane'( event, instance ){
-        const roles = Roles.EditPanel.checked();
-        instance.$( event.currentTarget ).trigger( 'pr-global-state', { roles: roles });
     }
 });

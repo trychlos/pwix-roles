@@ -7,14 +7,16 @@ Roles.i18n = {
     ...{
         en: {
             dialogs: {
-                title: 'Edit user\'s roles',
-                title_mail: 'Edit roles for %s',
+                cancel: 'Cancel',
+                close: 'Close',
+                edit_title: 'Edit user\'s roles',
+                edit_title_mail: 'Edit roles for %s',
                 myroles: 'My roles',
                 norole: 'It seems you don\'t have any particular role at the moment.',
                 roles_tab: 'Roles',
-                cancel: 'Cancel',
                 save: 'Save',
-                close: 'Close'
+                view_title: 'View user\'s roles',
+                view_title_mail: 'View roles for %s',
             },
             panels: {
                 add_button: 'New scope',

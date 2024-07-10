@@ -1,5 +1,5 @@
 /*
- * /imports/client/components/edit_scoped_pane/edit_scoped_pane.js
+ * pwix:roles/src/client/components/edit_scoped_pane/edit_scoped_pane.js
  *
  *  Edit scoped roles.
  *  We display the scoped roles as a list of accordions <role> <scope>
@@ -126,10 +126,10 @@ Template.edit_scoped_pane.onCreated( function(){
 
     // track the current scoped roles
     self.autorun(() => {
-        console.debug( Template.currentData().roles.get().scoped );
+        //console.debug( Template.currentData().roles.get().scoped );
     });
 
-    // do we have the pwix:forms package
+    // do we have the pwix:forms package ?
     self.autorun(() => {
         self.PR.haveForms.set( Package['pwix:forms'] && Package['pwix:forms'].Forms );
     });

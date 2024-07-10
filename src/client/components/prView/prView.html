@@ -7,36 +7,7 @@
 <template name="prView_body">
     <div class="prView-body">
 
-        <ul class="nav nav-tabs" role="tablist">
-            {{#each it in tabItems }}
-                <li class="nav-item" role="presentation">
-                    <button 
-                        id="{{ it.tabId }}"
-                        type="button"
-                        class="nav-link {{ tabActive it }}"
-                        aria-selected="{{ tabSelected it }}"
-                        aria-controls="{{ it.paneId }}"
-                        role="tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#{{ it.paneId }}">
-                            {{ tabLabel it }}
-                    </button>
-                </li>
-            {{/each}}
-        </ul>
-
-        <div class="tab-content container-fluid">
-            {{#each it in tabItems }}
-                <div
-                    class="tab-pane {{ paneActive it }} pr-tab" 
-                    id="{{ it.paneId }}" 
-                    role="tabpanel" 
-                    aria-labelledby="{{ it.tabId }}"
-                    tabindex="0">
-                        {{{ paneContent it }}}
-                </div>
-            {{/each}}
-        </div>
+        {{> prViewPanel }}
 
     </div>
 </template>

@@ -1,10 +1,12 @@
 /*
- * /imports/client/components/roles_edit/roles_edit.js
+ * pwix:roles/src/client/components/prEdit/prEdit.js
  *
- *  Edit the roles of the specified user.
+ *  Edit the roles of the specified user inside of an autonomous modal dialog.
  * 
  *  Parms:
  *  - `user`: optional, the user identifier or the user full document record
+ *      The edition works well without any user, starting from an empty set of roles.
+ *      Bu twe will - of course - be unable to save anything.
  * 
  *  As a side effect, if a user is provided as a full document, then the mail address is displayed in the dialog title.
  */
@@ -26,7 +28,7 @@ Template.prEdit.onCreated( function(){
         Modal.run({
             mdBody: 'prEdit_body',
             mdFooter: 'prEdit_footer',
-            mdTitle: pwixI18n.label( I18N, 'dialogs.'+( email ? 'title_mail' : 'title' ), email ),
+            mdTitle: pwixI18n.label( I18N, 'dialogs.'+( email ? 'edit_title_mail' : 'edit_title' ), email ),
             ...Template.currentData()
         });
     });
@@ -46,7 +48,6 @@ Template.prEdit_footer.events({
         // update the user roles if a user was provided
         if( this.user ){
             Meteor.callAsync( 'Roles.setUserRoles', user, roles );
-            Meteor.callAsync( 'Roles.Accounts.Updated', user );
         }
         Modal.close();
         return false;

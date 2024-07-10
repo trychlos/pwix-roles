@@ -321,7 +321,7 @@ The globally exported object.
 
 - `Roles.userIsInRoles( user, roles [, opts ])`
 
-    An async reactive data source which says if the specified user has at least one the specified roles.
+    An async function which says if the specified user has at least one the specified roles.
 
     - `user`: either a user identifier or a user document
     - `roles`: either a single role or an array of roles

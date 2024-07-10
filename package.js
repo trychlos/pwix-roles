@@ -45,6 +45,7 @@ function configure( api ){
     api.addFiles( 'src/client/components/prEdit/prEdit.js', 'client' );
     api.addFiles( 'src/client/components/prEditPanel/prEditPanel.js', 'client' );
     api.addFiles( 'src/client/components/prView/prView.js', 'client' );
+    api.addFiles( 'src/client/components/prViewPanel/prViewPanel.js', 'client' );
 }
 
 // NPM dependencies are checked in /src/server/js/check_npms.js
