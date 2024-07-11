@@ -18,6 +18,8 @@
  *  - pr_edit: whether we want be able to edit, defaulting to true
  */
 
+import _ from 'lodash';
+
 import './pr_tree.html';
 
 Template.pr_tree.onCreated( function(){
@@ -30,11 +32,14 @@ Template.pr_tree.onCreated( function(){
         tree_nodes_asked: {},
         tree_nodes_created: {},
         tree_nodes_waiting: {},
-        tree_done_rv: new ReactiveVar( false ),
-        tree_dataset_rv: new ReactiveVar( false ),
+        tree_built_rv: new ReactiveVar( false ),
+        tree_populated_rv: new ReactiveVar( false ),
 
         // whether the tree is readonly
         readOnly: new ReactiveVar( false ),
+
+        // last built and populated tree
+        prevTree: null,
 
         // we have explicitely or programatically checked an item (but cascade doesn't come here)
         //  data = { node, selected, event, jsTree instance }
@@ -93,7 +98,7 @@ Template.pr_tree.onCreated( function(){
             }
             // when we have created all the nodes...
             if( Object.keys( self.PR.tree_nodes_waiting ).length === 0 ){
-                self.PR.tree_done( true );
+                self.PR.tree_built( true );
             }
         },
 
@@ -112,20 +117,25 @@ Template.pr_tree.onCreated( function(){
             });
         },
 
-        // getter/setter: whether the initial data has been set in the tree (whether checkboxes are checked)
-        tree_dataset( set ){
-            if( set === true || set === false ){
-                self.PR.tree_dataset_rv.set( set );
-            }
-            return self.PR.tree_dataset_rv.get();
+        // delete a node
+        //  a node has been deleted
+        tree_delete_node( data ){
         },
 
         // getter/setter: whether the creation of the tree is done
-        tree_done( done ){
+        tree_built( done ){
             if( done === true || done === false ){
-                self.PR.tree_done_rv.set( done );
+                self.PR.tree_built_rv.set( done );
             }
-            return self.PR.tree_done_rv.get();
+            return self.PR.tree_built_rv.get();
+        },
+
+        // getter/setter: whether the tree has been populated
+        tree_populated( done ){
+            if( done === true || done === false ){
+                self.PR.tree_populated_rv.set( done );
+            }
+            return self.PR.tree_populated_rv.get();
         },
 
         // getter/setter: whether the tree is ready
@@ -142,9 +152,23 @@ Template.pr_tree.onCreated( function(){
         self.PR.readOnly.set( Template.currentData().pr_edit === false );
     });
 
-    // track the received roles
+    // track the received roles -> have to rebuild the tree on changes
     self.autorun(() => {
-        //console.debug( Template.currentData().roles.get());
+        const roles = Template.currentData().roles.get();
+        if( !_.isEqual( roles, self.PR.prevTree )){
+            self.PR.prevTree = _.cloneDeep( roles );
+            self.PR.tree_built( false );
+        }
+    });
+
+    // track the built status
+    self.autorun(() => {
+        //console.debug( 'tree_built', self.PR.tree_built());
+    });
+
+    // track the populated status
+    self.autorun(() => {
+        //console.debug( 'tree_populated', self.PR.tree_populated());
     });
 });
 
@@ -169,6 +193,7 @@ Template.pr_tree.onRendered( function(){
                     check_callback( operation, node, node_parent, node_position, more ){
                         switch( operation ){
                             case 'create_node':
+                            case 'delete_node':
                                 return true;
                             default:
                                 return false;
@@ -207,6 +232,10 @@ Template.pr_tree.onRendered( function(){
             .on( 'uncheck_node.jstree', ( event, data ) => {
                 self.PR.tree_checkbox_uncheck( data );
             })
+            // 'delete_node.jstree' data = { node, parent, jsTree instance }
+            .on( 'delete_node.jstree', ( event, data ) => {
+                self.PR.tree_delete_node( data );
+            })
             // 'enable_checkbox.jstree' data = { node, jsTree instance }
             .on( 'enable_node.jstree', ( event, data ) => {
                 $tree.jstree( true ).get_node( data.node.id, true ).removeClass( 'pr-disabled' );
@@ -220,12 +249,21 @@ Template.pr_tree.onRendered( function(){
 
     // build the roles tree
     //  displaying the roles hierarchy that the current user is allowed to give to someone else
+    //  we build here the structure opened to the user roles
+    //  the built structure includes all the roles the current user has
     self.autorun(() => {
         const $tree = self.PR.$tree.get();
         const roles = Template.currentData().roles.get();
-        if( $tree && self.PR.tree_ready() && !self.PR.tree_done()){
+        if( $tree && self.PR.tree_ready() && !self.PR.tree_built()){
+            // reset the tree
+            //console.debug( 'reset the tree' );
+            $tree.jstree( true ).delete_node( Object.values( self.PR.tree_nodes_created ));
+            self.PR.tree_nodes_asked = {};
+            self.PR.tree_nodes_created = {};
+            self.PR.tree_nodes_waiting = {};
+            // and rebuild it
+            //console.debug( 'rebuild the tree' );
             const wantScoped = Template.currentData().wantScoped === true;
-            // be reactive to roles changes
             let promises = [];
             // display the role and its children if:
             //  - role is global or scoped depending of wantScoped
@@ -243,24 +281,24 @@ Template.pr_tree.onRendered( function(){
                     }
                 });
             }
-            //console.log( Roles );
             Roles.configure().roles.hierarchy.forEach(( it ) => {
                 promises.push( f_role( it ));
             });
             Promise.allSettled( promises ).then(() => {
-                // nothing to do here
+                self.PR.tree_populated( false );
             });
         }
     });
 
     // at the end of the nodes creation, update the display
+    //  populate the built tree with actual roles of the user by checking already created checkboxes
     self.autorun(() => {
         const roles = Template.currentData().roles.get();
-        if( self.PR.tree_done()){
+        if( self.PR.tree_built() && !self.PR.tree_populated()){
+            //console.debug( 'populating with', roles.global.direct );
             const $tree = self.PR.$tree.get();
             $tree.jstree( true ).show_checkboxes();
             $tree.jstree( true ).open_all();
-            //self.$( '.modal' ).modal( 'handleUpdate' );
             const radical = Template.currentData().pr_prefix;
             const wantScoped = Template.currentData().wantScoped === true;
             if( wantScoped ){
@@ -277,7 +315,7 @@ Template.pr_tree.onRendered( function(){
                     $tree.jstree( true ).check_node( id );
                 });
             }
-            self.PR.tree_dataset( true );
+            self.PR.tree_populated( true );
         }
     });
 });

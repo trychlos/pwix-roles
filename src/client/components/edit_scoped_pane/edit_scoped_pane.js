@@ -126,7 +126,7 @@ Template.edit_scoped_pane.onCreated( function(){
 
     // track the current scoped roles
     self.autorun(() => {
-        //console.debug( Template.currentData().roles.get().scoped );
+        console.debug( Template.currentData().roles.get().scoped );
     });
 
     // do we have the pwix:forms package ?
@@ -179,7 +179,9 @@ Template.edit_scoped_pane.helpers({
 
     // whether the user already has any scoped role
     haveScoped(){
-        return Object.keys( this.roles.get().scoped ).length > 0;
+        const scoped = this.roles.get().scoped;
+        console.debug( 'haveScoped', Object.keys( scoped ).length > 0 );
+        return Object.keys( scoped ).length > 0;
     },
 
     // string translation

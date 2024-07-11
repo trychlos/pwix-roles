@@ -34,7 +34,7 @@ Template.prViewPanel.onCreated( function(){
 
         // initial roles or initial roles of the specified user as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
         //  (same structure than current)
-        roles: new ReactiveVar({ scoped: {}, global: { all: [], direct: [] }}),
+        roles: new ReactiveVar({ scoped: {}, global: { all: [], direct: [] }}, _.isEqual ),
         userId: null,
         handle: null
     };
