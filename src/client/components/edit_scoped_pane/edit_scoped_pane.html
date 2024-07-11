@@ -1,12 +1,6 @@
 <template name="edit_scoped_pane">
     <div class="pr-edit-scoped-pane {{ divClass }}">
 
-        <div class="scoped-header">
-            <div class="js-plus">
-                {{> plusButton (parmsPlusButton) }}
-            </div>
-        </div>
-
         {{#if haveScoped }}
             <div class="accordion" id="{{ accordionId }}">
                 {{! 'it' is an internal invariant scope object identifier }}

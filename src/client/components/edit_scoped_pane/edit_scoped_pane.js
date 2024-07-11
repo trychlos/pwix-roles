@@ -15,7 +15,6 @@
 import _ from 'lodash';
 
 import { Bootbox } from 'meteor/pwix:bootbox';
-import { PlusButton } from 'meteor/pwix:plus-button';
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -29,8 +28,6 @@ Template.edit_scoped_pane.onCreated( function(){
     self.PR = {
         // the main div
         accordionId: Random.id(),
-        // whether the plus button is enabled
-        enabledPlus: new ReactiveVar( true ),
         // whether we have the pwix:forms package
         haveForms: new ReactiveVar( false ),
 
@@ -126,7 +123,7 @@ Template.edit_scoped_pane.onCreated( function(){
 
     // track the current scoped roles
     self.autorun(() => {
-        console.debug( Template.currentData().roles.get().scoped );
+        //console.debug( 'scoped', Template.currentData().roles.get().scoped );
     });
 
     // do we have the pwix:forms package ?
@@ -137,13 +134,6 @@ Template.edit_scoped_pane.onCreated( function(){
 
 Template.edit_scoped_pane.onRendered( function(){
     const self = this;
-
-    // disable the 'plus' button while we have an unset scope
-    self.autorun(() => {
-        const scoped = Template.currentData().roles.get().scoped;
-        const haveNone = Object.keys( scoped ).includes( Template.currentData().pr_none );
-        self.PR.enabledPlus.set( !haveNone );
-    });
 
     // open the first accordion (if any)
     self.$( '.pr-edit-scoped-pane .accordion-collapse' ).first().addClass( 'show' );
@@ -179,9 +169,7 @@ Template.edit_scoped_pane.helpers({
 
     // whether the user already has any scoped role
     haveScoped(){
-        const scoped = this.roles.get().scoped;
-        console.debug( 'haveScoped', Object.keys( scoped ).length > 0 );
-        return Object.keys( scoped ).length > 0;
+        return Object.keys( this.roles.get().scoped ).length > 0;
     },
 
     // string translation
@@ -227,16 +215,6 @@ Template.edit_scoped_pane.helpers({
         return o ? { statusRv: o.DYN.checkStatus } : {};
     },
 
-    // parms for adding a new scope
-    parmsPlusButton(){
-        return {
-            enabled: Template.instance().PR.enabledPlus,
-            label: pwixI18n.label( I18N, 'panels.add_button' ),
-            shape: PlusButton.C.Shape.RECTANGLE,
-            title: pwixI18n.label( I18N, 'panels.add_title' ),
-        };
-    },
-
     // parms for a scoped tree for the current scoped role
     parmsTree( it ){
         return {
@@ -269,7 +247,7 @@ Template.edit_scoped_pane.events({
     },
 
     // add a new accordion to enter into a new scope (and a new tree of roles)
-    'click .js-plus'( event, instance ){
+    'pr-new-scope .pr-edit-scoped-pane'( event, instance ){
         let roles = this.roles.get();
         const res = instance.PR.newScope();
         roles.scoped[res.key] = res.value;

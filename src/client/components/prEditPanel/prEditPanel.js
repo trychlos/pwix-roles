@@ -11,10 +11,12 @@
 
 import _ from 'lodash';
 
+import { PlusButton } from 'meteor/pwix:plus-button';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import '../edit_global_pane/edit_global_pane.js';
 import '../edit_scoped_pane/edit_scoped_pane.js';
+import '../edit_scoped_plus/edit_scoped_plus.js';
 import '../pr_tree/pr_tree.js';
 
 import './prEditPanel.html';
@@ -30,11 +32,17 @@ Template.prEditPanel.onCreated( function(){
         scoped_prefix: 'prscoped_',
         scoped_none: 'NONE',
 
+        // whether the plus button is enabled
+        enabledPlus: new ReactiveVar( true ),
+
         // initial roles or initial roles of the specified user as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
         //  (same structure than current)
-        roles: new ReactiveVar({ scoped: {}, global: { all: [], direct: [] }}, _.isEqual ),
+        roles: new ReactiveVar({ scoped: {}, global: { all: [], direct: [] }}),
         userId: null,
-        handle: null
+        handle: null,
+
+        // have to name the Tabbed component to be able to save/restore the last active pane
+        tabbedName: 'pwix:roles/pr-edit-panel',
     };
 
     // when this component is created, then declare the function to get back its values
@@ -92,7 +100,7 @@ Template.prEditPanel.onCreated( function(){
                 });
                 checked[scope] = Roles._filter( locals );
             });
-            //console.debug( 'scoped()', checked );
+            console.debug( 'scoped()', checked );
             return checked;
         }
     };
@@ -123,9 +131,11 @@ Template.prEditPanel.onCreated( function(){
                 o.all = o.all || [];
                 o.direct = o.direct || [];
                 o.direct.push( it.role._id );
-                it.inheritedRoles.forEach(( role ) => {
-                    o.all.push( role._id );
-                });
+                if( it.inheritedRoles && _.isArray( it.inheritedRoles )){
+                    it.inheritedRoles.forEach(( role ) => {
+                        o.all.push( role._id );
+                    });
+                }
             };
             Roles.getRolesForUser( self.PR.userId, { anyScope: true, fullObjects: true }).then(( res ) => {
                 res.forEach(( it ) => {
@@ -144,6 +154,13 @@ Template.prEditPanel.onCreated( function(){
     // track edited roles
     self.autorun(() => {
         //console.debug( 'edited roles', self.PR.roles.get());
+    });
+
+    // disable the 'plus' button while we have an unset scope
+    self.autorun(() => {
+        const scoped = self.PR.roles.get().scoped;
+        const haveNone = Object.keys( scoped ).includes( self.PR.scoped_none );
+        self.PR.enabledPlus.set( !haveNone );
     });
 });
 
@@ -168,6 +185,7 @@ Template.prEditPanel.helpers({
     parmsTabbed(){
         const PR = Template.instance().PR;
         return {
+            name: PR.tabbedName,
             tabs: [
                 {
                     tabid: 'global_tab',
@@ -184,6 +202,7 @@ Template.prEditPanel.helpers({
                     tabid: 'scoped_tab',
                     paneid: 'scoped_pane',
                     navLabel: pwixI18n.label( I18N, 'tabs.scoped_title' ),
+                    navItemClasses: 'flex-grow-1',
                     paneTemplate: 'edit_scoped_pane',
                     paneData: {
                         roles: PR.roles,
@@ -191,8 +210,37 @@ Template.prEditPanel.helpers({
                         pr_prefix: PR.scoped_prefix,
                         pr_none: PR.scoped_none
                     }
+                },
+                {
+                    tabid: 'plus_tab',
+                    paneid: 'plus_pane',
+                    navTemplate: 'edit_scoped_plus',
+                    navData: {
+                        enabled: Template.instance().PR.enabledPlus,
+                        label: pwixI18n.label( I18N, 'panels.add_button' ),
+                        shape: PlusButton.C.Shape.RECTANGLE,
+                        title: pwixI18n.label( I18N, 'panels.add_title' ),
+                    }
                 }
             ]
         };
+    }
+});
+
+Template.prEditPanel.events({
+    // because of the position of the plusButton in the DOM, the edit_scoped_pane component cannot directly handle the clicks
+    //  we have to get them here, and redirect to the pane
+    'click .js-plus'( event, instance ){
+        instance.$( '.pr-edit-scoped-pane' ).trigger( 'pr-new-scope' );
+    },
+
+    // show/hide the 'new scope' button depending of the shown pane
+    // note that initial display only triggers the 'shown' event
+    'tabbed-pane-shown .prEditPanel'( event, instance, data ){
+        if( data.tab.tabid === 'scoped_tab' ){
+            instance.$( '.pr-edit-scoped-plus' ).removeClass( 'ui-hidden' );
+        } else {
+            instance.$( '.pr-edit-scoped-plus' ).addClass( 'ui-hidden' );
+        }
     }
 });
