@@ -389,55 +389,6 @@ Roles.usedScopes = async function(){
  * @param {Object} options
  * @returns {Boolean} true if the user exhibits any of the required roles
  */
-/*
-_userIsInRoles = {
-    dep: null,
-    userId: null,
-    userRoles: [],
-    reqRoles: []
-};
-Roles.userIsInRoles = async function( user, roles, options={} ){
-    if( !_userIsInRoles.dep ){
-        _userIsInRoles.dep = new Tracker.Dependency();
-        _userIsInRoles.dep.depend();
-    }
-    //console.log( 'Roles.userIsInRoles', user, roles );
-
-    // keep a trace of previous values to advertise of change
-    const prevId = _userIsInRoles.userId;
-    const prevRoles = [ ..._userIsInRoles.userRoles ];
-    const prevReq = [ ..._userIsInRoles.reqRoles ];
-
-    // set new values
-    _userIsInRoles.userId = user ? (( typeof user === 'string' ) ? user : user._id ) : null;
-    _userIsInRoles.reqRoles = roles ? (( typeof roles === 'string' ) ? [ roles ] : [ ...roles ]) : [];
-    let ret;
-
-    // if no user is connected, then we return false, unless no roles is requested
-    if( !user ){
-        _userIsInRoles.userRoles = [];
-        ret = ( _userIsInRoles.reqRoles.length === 0 );
-
-    } else {
-        _userIsInRoles.userRoles = await alRoles.getRolesForUserAsync( user, options );
-
-        // if no role is requested, then user is always allowed
-        if( _userIsInRoles.reqRoles.length === 0 ){
-            ret = true;
-        } else {
-            ret = await alRoles.userIsInRoleAsync( user, roles, options );
-        }
-    }
-
-    // have a change ?
-    if( prevId !== _userIsInRoles.userId || !_.isEqual( prevRoles, _userIsInRoles.usersRoles ) || !_isEqual( prevReq, _userIsInRoles.reqRoles )){
-        _userIsInRoles.dep.changed();
-    }
-
-    return ret;
-}
-    */
-
 Roles.userIsInRoles = async function( user, roles, options={} ){
     let result = false;
     let userId = _.isString( user ) ? user : ( _.isObject( user ) && user._id ? user._id : null );
