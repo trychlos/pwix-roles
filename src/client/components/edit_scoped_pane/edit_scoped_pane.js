@@ -53,8 +53,6 @@ Template.edit_scoped_pane.onCreated( function(){
                 roles.scoped[newScope] = roles.scoped[oldScope];
                 delete roles.scoped[oldScope];
                 Template.currentData().roles.set( roles );
-                // and avertize of the change
-                self.$( event.currentTarget ).trigger( 'pr-change' );
             } else {
                 console.warn( 'identifier not found', id );
             }
@@ -77,7 +75,7 @@ Template.edit_scoped_pane.onCreated( function(){
         },
 
         // after user confirmation, remove a scope and its roles
-        removeScope( event, id ){
+        removeScope( event, id, $tree ){
             const scope = self.PR.byId( id );
             if( scope ){
                 const dataContext = Template.currentData();
@@ -86,11 +84,10 @@ Template.edit_scoped_pane.onCreated( function(){
                     title: pwixI18n.label( I18N, 'panels.remove_scope_title' )
                 }, ( res ) => {
                     if( res ){
+                        $tree.trigger( 'pr-delete' );
                         const roles = dataContext.roles.get();
                         delete roles.scoped[scope];
                         dataContext.roles.set( roles );
-                        // and avertize of the change (on the pane only)
-                        self.$( '.pr-edit-scoped-pane' ).trigger( 'pr-change' );
                     }
                 });
             } else {
@@ -99,14 +96,23 @@ Template.edit_scoped_pane.onCreated( function(){
         },
 
         // update the check status indicator
-        setCheckStatus( scope, direct ){
+        // $tree and prefix must be provided to (non-reactively) update the data context roles reactive var with the checked checkboxes
+        updateStatus( scope, $tree, prefix ){
+            let scopedRoles = Template.currentData().roles.get().scoped[scope];
+            if( $tree && prefix ){
+                let locals = [];
+                $tree.jstree( true ).get_checked_descendants( '#' ).every(( id ) => {
+                    locals.push( id.replace( prefix, '' ));
+                    return true;
+                });
+                scopedRoles.direct = Roles._filter( locals );
+            }
             let status = 'UNCOMPLETE';
-            if( scope && scope != Template.currentData().pr_none && direct.length ){
+            if( scope && scope != Template.currentData().pr_none && scopedRoles.direct.length ){
                 status = 'VALID';
             }
-            const o = Template.currentData().roles.get().scoped[scope];
-            if( o && o.DYN && o.DYN.checkStatus ){
-                o.DYN.checkStatus.set( Package['pwix:forms'].Forms.CheckStatus.C[status] );
+            if( scopedRoles.DYN.checkStatus ){
+                scopedRoles.DYN.checkStatus.set( Package['pwix:forms'].Forms.CheckStatus.C[status] );
             }
         }
     };
@@ -252,30 +258,29 @@ Template.edit_scoped_pane.events({
         const res = instance.PR.newScope();
         roles.scoped[res.key] = res.value;
         this.roles.set( roles );
-        instance.PR.setCheckStatus( res.key, res.value.direct );
+        instance.PR.updateStatus( res.key );
         return false;
     },
 
     // remove the current scope and all its roles
     'click .js-minus'( event, instance ){
-        const $parent = instance.$( event.currentTarget ).closest( '.scoped-item' ).find( '.accordion-header' );
-        const id = $parent.prop( 'id' ).replace( /^header-/, '' );
-        instance.PR.removeScope( event, id );
+        const $parent = instance.$( event.currentTarget ).closest( '.scoped-item' );
+        const id = $parent.find( '.accordion-header' ).prop( 'id' ).replace( /^header-/, '' );
+        instance.PR.removeScope( event, id, $parent.find( '.'+this.pr_div ));
         return false;
     },
 
     // update the check status indicator (if any)
+    //  get event at the item level to recompute only *this* status
     'pr-change .scoped-item'( event, instance, data ){
         const $parent = instance.$( event.currentTarget ).find( '.accordion-header' );
         const id = $parent.prop( 'id' ).replace( /^header-/, '' );
-        const scope = instance.PR.byId( id );
-        const roles = Roles.EditPanel.scoped();
-        instance.PR.setCheckStatus( scope, roles[scope] );
+        instance.PR.updateStatus( instance.PR.byId( id ), instance.$( event.currentTarget ).find( '.'+this.pr_div ), this.pr_prefix );
     },
 
     // select/unselect a role and/or change a scope
+    //  get event at the component level to recompute only once all the scopes and roles
     'pr-change .pr-edit-scoped-pane'( event, instance, data ){
-        const roles = Roles.EditPanel.scoped();
-        instance.$( event.currentTarget ).trigger( 'pr-scoped-state', { roles: roles });
+        instance.$( event.currentTarget ).trigger( 'pr-scoped-state', { scoped: Roles.EditPanel.scoped() });
     }
 });

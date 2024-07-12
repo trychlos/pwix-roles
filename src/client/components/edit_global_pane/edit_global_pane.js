@@ -23,7 +23,6 @@ Template.edit_global_pane.helpers({
 
 Template.edit_global_pane.events({
     'pr-change .pr-edit-global-pane'( event, instance ){
-        const global = Roles.EditPanel.global();
-        instance.$( event.currentTarget ).trigger( 'pr-global-state', { global: global });
+        instance.$( event.currentTarget ).trigger( 'pr-global-state', { global: Roles.EditPanel.global() });
     }
 });

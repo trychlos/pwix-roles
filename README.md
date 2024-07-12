@@ -410,32 +410,28 @@ The caller can get the result back in two ways:
 
 - either by listening at the `pr-change` event:
 
-    This event is triggered each time the user changes a selection
+    This event is triggered on the tree:
+    
+    - once after the initial population of the tree
 
-    At every moment, the `Roles.EditPanel.checked( <jstree_selector> )` client-only companion function can be called to get the current state of selected roles.
+    - then each time the user changes the selection by cyhecking/uncheckibng the checkboxes.
 
-- or, starting with v 1.5.0, by listening to the `pr-global-state` event:
+Starting with v 1.5.0, the application can also use:
 
-    This event is triggered on each change, and holds a data object with the current list of directly selected roles.
+- the `pr-global-state` event, triggered with a data `{ global: direct<Array> }` which only contains directly attributed global roles
 
-- `Roles.EditPanel.global()`
+- the `pr-scoped-state` event, triggered with a data `{ scoped: { <scope>: { direct<Array> }}}` which only contains directly attributed scoped roles for each scope
 
-    Returns the list of selected direct global roles (without the inherited ones).
+- the `Roles.EditPanel.global()` function which returns the array of directly attributed global roles
 
-    As a companion function for the `prEditPanel` component, this is a client-only function.
+- the `Roles.EditPanel.scoped()` function which returns the array of directly attributed scoped roles for each scope.
 
-- `Roles.EditPanel.scoped()`
+Please note that either through the event or through the function, scoped roles are aonly returned when they are valid, i.e. with a not empty scope and at least one role.
 
-    Returns an object where keys are the scopes, and values an array of their selected direct roles (without the inherited ones).
-
-    As a companion function for the `prEditPanel` component, this is a client-only function.
-
-- `Roles.EditPanel.roles()`
-
-    Returns the full result of the edition as an object:
+- the `Roles.EditPanel.roles()` function returns both global and scoped roles as an object:
 
 ```js
-    - scoped    {Object}    a per-scope object where each key is a scope, and the value is an object with following keys:
+    - <scope>     {Object}
         - direct    {Array}     an array of directly (not inherited) assigned scoped roles
     - global    {Object}
         - direct    {Array}     an array of directly (not inherited) assigned scoped roles

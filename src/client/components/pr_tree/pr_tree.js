@@ -41,6 +41,10 @@ Template.pr_tree.onCreated( function(){
         // last built and populated tree
         prevTree: null,
 
+        // whether trigger pr-change event
+        //  doesn't trigger the event when checkboxes are programatically checked
+        triggerChangeEvent: true,
+
         // we have explicitely or programatically checked an item (but cascade doesn't come here)
         //  data = { node, selected, event, jsTree instance }
         tree_checkbox_check( data ){
@@ -49,7 +53,10 @@ Template.pr_tree.onCreated( function(){
                 $tree.jstree( true ).disable_node( id );
                 return true;
             });
-            $tree.trigger( 'pr-change' );
+            if( self.PR.triggerChangeEvent ){
+                //console.debug( 'triggering pr-change due to checkbox check' );
+                $tree.trigger( 'pr-change' );
+            }
         },
 
         // we have explicitely or programatically unchecked an item (but cascade doesn't come here)
@@ -59,6 +66,7 @@ Template.pr_tree.onCreated( function(){
             data.node.children_d.forEach(( id ) => {
                 $tree.jstree( true ).enable_node( id );
             });
+            //console.debug( 'triggering pr-change due to checkbox uncheck' );
             $tree.trigger( 'pr-change' );
         },
 
@@ -256,7 +264,7 @@ Template.pr_tree.onRendered( function(){
         const roles = Template.currentData().roles.get();
         if( $tree && self.PR.tree_ready() && !self.PR.tree_built()){
             // reset the tree
-            //console.debug( 'reset the tree' );
+            //console.debug( 'reset and rebuild the tree' );
             $tree.jstree( true ).delete_node( Object.values( self.PR.tree_nodes_created ));
             self.PR.tree_nodes_asked = {};
             self.PR.tree_nodes_created = {};
@@ -292,10 +300,12 @@ Template.pr_tree.onRendered( function(){
 
     // at the end of the nodes creation, update the display
     //  populate the built tree with actual roles of the user by checking already created checkboxes
+    //  send once pr-change event at the end of the task
     self.autorun(() => {
         const roles = Template.currentData().roles.get();
         if( self.PR.tree_built() && !self.PR.tree_populated()){
             //console.debug( 'populating with', roles.global.direct );
+            self.PR.triggerChangeEvent = false;
             const $tree = self.PR.$tree.get();
             $tree.jstree( true ).show_checkboxes();
             $tree.jstree( true ).open_all();
@@ -316,6 +326,9 @@ Template.pr_tree.onRendered( function(){
                 });
             }
             self.PR.tree_populated( true );
+            self.PR.triggerChangeEvent = true;
+            // send a pr-change on the tree to leave the status indicator a chance to auto-update
+            $tree.trigger( 'pr-change' );
         }
     });
 });
@@ -324,5 +337,16 @@ Template.pr_tree.helpers({
     // name of the main class
     divClass(){
         return this.pr_div;
+    }
+});
+
+Template.pr_tree.events({
+    'pr-delete .pr-tree'( event, instance ){
+        //console.debug( 'deleting pr-tree' );
+        const $tree = instance.PR.$tree.get();
+        if( $tree ){
+            $tree.jstree( true ).destroy();
+            instance.PR.$tree.set( null );
+        }
     }
 });

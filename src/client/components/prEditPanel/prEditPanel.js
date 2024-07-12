@@ -51,13 +51,7 @@ Template.prEditPanel.onCreated( function(){
          * @returns {Array} the list of global roles checked in the prEditPanel
          */
         global(){
-            let checked = [];
-            self.$( '.'+self.PR.global_div ).jstree( true ).get_checked_descendants( '#' ).every(( id ) => {
-                checked.push( id.replace( self.PR.global_prefix, '' ));
-                return true;
-            });
-            const filtered = Roles._filter( checked );
-            return filtered;
+           return self.PR.roles.get().global.direct;
         },
         /**
          * @returns {Object} an object with following keys:
@@ -75,33 +69,27 @@ Template.prEditPanel.onCreated( function(){
             };
             const scoped = Roles.EditPanel.scoped();
             Object.keys( scoped ).forEach(( scope ) => {
-                if( scope && scope !== self.PR.scoped_none ){
-                    roles.scoped[scope] = {
-                        direct: scoped[scope]
-                    };
-                }
+                roles.scoped[scope] = {
+                    direct: scoped[scope]
+                };
             });
             //console.debug( 'roles', roles );
             return roles;
         },
         /**
          * @returns {Object} where keys are the scopes, and values an array of direct roles
-         *  NB: this also returns the checked roles for a new 'NONE' scope
-         *  this is needed for UI management, but you have to take care of not assigning this pseudo-scope to the user.
+         *  NB: this doesn't return the checked roles for a new 'NONE' scope
+         * so have to filter before returning the data
          */
         scoped(){
-            let checked = {};
-            self.$( '.scoped-item' ).each( function(){
-                const scope = $( this ).find( '.js-scope :selected' ).val();
-                let locals = [];
-                $( this ).find( '.'+self.PR.scoped_div ).jstree( true ).get_checked_descendants( '#' ).every(( id ) => {
-                    locals.push( id.replace( self.PR.scoped_prefix, '' ));
-                    return true;
-                });
-                checked[scope] = Roles._filter( locals );
+            let directScoped = {};
+            const rolesScoped = self.PR.roles.get().scoped;
+            Object.keys( rolesScoped ).forEach(( scope ) => {
+                if( scope !== self.PR.scoped_none ){
+                    directScoped[scope] = rolesScoped[scope].direct;
+                }
             });
-            console.debug( 'scoped()', checked );
-            return checked;
+           return directScoped;
         }
     };
 
@@ -154,6 +142,8 @@ Template.prEditPanel.onCreated( function(){
     // track edited roles
     self.autorun(() => {
         //console.debug( 'edited roles', self.PR.roles.get());
+        //console.debug( 'edited roles global', self.PR.roles.get().global.direct );
+        //console.debug( 'edited roles scoped', self.PR.roles.get().scoped );
     });
 
     // disable the 'plus' button while we have an unset scope
