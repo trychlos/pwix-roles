@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.5.0-rc
+### 1.5.0
 
-    Release date:
+    Release date: 2024- 7-12
 
     - Define Roles.usedScopes() new function, bumping minor candidate version number
     - Roles.configure() becomes a reactive data source
@@ -110,4 +110,4 @@
 
 ---
 P. Wieser
-- Last updated on 2024, Jun. 11th
+- Last updated on 2024, Jul. 12th
