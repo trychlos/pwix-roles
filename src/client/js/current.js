@@ -62,7 +62,7 @@ Tracker.autorun(() => {
 //  - reactive to user login/logout
 //  - reactive to user roles assignments changes
 Tracker.autorun(() => {
-    if( Roles.ready() && _current.handle.ready()){
+    if( Roles.ready() && _current.handle && _current.handle.ready()){
         const userId = Meteor.userId();
         if( userId === _current.val.userId ){
             Meteor.roleAssignment.find({ 'user._id': userId }).fetchAsync().then(( fetched ) => {

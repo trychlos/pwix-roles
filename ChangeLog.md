@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - Protect against unconnected user
 
 ### 1.5.0
 
