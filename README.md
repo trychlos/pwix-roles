@@ -98,11 +98,13 @@ Known configuration options are:
 
     An async function which will be called with an action string identifier, and must return whether the current user is allowed to do the specified action.
 
-    If the function is not provided, then the default is to allow all actions (not very desirable nor secure, in fact, but compatible).
+    If the function is not provided, then the default is to allow all actions (not very desirable nor secure, in fact, but compatible with the previous versions).
 
     **So, the application should take care of protecting the roles by providing here a suitable function.**
 
-    `allowFn` prototype is: `async allowFn( action<String> [, ...<Any> ] ): Boolean`
+    `allowFn` prototype is: `async allowFn( action<String> [, user<String|Object> ][, ...<Any> ] ): Boolean`
+
+    If the user is not provided, the `allowFn` function is expected to default to the currently logged-in user.
 
     At the moment, the asked permissions are:
 

@@ -298,15 +298,15 @@ Roles.getUsersInScope = async function( scope ){
 
 /**
  * @param {String} action
- * @param {String|Object} user
+ * @param {String} userId
  * @returns {Boolean} true if the current user is allowed to do the action
  */
-Roles.isAllowed = async function( action, user=null ){
+Roles.isAllowed = async function( action, userId=null ){
     // not very desirable nor secure, but compatible
     let allowed = true;
     const fn = Roles.configure().allowFn;
     if( fn ){
-        allowed = await fn( action, user || ( Meteor.isClient && Meteor.userId()));
+        allowed = await fn( action, userId || ( Meteor.isClient && Meteor.userId() || null ));
     }
     return allowed;
 }

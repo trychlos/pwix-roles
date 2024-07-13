@@ -6,28 +6,25 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 
 // publishes the roles of the specified user (or of all users)
 //  requires at least a connected user
-Meteor.publish( 'pwix_roles_user_assignments', function( userId=null ){
-    if( !this.userId || !Roles.isAllowed( 'pwix.roles.pub.user_assignments' )){
-        this.ready();
-        return false;
+Meteor.publish( 'pwix_roles_user_assignments', async function( userId=null ){
+    const allowed = await Roles.isAllowed( 'pwix.roles.pub.user_assignments', this.userId );
+    if( allowed ){
+        let selector = {};
+        if( userId ){
+            selector['user._id'] = userId;
+        }
+        return Meteor.roleAssignment.find( selector );
     }
-    let selector = {};
-    if( userId ){
-        selector['user._id'] = userId;
-    }
-    return Meteor.roleAssignment.find( selector );
+    console.log( 'pwix.roles.pub.user_assignments not allowed', this.userId );
+    this.ready();
+    return false;
 });
 
 // publishes the used scopes
 //  this acts as a default if the application doesn't provide its own list of managed scopes
 //  requires at least a connected user
-Meteor.publish( 'pwix_roles_used_scopes', function(){
-    if( !this.userId || !Roles.isAllowed( 'pwix.roles.pub.used_scopes' )){
-        this.ready();
-        return false;
-    }
 
-    const self = this;
+const pwix_roles_used_scopes_pub = function( self ){
     const collectionName = 'pwix_roles_used_scopes';
     let scopes = {};
 
@@ -59,6 +56,16 @@ Meteor.publish( 'pwix_roles_used_scopes', function(){
     self.onStop( function(){
         observer.then(( handle ) => { handle.stop(); });
     });
+};
+
+Meteor.publish( 'pwix_roles_used_scopes', async function(){
+    const allowed = await Roles.isAllowed( 'pwix.roles.pub.used_scopes', this.userId );
+    if( allowed ){
+        pwix_roles_used_scopes_pub( this );
+    }
+    console.log( 'pwix.roles.pub.used_scopes not allowed', this.userId );
+    this.ready();
+    return false;
 });
 
 // this function builds and maintains the _rolesHash has with roles -> array of users
@@ -163,10 +170,10 @@ function _maintainUsersPerRole( cb ){
 //       }
 //     }
 //
-Meteor.publish( 'pwix_roles_count_by_roles', function( roles ){
-
+Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
     // maybe the application may protect that
-    if( !Roles.isAllowed( 'pwix.roles.pub.count_by_roles', roles )){
+    if( !await Roles.isAllowed( 'pwix.roles.pub.count_by_roles', this.userId, roles )){
+        console.log( 'pwix.roles.pub.count_by_roles not allowed', this.userId );
         this.ready();
         return false;
     }
