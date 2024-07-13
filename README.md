@@ -94,11 +94,30 @@ The package's behavior can be configured through a call to the `Roles.configure(
 
 Known configuration options are:
 
-- `roles`
+- `allowFn`
 
-    Define the known roles.
+    An async function which will be called with an action string identifier, and must return whether the current user is allowed to do the specified action.
 
-    Defaults to an empty object.
+    If the function is not provided, then the default is to allow all actions (not very desirable nor secure, in fact, but compatible).
+
+    **So, the application should take care of protecting the roles by providing here a suitable function.**
+
+    `allowFn` prototype is: `async allowFn( action<String> [, ...<Any> ] ): Boolean`
+
+    At the moment, the asked permissions are:
+
+    - `pwix.roles.fn.getRolesForUser`
+    - `pwix.roles.fn.getUsersInScope`
+    - `pwix.roles.fn.removeAssignedRolesFromUser`
+    - `pwix.roles.fn.removeUserAssignmentsFromRoles`
+    - `pwix.roles.fn.setUserRoles`
+    - `pwix.roles.fn.usedScopes`
+    - `pwix.roles.method.addUsersToRoles`
+    - `pwix.roles.method.countUsersInRoles`
+    - `pwix.roles.method.createRole`
+    - `pwix.roles.pub.user_assignments`
+    - `pwix.roles.pub.used_scopes`
+    - `pwix.roles.pub.count_by_roles`
 
 - `maintainHierarchy`
 
@@ -111,6 +130,12 @@ Known configuration options are:
     In order to make sure that the application has had a chance to configure the package, this work is done on the server at startup time.
 
     Defaults to `true`.
+
+- `roles`
+
+    Define the known roles.
+
+    Defaults to an empty object.
 
 - `scopeLabelFn`
 

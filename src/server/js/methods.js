@@ -11,22 +11,44 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 
 Meteor.methods({
     // assign the role(s) to the user(s)
+    //  alRoles doesn't return any value
     async 'Roles.addUsersToRoles'( users, roles, options={} ){
-        await alRoles.addUsersToRolesAsync( users, roles, options );
-        //console.log( 'pwix:roles/src/server/js/methods:addUsersToRoles()' );
+        await Roles.isAllowed( 'pwix.roles.method.addUsersToRoles', users ).then(( allowed ) => {
+            if( allowed ){
+                return alRoles.addUsersToRolesAsync( users, roles, options );
+                //console.log( 'pwix.roles.method.addUsersToRoles()', res );    // undefined
+            } else {
+                console.log( 'pwix.roles.method.addUsersToRoles not allowed' );
+                return null;
+            }
+        });
     },
 
     // returns the count of users which have at least one of the specified roles
     async 'Roles.countUsersInRoles'( roles, options={} ){
-        const res = await alRoles.getUsersInRoleAsync( roles, options ).count();
-        //console.log( 'pwix:roles/src/server/js/methods:countUsersInRoles()', roles, res );
+        const res = await Roles.isAllowed( 'pwix.roles.method.countUsersInRoles' ).then(( allowed ) => {
+            if( allowed ){
+                return alRoles.getUsersInRoleAsync( roles, options ).count();
+            } else {
+                console.log( 'pwix.roles.method.countUsersInRoles not allowed' );
+                return null;
+            }
+        });
+        //console.log( 'pwix.roles.method.countUsersInRoles', roles, res );
         return res;
     },
 
     // create a new role (when we do not want manage it in the hierarchy)
     async 'Roles.createRole'( role, options={} ){
-        const res = await alRoles.createRoleAsync( role, options );
-        //console.log( 'pwix:roles/src/server/js/methods:createRole()', res );
+        const res = await Roles.isAllowed( 'pwix.roles.method.createRole' ).then(( allowed ) => {
+            if( allowed ){
+                return alRoles.createRoleAsync( role, options );
+            } else {
+                console.log( 'pwix.roles.method.createRole not allowed' );
+                return null;
+            }
+        });
+        //console.log( 'pwix.roles.method.createRole', res );
         return res;
     },
 

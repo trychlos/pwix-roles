@@ -7,7 +7,7 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 // publishes the roles of the specified user (or of all users)
 //  requires at least a connected user
 Meteor.publish( 'pwix_roles_user_assignments', function( userId=null ){
-    if( !this.userId ){
+    if( !this.userId || !Roles.isAllowed( 'pwix.roles.pub.user_assignments' )){
         this.ready();
         return false;
     }
@@ -22,7 +22,7 @@ Meteor.publish( 'pwix_roles_user_assignments', function( userId=null ){
 //  this acts as a default if the application doesn't provide its own list of managed scopes
 //  requires at least a connected user
 Meteor.publish( 'pwix_roles_used_scopes', function(){
-    if( !this.userId ){
+    if( !this.userId || !Roles.isAllowed( 'pwix.roles.pub.used_scopes' )){
         this.ready();
         return false;
     }
@@ -164,6 +164,12 @@ function _maintainUsersPerRole( cb ){
 //     }
 //
 Meteor.publish( 'pwix_roles_count_by_roles', function( roles ){
+
+    // maybe the application may protect that
+    if( !Roles.isAllowed( 'pwix.roles.pub.count_by_roles', roles )){
+        this.ready();
+        return false;
+    }
 
     const self = this;
     const collectionName = 'pwix_roles_count_by_roles';

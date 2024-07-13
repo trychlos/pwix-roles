@@ -11,8 +11,9 @@ let _conf = {};
 Roles._conf = new ReactiveVar( _conf );
 
 Roles._defaults = {
-    roles: {},
+    allowFn: null,
     maintainHierarchy: true,
+    roles: {},
     scopeLabelFn: null,
     scopesFn: null,
     scopesPub: null,
