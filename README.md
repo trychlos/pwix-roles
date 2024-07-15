@@ -253,6 +253,12 @@ The globally exported object.
 
     Note that the description of the `current()` object is changed in v 1.5.0 to better host global and scopes roles.
 
+- `Roles.suggestedPermissions()`
+
+    Returns an object suitable to be provided to `Roles.allowFn()` permissions manager.
+
+    These are NOT default as the internal permissions manager doesn't care of these, and actually defaults to `true`.
+
 - `Roles.directRolesForUser( user )`
 
     An async function which returns the direct roles of the user (_i.e._ only the first level of the hierarchy) as an array.

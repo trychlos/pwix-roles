@@ -6,12 +6,12 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 
 // publishes the roles of the specified user (or of all users)
 //  requires at least a connected user
-Meteor.publish( 'pwix_roles_user_assignments', async function( userId=null ){
-    const allowed = await Roles.isAllowed( 'pwix.roles.pub.user_assignments', this.userId );
+Meteor.publish( 'pwix_roles_user_assignments', async function( user=null ){
+    const allowed = await Roles.isAllowed( 'pwix.roles.pub.user_assignments', this.userId, user );
     if( allowed ){
         let selector = {};
-        if( userId ){
-            selector['user._id'] = userId;
+        if( user ){
+            selector['user._id'] = user._id || user;
         }
         return Meteor.roleAssignment.find( selector );
     }

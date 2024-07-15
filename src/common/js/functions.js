@@ -306,7 +306,7 @@ Roles.isAllowed = async function( action, userId=null ){
     let allowed = true;
     const fn = Roles.configure().allowFn;
     if( fn ){
-        allowed = await fn( action, userId || ( Meteor.isClient && Meteor.userId() || null ));
+        allowed = await fn( action, userId );
     }
     return allowed;
 }
@@ -385,6 +385,65 @@ Roles.scopedRoles = function(){
  */
 Roles.setUserRoles = async function( user, roles ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.setUserRoles', user, roles ) : Roles.server.setUserRoles( user, roles ));
+}
+
+/**
+ * @summary Provide a default to allowFn() permissions manager
+ * @locus Anywhere
+ * @returns {Object} the suggested permissions
+ *  These are NOT default as the internal permissions manager doesn't care of these and actually defaults to `true`.
+ */
+Roles.suggestedPermissions = function(){
+    return {
+        pwix: {
+            roles: {
+                fn: {
+                    async getRolesForUser( userId, user ){
+                        return userId !== null;
+                    },
+                    async getUsersInScope( userId, scope ){
+                        return userId !== null;
+                    },
+                    async removeAssignedRolesFromUser( userId, user ){
+                        return userId !== null;
+                    },
+                    async removeUserAssignmentsFromRoles( userId, roles ){
+                        return userId !== null;
+                    },
+                    async setUserRoles( userId, user, roles ){
+                        return userId !== null;
+                    },
+                    async usedScopes( userId ){
+                        return userId !== null;
+                    }
+                },
+                method: {
+                    async addUsersToRoles( userId, users ){
+                        return userId !== null;
+                    },
+                    async countUsersInRoles( userId, roles ){
+                        return userId !== null;
+                    },
+                    async createRole( userId, role ){
+                        return userId !== null;
+                    }
+                },
+                pub: {
+                    // this should be allowed to all while the app admin role is not attributed - after that, a user needs to be connected
+                    //  but - chicken and eggs problem - that is same than allowing the above countUsersInRoles() method
+                    async count_by_roles( userId, roles ){
+                        return true;
+                    },
+                    async user_assignments( userId, user ){
+                        return userId !== null;
+                    },
+                    async used_scopes( userId ){
+                        return userId !== null;
+                    }
+                }
+            }
+        }
+    };
 }
 
 /**

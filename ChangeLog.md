@@ -8,6 +8,7 @@
 
     - Protect against unconnected user
     - Define the set of CRUD actions, alogn with a allowFn() configuration parameter, and a Roles.isAllowed() new function, bumping minor candidate version number
+    - Define Roles.suggestedPermissions() new function
 
 ### 1.5.0
 
