@@ -19,7 +19,7 @@ Meteor.methods({
             //console.log( 'pwix.roles.method.addUsersToRoles()', res );    // undefined
             return res;
         }
-        console.log( 'pwix.roles.method.addUsersToRoles not allowed' );
+        //console.log( 'pwix.roles.method.addUsersToRoles not allowed' );
         return null;
     },
 
@@ -31,7 +31,7 @@ Meteor.methods({
             //console.log( 'pwix.roles.method.countUsersInRoles', roles, res );
             return res;
         }
-        console.log( 'pwix.roles.method.countUsersInRoles not allowed' );
+        //console.log( 'pwix.roles.method.countUsersInRoles not allowed' );
         return null;
     },
 
@@ -43,7 +43,7 @@ Meteor.methods({
             //console.log( 'pwix.roles.method.createRole', res );
             return res;
         }
-        console.log( 'pwix.roles.method.createRole not allowed' );
+        //console.log( 'pwix.roles.method.createRole not allowed' );
         return null;
     },
 

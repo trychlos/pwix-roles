@@ -15,7 +15,7 @@ Meteor.publish( 'pwix_roles_user_assignments', async function( user=null ){
         }
         return Meteor.roleAssignment.find( selector );
     }
-    console.log( 'pwix.roles.pub.user_assignments not allowed', this.userId );
+    //console.log( 'pwix.roles.pub.user_assignments not allowed', this.userId );
     this.ready();
     return false;
 });
@@ -63,7 +63,7 @@ Meteor.publish( 'pwix_roles_used_scopes', async function(){
     if( allowed ){
         pwix_roles_used_scopes_pub( this );
     }
-    console.log( 'pwix.roles.pub.used_scopes not allowed', this.userId );
+    //console.log( 'pwix.roles.pub.used_scopes not allowed', this.userId );
     this.ready();
     return false;
 });
@@ -173,7 +173,7 @@ function _maintainUsersPerRole( cb ){
 Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
     // maybe the application may protect that
     if( !await Roles.isAllowed( 'pwix.roles.pub.count_by_roles', this.userId, roles )){
-        console.log( 'pwix.roles.pub.count_by_roles not allowed', this.userId );
+        //console.log( 'pwix.roles.pub.count_by_roles not allowed', this.userId );
         this.ready();
         return false;
     }

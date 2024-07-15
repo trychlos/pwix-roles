@@ -17,7 +17,7 @@ Roles.server = {
             if( allowed ){
                 return await alRoles.getRolesForUserAsync( user, options );
             }
-            console.log( 'pwix.roles.fn.getRolesForUser', user, 'not allowed' );
+            //console.log( 'pwix.roles.fn.getRolesForUser', user, 'not allowed' );
             return null;
         }
         catch( e ){
@@ -41,7 +41,7 @@ Roles.server = {
                 });
                 return result;
             }
-            console.log( 'pwix.roles.fn.getUsersInScope not allowed' );
+            //console.log( 'pwix.roles.fn.getUsersInScope not allowed' );
             return null;
         }
         catch( e ){
@@ -81,7 +81,7 @@ Roles.server = {
                 console.warn( 'pwix.roles.fn.removeAssignedRolesFromUser() user is falsy', user );
                 return null;
             }
-            console.log( 'pwix.roles.fn.removeAssignedRolesFromUser not allowed' );
+            //console.log( 'pwix.roles.fn.removeAssignedRolesFromUser not allowed' );
             return null;
         }
         catch( e ) {
@@ -116,7 +116,7 @@ Roles.server = {
                 });
                 return Promise.allSettled( promises );
             }
-            console.log( 'pwix.roles.fn.removeUserAssignmentsFromRoles not allowed' );
+            //console.log( 'pwix.roles.fn.removeUserAssignmentsFromRoles not allowed' );
             return null;
         }
         catch( e ) {
@@ -143,7 +143,7 @@ Roles.server = {
                             return null;
                         }
                     } else {
-                        console.log( 'pwix.roles.fn.setUserRoles not allowed' );
+                        //console.log( 'pwix.roles.fn.setUserRoles not allowed' );
                         return null;
                     }
                 })
@@ -181,7 +181,7 @@ Roles.server = {
             if( allowed ){
                 return await Meteor.roleAssignment.rawCollection().distinct( 'scope' );
             }
-            console.log( 'pwix.roles.fn.usedScopes not allowed' );
+            //console.log( 'pwix.roles.fn.usedScopes not allowed' );
             return null;
         }
         catch( e ) {
