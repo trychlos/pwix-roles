@@ -28,6 +28,7 @@ Roles.i18n = {
                 remove_scope_title: 'Scope deletion',
                 remove_title: 'Remove all roles on this scope',
                 scope_select: 'Select a scope',
+                view_no_global: 'No global role has been attributed.',
                 view_no_scope: 'No scoped role has been attributed.'
             },
             tabs: {

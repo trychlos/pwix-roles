@@ -1,7 +1,13 @@
 <template name="view_global_pane">
-    <div class="pr-view-global-pane">
+    <div class="pr-view-global-pane pr-global">
 
-        {{> pr_tree (parmsTree) }}
+        {{#if haveGlobal }}
+            {{> pr_tree (parmsTree) }}
+        {{else}}
+            <div class="pr-no-global">
+                {{{ i18n key="panels.view_no_global" }}}
+            </div>
+        {{/if}}
 
     </div>
 </template>

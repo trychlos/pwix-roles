@@ -12,6 +12,7 @@
     - Define Roles.compareLevels() new function
     - Reinit scopes before reloading them
     - Have distinct behavior when no scoped role depending of whether there are available scopes
+    - Have an information message when there is no attributed global role
 
 ### 1.5.0
 

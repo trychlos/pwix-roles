@@ -28,7 +28,8 @@ Roles.i18n = {
                 remove_scope_title: 'Suppression de périmètre',
                 remove_title: 'Supprime tous les rôles de ce périmètre',
                 scope_select: 'Choisissez un périmètre',
-                view_no_scope: 'Aucun rôle n\'a été attribué sur aucun pếrimètre.'
+                view_no_global: 'Aucun rôle global n\'a été attribué.',
+                view_no_scope: 'Aucun rôle n\'a été attribué sur aucun périmètre.'
             },
             tabs: {
                 global_title: 'Rôles globaux',

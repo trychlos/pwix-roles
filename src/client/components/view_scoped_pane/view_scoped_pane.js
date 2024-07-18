@@ -16,7 +16,6 @@ import _ from 'lodash';
 
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { Random } from 'meteor/random';
-import { Roles } from 'meteor/pwix:roles';
 
 import './view_scoped_pane.html';
 

@@ -66,6 +66,7 @@ Tracker.autorun(() => {
         const userId = Meteor.userId();
         if( userId === _current.val.userId ){
             Meteor.roleAssignment.find({ 'user._id': userId }).fetchAsync().then(( fetched ) => {
+                //console.debug( 'fetched', fetched );
                 _current.val.scoped = {};
                 _current.val.global = { all: [], direct: [] };
                 fetched.forEach(( it ) => {
