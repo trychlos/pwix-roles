@@ -66,9 +66,10 @@ Meteor.startup(() => {
             if( Roles._scopes.handle.ready()){
                 Roles._scopes.collection.find().fetchAsync().then(( fetched ) => {
                     //console.debug( 'fetched', fetched );
+                    Roles._scopes.labels.clear();
                     fetched.forEach(( it ) => {
                         Roles._scopes.labels.set( it._id, it.label || null );
-                    })
+                    });
                 });
             }
         });
@@ -77,5 +78,5 @@ Meteor.startup(() => {
 
 // track the scopes list
 Tracker.autorun(() => {
-    //console.debug( Roles._scopes.labels.all());
+    console.debug( 'scopes', Roles._scopes.labels.all());
 });
