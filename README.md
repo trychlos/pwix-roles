@@ -225,6 +225,18 @@ The globally exported object.
 
     Available both on client and server.
 
+- `Roles.compareLevels( userA<Object|String>, userB<Object|String> )`
+
+    Compare the roles assigned to the two specified users, and provide a pseudo classement based of the level of their highest role.
+
+    Returns:
+
+    - `-1` if highest role of user A is lower than highest role of user B
+    - `0` if highest role of user A has same level than highest role of user B
+    - `+1` if highest role of user A is higher than highest role of user B
+
+    Rationale: this let compare the capabilities of two accounts. A typical use case is to allow an account to edit other accounts, but only with lower role levels, and for example, prevent him to editing the application administration account.
+
 - `Roles.configure( o<Object> )`
 
     See [above](#package-configuration).
@@ -343,6 +355,12 @@ The globally exported object.
     `roles` is an object { global: { direct: [], scoped: { <scope>: { direct: [] }}}}
 
     The application should take care of **not** remove all roles for the currently logged-in user. This is not checked by the package.
+
+    Available both on client and server.
+
+- `Roles.suggestedPermissions()`
+
+    Returns an object with `allowFn` function for the package asked permissions. This object is suitable to feed the `pwix:permissions` manager, and can be overriden by the application.
 
     Available both on client and server.
 

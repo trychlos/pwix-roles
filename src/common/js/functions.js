@@ -5,7 +5,6 @@
 import _ from 'lodash';
 
 import { Roles as alRoles } from 'meteor/alanning:roles';
-import { Tracker } from 'meteor/tracker';
 
 /*
  * Enumerate the configured role hierarchy, calling the provided callback for each and every role.
@@ -239,6 +238,26 @@ Roles.addUsersToRoles = async function( users, roles, options={} ){
 }
 
 /**
+ * @summary Compare the roles assigned to two users and compute the highest side
+ * @locus Anywhere
+ * @param {Object|String} a user identifier or document
+ * @param {Object|String} ab user identifier or document
+ * @returns {Integer}
+ *  -1 if highest role of user a is lower than highest role of user b
+ *   0 if highest role of user a is same level than highest role of user b
+ *  +1 if highest role of user a is higher than highest role of user b
+ */
+Roles.compareLevels = async function( userA, userB ){
+    const rolesA = await Roles.directRolesForUser( userA );
+    const levelA = Roles.highestLevel( rolesA );
+    const rolesB = await Roles.directRolesForUser( userB );
+    const levelB = Roles.highestLevel( rolesB );
+    const res = levelA < levelB ? +1 : ( levelA > levelB ? -1 : 0 );
+    //console.debug( userA, rolesA, levelA, userB, rolesB, levelB, res );
+    return res;
+}
+
+/**
  * @summary Returns the direct roles of the user
  * @locus Anywhere
  * @param {Object|String} user User identifier or actual user object
@@ -268,7 +287,7 @@ Roles.flat = function(){
             });
         }
     }
-    const h = Roles._conf && Roles.configure().roles && Roles.configure().roles.hierarchy ? Roles.configure().roles.hierarchy : [];
+    const h = Roles.configure().roles && Roles.configure().roles.hierarchy ? Roles.configure().roles.hierarchy : [];
     h.every(( o ) => {
         f_explore( o );
         return true;
@@ -294,6 +313,46 @@ Roles.getRolesForUser = async function( user, options={} ){
  */
 Roles.getUsersInScope = async function( scope ){
     return await( Meteor.isClient ? Meteor.callAsync( 'Roles.getUsersInScope', scope ) : Roles.server.getUsersInScope( scope ));
+}
+
+/**
+ * @summary Compute the highest level among the provided list of roles
+ * @locus Anywhere
+ * @param {Array} roles
+ * @returns {Integer} the level number, '0' being the root of the role hierarchy.
+ *  NB 1: the lower this level, the higher the role is in the hierarchy.
+ *  NB 2: as a consequence, returns a very high level if the roles are empty (no role implies very low level in the hierarchy)
+ */
+Roles.highestLevel = function( roles ){
+    let lowestLevel = Number.MAX_VALUE;
+    const hierarchy = Roles.configure().roles?.hierarchy || [];
+    roles.forEach(( role ) => {
+        //console.debug( 'role', role );
+        let roleLevel = Number.MAX_VALUE;
+        const f_rec = function( it, level=0 ){
+            let found = false;
+            //console.debug( 'examining', it, 'at', level );
+            if( it.name === role ){
+                roleLevel = level;
+                found = true;
+                //console.debug( 'found at level', level );
+            }
+            if( !found && it.children ){
+                it.children.forEach(( child ) => {
+                    found = f_rec( child, level+1 );
+                });
+            }
+            return !found;
+        }
+        hierarchy.every(( it ) => {
+            const found = f_rec( it );
+            return !found;
+        });
+        if( roleLevel < lowestLevel ){
+            lowestLevel = roleLevel;
+        }
+    });
+    return lowestLevel;
 }
 
 /**
