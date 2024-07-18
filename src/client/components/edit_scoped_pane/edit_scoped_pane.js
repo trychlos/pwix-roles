@@ -178,6 +178,11 @@ Template.edit_scoped_pane.helpers({
         return Object.keys( this.roles.get().scoped ).length > 0;
     },
 
+    // whether there is at least one available scope
+    haveScopes(){
+        return Object.keys( Roles._scopes.labels.all()).length > 0;
+    },
+
     // string translation
     i18n( arg ){
         return pwixI18n.label( I18N, arg.hash.key );

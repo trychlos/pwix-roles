@@ -146,11 +146,12 @@ Template.prEditPanel.onCreated( function(){
         //console.debug( 'edited roles scoped', self.PR.roles.get().scoped );
     });
 
-    // disable the 'plus' button while we have an unset scope
+    // disable the 'plus' button while we have an unset scope or no available scope at all
     self.autorun(() => {
         const scoped = self.PR.roles.get().scoped;
-        const haveNone = Object.keys( scoped ).includes( self.PR.scoped_none );
-        self.PR.enabledPlus.set( !haveNone );
+        const haveNone = Object.keys( scoped ).includes( self.PR.scoped_none ) > 0;
+        const haveScopes = Object.keys( Roles._scopes.labels.all()).length > 0;
+        self.PR.enabledPlus.set( !haveNone && haveScopes );
     });
 });
 
@@ -221,7 +222,9 @@ Template.prEditPanel.events({
     // because of the position of the plusButton in the DOM, the edit_scoped_pane component cannot directly handle the clicks
     //  we have to get them here, and redirect to the pane
     'click .js-plus'( event, instance ){
-        instance.$( '.pr-edit-scoped-pane' ).trigger( 'pr-new-scope' );
+        if( instance.PR.enabledPlus.get()){
+            instance.$( '.pr-edit-scoped-pane' ).trigger( 'pr-new-scope' );
+        }
     },
 
     // show/hide the 'new scope' button depending of the shown pane

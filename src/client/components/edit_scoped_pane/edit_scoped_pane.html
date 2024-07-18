@@ -49,6 +49,12 @@
         {{else}}
             <div class="pr-no-scoped">
                 {{{ i18n key="panels.edit_no_scope" }}}
+                <br />
+                {{#if haveScopes }}
+                    {{{ i18n key="panels.edit_no_scope_add" }}}
+                {{else}}
+                    {{{ i18n key="panels.edit_no_scope_none" }}}
+                {{/if}}
             </div>
         {{/if}}
 

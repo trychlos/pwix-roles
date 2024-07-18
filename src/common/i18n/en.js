@@ -21,7 +21,9 @@ Roles.i18n = {
             panels: {
                 add_button: 'New scope',
                 add_title: 'Add a new scope perimeter able to host roles',
-                edit_no_scope: 'There is not yet any allowed scoped role.<br />Begin by adding a new scope.',
+                edit_no_scope: 'There is not yet any allowed scoped role.',
+                edit_no_scope_add: 'Begin by adding a new scope.',
+                edit_no_scope_none: 'There is unfortunately no available scope yet.',
                 remove_scope_confirm: 'You are about to remove the "%s" scope and all its attached roles.<br />Are you sure ?',
                 remove_scope_title: 'Scope deletion',
                 remove_title: 'Remove all roles on this scope',
