@@ -489,7 +489,7 @@ Please note that either through the event or through the function, scoped roles 
 ```
 
 
-    As a companion function for the `prEditPanel` component, this is a client-only function.
+As a companion function for the `prEditPanel` component, this is a client-only function.
 
 Note: without explicitely requiring it, `pwix:roles` is able to take advantage of `pwix:forms` to display a status indicator on the scoped pane. This let the user have a visual indication of whether the current scope/roles group will be saved or not.
 
