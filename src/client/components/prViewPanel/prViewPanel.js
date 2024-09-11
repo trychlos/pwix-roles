@@ -114,8 +114,7 @@ Template.prViewPanel.helpers({
         const PR = Template.instance().PR;
         const tabs = [
             {
-                tabid: 'global_tab',
-                paneid: 'global_pane',
+                name: 'roles_global_tab',
                 navLabel: pwixI18n.label( I18N, 'tabs.global_title' ),
                 paneTemplate: 'view_global_pane',
                 paneData: {
@@ -126,8 +125,7 @@ Template.prViewPanel.helpers({
                 }
             },
             {
-                tabid: 'scoped_tab',
-                paneid: 'scoped_pane',
+                name: 'roles_scoped_tab',
                 navLabel: pwixI18n.label( I18N, 'tabs.scoped_title' ),
                 paneTemplate: 'view_scoped_pane',
                 paneData: {

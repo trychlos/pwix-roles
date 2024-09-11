@@ -13,6 +13,7 @@
     - Reinit scopes before reloading them
     - Have distinct behavior when no scoped role depending of whether there are available scopes
     - Have an information message when there is no attributed global role
+    - Upgrade pwix:tabbed to v 1.3.0
 
 ### 1.5.0
 

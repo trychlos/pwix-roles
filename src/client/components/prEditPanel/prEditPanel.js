@@ -179,8 +179,7 @@ Template.prEditPanel.helpers({
             name: PR.tabbedName,
             tabs: [
                 {
-                    tabid: 'global_tab',
-                    paneid: 'global_pane',
+                    name: 'roles_global_tab',
                     navLabel: pwixI18n.label( I18N, 'tabs.global_title' ),
                     paneTemplate: 'edit_global_pane',
                     paneData: {
@@ -190,8 +189,7 @@ Template.prEditPanel.helpers({
                     }
                 },
                 {
-                    tabid: 'scoped_tab',
-                    paneid: 'scoped_pane',
+                    name: 'roles_scoped_tab',
                     navLabel: pwixI18n.label( I18N, 'tabs.scoped_title' ),
                     navItemClasses: 'flex-grow-1',
                     paneTemplate: 'edit_scoped_pane',
@@ -203,8 +201,7 @@ Template.prEditPanel.helpers({
                     }
                 },
                 {
-                    tabid: 'plus_tab',
-                    paneid: 'plus_pane',
+                    name: 'roles_plus_tab',
                     navTemplate: 'edit_scoped_plus',
                     navData: {
                         enabled: Template.instance().PR.enabledPlus,
