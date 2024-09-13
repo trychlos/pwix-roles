@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.6.0-rc
+### 1.6.0
 
-    Release date: 
+    Release date: 2024- 9-13
 
     - Protect against unconnected user
     - Define the set of CRUD actions, alogn with a allowFn() configuration parameter, and a Roles.isAllowed() new function, bumping minor candidate version number
@@ -123,4 +123,4 @@
 
 ---
 P. Wieser
-- Last updated on 2024, Jul. 12th
+- Last updated on 2024, Sep. 13th
