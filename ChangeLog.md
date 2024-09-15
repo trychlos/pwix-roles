@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - Accept uuid v10
 
 ### 1.6.0
 
