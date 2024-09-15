@@ -7,6 +7,7 @@
     Release date: 
 
     - Accept uuid v10
+    - Replace alanning:roles client subscription feature obsoleted in v4.0.0
 
 ### 1.6.0
 

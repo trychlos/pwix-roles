@@ -11,11 +11,12 @@ _ready = {
     val: false
 };
 
-// the underlying 'alanning:roles' package is said ready when all existing roles are available on the client side
-//  https://meteor-community-packages.github.io/meteor-roles/classes/Roles.html#property_subscription
+// with v4.0.0, alanning:roles no more automatically publishes the roles for the connected user - Have to replace this feature
+alRoles.subscription = Meteor.subscribe( 'pwix_roles_user_assignments_roles', Meteor.userId());
+
+// when we have got the roles of the current user
 Tracker.autorun(() => {
     if( alRoles.subscription.ready()){
-        //console.debug( 'setting ready to true' );
         _ready.val = true,
         _ready.dep.changed();
     }

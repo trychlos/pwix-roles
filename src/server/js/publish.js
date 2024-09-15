@@ -15,7 +15,6 @@ Meteor.publish( 'pwix_roles_user_assignments', async function( user=null ){
         }
         return Meteor.roleAssignment.find( selector );
     }
-    //console.log( 'pwix.roles.pub.user_assignments not allowed', this.userId );
     this.ready();
     return false;
 });
