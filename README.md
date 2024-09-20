@@ -503,7 +503,7 @@ Dependencies as of v 1.6.0:
 
 ```
     'lodash': '^4.17.0',
-    'uuid': '^9.0.0'
+    'uuid': '^9.0.0 || ^10.0.0'
 ```
 
 Each of these dependencies should be installed at application level:
@@ -517,4 +517,4 @@ New and updated translations are willingly accepted, and more than welcome. Just
 
 ---
 P. Wieser
-- Last updated on 2024, Sep. 13th
+- Last updated on 2024, Sep. 20th

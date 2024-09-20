@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.6.1-rc
+### 1.6.1
 
-    Release date: 
+    Release date: 2024- 9-20
 
     - Accept uuid v10
     - Replace alanning:roles client subscription feature obsoleted in v4.0.0
@@ -130,4 +130,4 @@
 
 ---
 P. Wieser
-- Last updated on 2024, Sep. 13th
+- Last updated on 2024, Sep. 20th
