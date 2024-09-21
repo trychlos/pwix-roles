@@ -7,6 +7,7 @@
     Release date: 
 
     - Improve edit_scoped_plus stylesheet
+    - Fix tab activation when showing the 'new scope' button
 
 ### 1.6.1
 

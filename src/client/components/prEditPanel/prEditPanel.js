@@ -228,7 +228,7 @@ Template.prEditPanel.events({
     // show/hide the 'new scope' button depending of the shown pane
     // note that initial display only triggers the 'shown' event
     'tabbed-pane-shown .prEditPanel'( event, instance, data ){
-        if( data.tab.tabid === 'scoped_tab' ){
+        if( data.tab.name === 'roles_scoped_tab' ){
             instance.$( '.pr-edit-scoped-plus' ).removeClass( 'ui-hidden' );
         } else {
             instance.$( '.pr-edit-scoped-plus' ).addClass( 'ui-hidden' );
