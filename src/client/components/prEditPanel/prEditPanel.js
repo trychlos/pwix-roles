@@ -208,6 +208,7 @@ Template.prEditPanel.helpers({
                         label: pwixI18n.label( I18N, 'panels.add_button' ),
                         shape: PlusButton.C.Shape.RECTANGLE,
                         title: pwixI18n.label( I18N, 'panels.add_title' ),
+                        classes: 'btn btn-sm btn-outline-primary'
                     }
                 }
             ]

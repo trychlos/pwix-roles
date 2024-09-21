@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - Improve edit_scoped_plus stylesheet
 
 ### 1.6.1
 
