@@ -112,7 +112,7 @@ Template.edit_scoped_pane.onCreated( function(){
                 status = 'VALID';
             }
             if( scopedRoles.DYN.checkStatus ){
-                scopedRoles.DYN.checkStatus.set( Package['pwix:forms'].Forms.CheckStatus.C[status] );
+                scopedRoles.DYN.checkStatus.set( Package['pwix:forms'].Forms.FieldStatus.C[status] );
             }
         }
     };
