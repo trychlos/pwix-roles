@@ -242,13 +242,6 @@ Template.edit_scoped_pane.helpers({
 });
 
 Template.edit_scoped_pane.events({
-    // clear the panel to initialize a new account
-    /*
-    'clear-panel .c-account-roles-panel'( event, instance ){
-        instance.PR.edited.set( [] );
-    },
-    */
-
     // change the currently selected scope
     'change .js-scope'( event, instance ){
         const $parent = instance.$( event.currentTarget ).closest( '.accordion-header' );

@@ -8,6 +8,7 @@
 
     - Improve edit_scoped_plus stylesheet
     - Fix tab activation when showing the 'new scope' button
+    - Fix global roles edition
 
 ### 1.6.1
 

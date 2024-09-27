@@ -152,7 +152,7 @@ Template.pr_tree.onCreated( function(){
                 self.PR.tree_ready_rv.set( ready );
             }
             return self.PR.tree_ready_rv.get();
-        },
+        }
     };
 
     // setup the edition flag

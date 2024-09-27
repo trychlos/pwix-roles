@@ -35,7 +35,7 @@ Template.prEditPanel.onCreated( function(){
         // whether the plus button is enabled
         enabledPlus: new ReactiveVar( true ),
 
-        // initial roles or initial roles of the specified user as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
+        // initial roles of the specified user as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
         //  (same structure than current)
         roles: new ReactiveVar({ scoped: {}, global: { all: [], direct: [] }}),
         userId: null,
@@ -51,7 +51,8 @@ Template.prEditPanel.onCreated( function(){
          * @returns {Array} the list of global roles checked in the prEditPanel
          */
         global(){
-           return self.PR.roles.get().global.direct;
+            //console.debug( 'self.PR.roles.get()',self.PR.roles.get());
+            return self.PR.roles.get().global.direct;
         },
         /**
          * @returns {Object} an object with following keys:
@@ -78,8 +79,8 @@ Template.prEditPanel.onCreated( function(){
         },
         /**
          * @returns {Object} where keys are the scopes, and values an array of direct roles
-         *  NB: this doesn't return the checked roles for a new 'NONE' scope
-         * so have to filter before returning the data
+         *  NB: doesn't want return the checked roles for a new 'NONE' scope
+         *  so have to filter before returning the data
          */
         scoped(){
             let directScoped = {};
