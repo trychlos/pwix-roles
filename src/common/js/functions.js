@@ -192,7 +192,7 @@ Roles._sort = function( array ){
     }
     const h = Roles._conf && Roles.configure().roles && Roles.configure().roles.hierarchy ? Roles.configure().roles.hierarchy : [];
     //console.debug( h );
-    h.every(( o ) => {
+    h.forEach(( o ) => {
         f_sort( o );
         return true;
     });
@@ -265,7 +265,7 @@ Roles.compareLevels = async function( userA, userB ){
  * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */
 Roles.directRolesForUser = async function( user, options={} ){
-    return Roles._filter( await alRoles.getRolesForUser( user, options ));
+    return Roles._filter( await Roles.getRolesForUser( user, options ) || [] );
 }
 
 /**
@@ -303,7 +303,7 @@ Roles.flat = function(){
  * @returns {Array} an array of roles documents
  */
 Roles.getRolesForUser = async function( user, options={} ){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.getRolesForUser', user, options ) : Meteor.server.getRolesForUser( user, options ));
+    return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.getRolesForUser', user, options ) : Roles.server.getRolesForUser( user, options ));
 }
 
 /**
