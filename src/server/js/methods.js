@@ -49,43 +49,43 @@ Meteor.methods({
 
     // return roles for the user
     async 'Roles.getRolesForUser'( user, options ){
-        return await Roles.server.getRolesForUser( user, options, this.userId );
+        return await Roles.s.getRolesForUser( user, options, this.userId );
     },
 
     // filter roles assignments for a scope
     async 'Roles.getUsersInScope'( scope ){
-        return await Roles.server.getUsersInScope( scope, this.userId );
+        return await Roles.s.getUsersInScope( scope, this.userId );
     },
 
     // remove all roles for the user
     async 'Roles.removeAllRolesFromUser'( user ){
         console.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
-        return await Roles.server.removeAssignedRolesFromUser( user, this.userId );
+        return await Roles.s.removeAssignedRolesFromUser( user, this.userId );
     },
 
     // remove all roles for the user
     async 'Roles.removeAssignedRolesFromUser'( user ){
-        return await Roles.server.removeAssignedRolesFromUser( user, this.userId );
+        return await Roles.s.removeAssignedRolesFromUser( user, this.userId );
     },
 
     // remove all assignments for a role
     async 'Roles.removeUserAssignmentsForRoles'( roles, opts ){
         console.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
-        return await Roles.server.removeUserAssignmentsFromRoles( roles, opts, this.userId );
+        return await Roles.s.removeUserAssignmentsFromRoles( roles, opts, this.userId );
     },
 
     // remove all assignments for a role
     async 'Roles.removeUserAssignmentsFromRoles'( roles, opts ){
-        return await Roles.server.removeUserAssignmentsFromRoles( roles, opts, this.userId );
+        return await Roles.s.removeUserAssignmentsFromRoles( roles, opts, this.userId );
     },
 
     // replace the user's roles with a new set
     async 'Roles.setUserRoles'( user, roles ){
-        return await Roles.server.setUserRoles( user, roles, this.userId );
+        return await Roles.s.setUserRoles( user, roles, this.userId );
     },
 
     // returns the used scopes
     async 'Roles.usedScopes'(){
-        return await Roles.server.usedScopes( this.userId );
+        return await Roles.s.usedScopes( this.userId );
     }
 });

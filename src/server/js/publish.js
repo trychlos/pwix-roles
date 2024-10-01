@@ -242,7 +242,7 @@ Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
 /*
 Meteor.publish( 'Roles.listByRole', function( roles ){
 
-    // return ( pwiForums.server.fn.Posts.moderablesByQuery.bind( this ))( query );
+    // return ( pwiForums.s.fn.Posts.moderablesByQuery.bind( this ))( query );
 
     const self = this;
     const collectionName = 'ListByRole';

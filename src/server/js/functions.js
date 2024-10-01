@@ -7,7 +7,7 @@ const assert = require( 'assert' ).strict;
 
 import { Roles as alRoles } from 'meteor/alanning:roles';
 
-Roles.server = {
+Roles.s = {
     // get roles for the user
     // https://meteor-community-packages.github.io/meteor-roles/classes/Roles.html#method_getRolesForUserAsync
     // returns Promise null if an error occurred
@@ -54,7 +54,7 @@ Roles.server = {
     //  returns a Promise which resolves to true|false
     async removeAllRolesFromUser( user ){
         console.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
-        return await Roles.server.removeAssignedRolesFromUser( user );
+        return await Roles.s.removeAssignedRolesFromUser( user );
     },
 
     // remove all roles for the user
@@ -94,7 +94,7 @@ Roles.server = {
     //  returns a Promise which resolves an array of the result for each role
     async removeUserAssignmentsForRoles( roles, opts, userId=null ){
         console.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
-        return await Roles.server.removeUserAssignmentsFromRoles( roles, opts, userId );
+        return await Roles.s.removeUserAssignmentsFromRoles( roles, opts, userId );
     },
 
     // remove all assignments for the role(s)
@@ -137,7 +137,7 @@ Roles.server = {
                     if( allowed ){
                         targetId = _.isString( user ) ? user : ( user._id ? user._id : null );
                         if( targetId ){
-                            return Roles.server.removeAssignedRolesFromUser( user );
+                            return Roles.s.removeAssignedRolesFromUser( user );
                         } else {
                             console.warn( 'pwix.roles.fn.setUserRoles unable to get a user identifier from provided user argument', user );
                             return null;
