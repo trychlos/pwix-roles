@@ -7,7 +7,6 @@ import _ from 'lodash';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 let _conf = {};
-
 Roles._conf = new ReactiveVar( _conf );
 
 Roles._defaults = {
@@ -29,12 +28,12 @@ Roles._defaults = {
  */
 Roles.configure = function( o ){
     if( o && _.isObject( o )){
-        _.merge( _conf, Roles._defaults, o );
+        _conf = _.merge( Roles._defaults, _conf, o );
         Roles._conf.set( _conf );
         _verbose( Roles.C.Verbose.CONFIGURE, 'pwix:roles configure() with', o );
     }
     return Roles._conf.get();
 }
 
-_.merge( _conf, Roles._defaults );
+_conf = _.merge( {}, Roles._defaults );
 Roles._conf.set( _conf );

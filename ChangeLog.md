@@ -10,6 +10,7 @@
     - Fix tab activation when showing the 'new scope' button
     - Fix global roles edition
     - Fix some calls to new alanning:roles v4
+    - Fix configuration overrides
 
 ### 1.6.1
 
