@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.6.2-rc
+### 1.6.2
 
-    Release date: 
+    Release date: 2024-10- 4
 
     - Improve edit_scoped_plus stylesheet
     - Fix tab activation when showing the 'new scope' button
@@ -140,4 +140,4 @@
 
 ---
 P. Wieser
-- Last updated on 2024, Sep. 20th
+- Last updated on 2024, Oct. 4th
