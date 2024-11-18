@@ -85,6 +85,8 @@ Meteor.publish( 'pwix_roles_used_scopes', async function(){
 // { "_id" : "sJQNPpYwXPt8bsCWu", "role" : { "_id" : "GROUP_EVEIL" }, "scope" : null, "user" : { "_id" : "55QDvyxocA8XBnyTy" }, "inheritedRoles" : [ { "_id" : "GROUP_EVEIL" } ] }
 // { "_id" : "muw4F8sxuaC84xwEb", "role" : { "_id" : "APP_ADMINISTRATOR" }, "scope" : null, "user" : { "_id" : "yoMKz2WLkw4w4dKzb" }, "inheritedRoles" : [ { "_id" : "APP_ADMINISTRATOR" }, { "_id" : "APP_CONTENT_MANAGER" }, { "_id" : "APP_FORUMS_MANAGER" }, { "_id" : "APP_NEWS_MANAGER" }, { "_id" : "APP_SUBSCRIPTIONS_MANAGER" }, { "_id" : "APP_USER_MANAGER" }, { "_id" : "APP_WRITER" }, { "_id" : "FRS_ADMIN" }, { "_id" : "GROUP_ACCORD_BUREAU" }, { "_id" : "GROUP_BANDACCORD" }, { "_id" : "GROUP_DECOUVERTE" }, { "_id" : "GROUP_EVEIL" }, { "_id" : "APP_NEWS_WRITER" }, { "_id" : "APP_ADM_WRITER" }, { "_id" : "APP_BANDA_WRITER" }, { "_id" : "APP_DECOUVERTE_WRITER" }, { "_id" : "APP_EVEIL_WRITER" }, { "_id" : "APP_HOME_WRITER" }, { "_id" : "APP_MAIL_WRITER" }, { "_id" : "FRS_CATEGORY_MANAGER" }, { "_id" : "FRS_FORUM_MANAGER" }, { "_id" : "FRS_MODERATORS" }, { "_id" : "FRS_MODERATOR_MANAGER" }, { "_id" : "FRS_PRIVATE_EDIT" }, { "_id" : "GROUP_ACCORD_MEMBRE" }, { "_id" : "FRS_CATEGORY_CREATE" }, { "_id" : "FRS_CATEGORY_DELETE" }, { "_id" : "FRS_CATEGORY_UPDATE" }, { "_id" : "FRS_FORUM_CREATE" }, { "_id" : "FRS_FORUM_DELETE" }, { "_id" : "FRS_FORUM_UPDATE" }, { "_id" : "FRS_MODERATOR" }, { "_id" : "FRS_MODERATOR_ACCESS" }, { "_id" : "FRS_PRIVATE_VIEW" }, { "_id" : "FRS_PRIVATE_MODERATOR" }, { "_id" : "FRS_PUBLIC_MODERATOR" }, { "_id" : "FRS_MODERATOR_OP" } ] }
 
+// keys are roles (name/id)
+// values are arrays of user._id
 let _rolesHash = {};
 
 function _maintainUsersPerRole( cb ){
@@ -108,23 +110,25 @@ function _maintainUsersPerRole( cb ){
             if( !Object.keys( _rolesHash ).includes( role._id )){
                 _rolesHash[role._id] = [];
             }
-            _rolesHash[role._id].push( user_id );
+            const array = _rolesHash[role._id];
+            array.push( user_id );
+            _rolesHash[role._id] = [ ...new Set( array )];
             return true;
         });
     }
 
-    const roleHandle = Meteor.roleAssignment.find({}).observe({
+    const roleHandle = Meteor.roleAssignment.find({}).observeAsync({
         added( doc ){
             //console.debug( 'roleAssignment added', arguments );
-            _remove( doc.user._id );
+            //_remove( doc.user._id );
             if( doc.inheritedRoles ){
                 _set( doc.user._id, doc.inheritedRoles );
             }
             cb();
         },
         changed( newDoc, oldDoc ){
-            //console.debug( 'roleAssignment changed', arguments );
-            _remove( newDoc.user._id );
+            console.debug( 'roleAssignment changed', arguments );
+            //_remove( newDoc.user._id );
             if( newDoc.inheritedRoles ){
                 _set( newDoc.user._id, newDoc.inheritedRoles );
             }
@@ -138,7 +142,7 @@ function _maintainUsersPerRole( cb ){
         }
     });
 
-    const userHandle = Meteor.users.find({}).observe({
+    const userHandle = Meteor.users.find({}).observeAsync({
         // adding or modfying something in users collection is not relevant here
         added( user ){
         },
@@ -155,7 +159,7 @@ function _maintainUsersPerRole( cb ){
     return [ roleHandle, userHandle ];
 }
 
-// publishes the count of users which have a role
+// publishes the count of users which have a role, either direct or inherited
 //  as several roles may be asked, this publication provides a 'pwix_roles_count_by_roles' collection, with one row { role, count } per role
 //  this is used by pwix:startup-app-admin, so when there is not yet any connected user -> so we cannot protect that and this is public
 //
@@ -177,6 +181,7 @@ Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
         return false;
     }
 
+    //console.debug( 'pwix_roles_count_by_roles', roles );
     const self = this;
     const collectionName = 'pwix_roles_count_by_roles';
     const rolesArray = Array.isArray( roles ) ? roles : [ roles ];
@@ -188,6 +193,7 @@ Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
 
     const _publish = function(){
         if( initialized ){
+            //console.debug( '_publish', _rolesHash );
             Object.keys( _rolesHash ).every(( role ) => {
                 if( rolesArray.includes( role )){
                     if( first ){
@@ -229,78 +235,7 @@ Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
     });
 });
 
-// publishes the list of users which have a role
-//  as several roles may be asked, this publication provides a 'ListByRole' collection, with one row { role, user_id } per role and user
-//  Note that this publication shares most of its code with 'Roles.countByRole' publication
-//
-// Rationale: it seems that Roles.getUsersInRole() publishes a non-reactive cursor, as doesn't trigger neither added(), changed() nor removed()
-//  when updating the role-assignment collection.
-//  However, the removed() is triggered when we delete a user from db.users collection...
-//  So, we observe changes on both the two collections
-//
-// as of 2024- 7-10 this is not used by any application nor any package  -just comment it out at the moment
-/*
-Meteor.publish( 'Roles.listByRole', function( roles ){
-
-    // return ( pwiForums.s.fn.Posts.moderablesByQuery.bind( this ))( query );
-
-    const self = this;
-    const collectionName = 'ListByRole';
-    const rolesArray = Array.isArray( roles ) ? roles : [ roles ];
-    let collectionHash = {};
-
-    // `observeChanges` only returns after the initial `added` callbacks have run.
-    // Until then, we don't want to send a lot of `changed` messages
-    // hence tracking the `initializing` state.
-
-    const handle = alRoles.getUsersInRoleAsync( rolesArray ).observeChanges({
-        added( user_id, user_doc ){
-            //console.debug( 'added', arguments );
-            alRoles.getRolesForUserAsync( user_id )
-                .then(( userRoles ) => {
-                    rolesArray.every(( role ) => {
-                        if( userRoles.includes( role )){
-                            if( Object.keys( collectionHash ).includes( role )){
-                                collectionHash[role] += 1;
-                            } else {
-                                collectionHash[role] = 1;
-                            }
-                        }
-                        return true;
-                    });
-                });
-        },
-        // cannot handle changed() nor removed() as obviously the roles have changed or have been removed
-        changed(){
-            console.debug( 'changed', arguments );
-        },
-        removed( user_id ){
-            console.debug( 'removed', arguments );
-        }
-    });
-
-    // Instead, we'll send one `added` message right after `observeChanges` has
-    // returned, and mark the subscription as ready.
-    Object.keys( collectionHash ).every(( role ) => {
-        self.added( collectionName, role, { role: role, count: collectionHash[role] });
-        //console.debug( 'adding', { role: role, count: collectionHash[role] });
-        return true;
-    });
-    rolesArray.every(( role ) => {
-        if( !Object.keys( collectionHash ).includes( role )){
-            self.added( collectionName, role, { role: role, count: 0 });
-            //console.debug( 'adding', { role: role, count: 0 });
-            //  this provides to the client rows as: { _id: 'APP_ADMIN', role: 'APP_ADMIN', count: 1 }
-
-        }
-        return true;
-    });
-
-    this.ready();
-
-    // Stop observing the cursor when the client unsubscribes. Stopping a
-    // subscription automatically takes care of sending the client any `removed`
-    // messages.
-    this.onStop(() => handle.stop());
+// publishes the list of users which have a role inside of a given scope
+Meteor.publish( 'pwix_roles_list_by_scope', function( scope ){
+    return Meteor.roleAssignment.find({ scope: scope });
 });
-*/

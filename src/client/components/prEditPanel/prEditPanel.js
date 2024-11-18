@@ -14,9 +14,9 @@ import _ from 'lodash';
 import { PlusButton } from 'meteor/pwix:plus-button';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import '../edit_global_pane/edit_global_pane.js';
-import '../edit_scoped_pane/edit_scoped_pane.js';
-import '../edit_scoped_plus/edit_scoped_plus.js';
+import '../pr_edit_global_pane/pr_edit_global_pane.js';
+import '../pr_edit_scoped_pane/pr_edit_scoped_pane.js';
+import '../pr_edit_scoped_plus/pr_edit_scoped_plus.js';
 import '../pr_tree/pr_tree.js';
 
 import './prEditPanel.html';
@@ -182,7 +182,7 @@ Template.prEditPanel.helpers({
                 {
                     name: 'roles_global_tab',
                     navLabel: pwixI18n.label( I18N, 'tabs.global_title' ),
-                    paneTemplate: 'edit_global_pane',
+                    paneTemplate: 'pr_edit_global_pane',
                     paneData: {
                         roles: PR.roles,
                         pr_div: PR.global_div,
@@ -193,7 +193,7 @@ Template.prEditPanel.helpers({
                     name: 'roles_scoped_tab',
                     navLabel: pwixI18n.label( I18N, 'tabs.scoped_title' ),
                     navItemClasses: 'flex-grow-1',
-                    paneTemplate: 'edit_scoped_pane',
+                    paneTemplate: 'pr_edit_scoped_pane',
                     paneData: {
                         roles: PR.roles,
                         pr_div: PR.scoped_div,
@@ -203,7 +203,7 @@ Template.prEditPanel.helpers({
                 },
                 {
                     name: 'roles_plus_tab',
-                    navTemplate: 'edit_scoped_plus',
+                    navTemplate: 'pr_edit_scoped_plus',
                     navData: {
                         enabled: Template.instance().PR.enabledPlus,
                         label: pwixI18n.label( I18N, 'panels.add_button' ),
@@ -218,7 +218,7 @@ Template.prEditPanel.helpers({
 });
 
 Template.prEditPanel.events({
-    // because of the position of the plusButton in the DOM, the edit_scoped_pane component cannot directly handle the clicks
+    // because of the position of the plusButton in the DOM, the pr_edit_scoped_pane component cannot directly handle the clicks
     //  we have to get them here, and redirect to the pane
     'click .js-plus'( event, instance ){
         if( instance.PR.enabledPlus.get()){

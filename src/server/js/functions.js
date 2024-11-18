@@ -125,6 +125,23 @@ Roles.s = {
         }
     },
 
+    // reset all assignment for a scope
+    async resetScopedAssignments( scope, assignments, userId=null ){
+        const allowed = true;   // BAD!
+        let res = null;
+        if( allowed ){
+            res = [];
+            res.deleted = await Meteor.roleAssignment.removeAsync({ scope: scope });
+            res.assigned = 0;
+            for await( it of assignments ){
+                await alRoles.addUsersToRolesAsync( it.user._id, it.role._id, { scope: scope });
+                res.assigned += 1;
+            };
+        }
+        console.debug( 'res', res );
+        return res;
+    },
+
     // replace the roles of the user
     //  return true|false, or null if an error occurred
     async setUserRoles( user, roles, userId=null ){

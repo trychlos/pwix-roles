@@ -6,6 +6,13 @@ Roles.i18n = {
     ...Roles.i18n,
     ...{
         fr: {
+            accounts: {
+                add: 'Gérer les comptes assignés',
+                edit: 'Editer les comptes sur le périmètre',
+                remove: 'Enlever ce compte',
+                res_error: 'Une erreur a été détectée lors de la mise à jour. Merci de réessayer ultérieurement',
+                res_success: 'L\'assignation des comptes aux rôles a été effectuée avec succès'
+            },
             dialogs: {
                 cancel: 'Annuler',
                 close: 'Fermer',
@@ -15,6 +22,7 @@ Roles.i18n = {
                 norole: 'Vous n\'avez aucun rôle particulier en ce moment.',
                 roles_tab: 'Rôles',
                 save: 'Enregistrer',
+                scoped_dialog_title: 'Edition des comptes utilisateurs sur le périmètre',
                 view_title: 'Visualisation des rôles',
                 view_title_mail: 'Visualisation des rôles de %s',
             },

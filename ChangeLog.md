@@ -2,17 +2,18 @@
 
 ## ChangeLog
 
-### 1.6.3-rc
+### 1.7.0-rc
 
     Release date: 
 
-    - 
+    - Define new prScopedAccountsPanel component, thus bumping minor candidate version number
+    - Fix 'pwix_roles_count_by_roles' publication when an account has redondant assignments
 
 ### 1.6.2
 
     Release date: 2024-10- 4
 
-    - Improve edit_scoped_plus stylesheet
+    - Improve pr_edit_scoped_plus stylesheet
     - Fix tab activation when showing the 'new scope' button
     - Fix global roles edition
     - Fix some calls to new alanning:roles v4

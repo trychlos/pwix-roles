@@ -1,5 +1,5 @@
 /*
- * pwix:roles/src/client/components/view_global_pane/view_global_pane.js
+ * pwix:roles/src/client/components/pr_view_global_pane/pr_view_global_pane.js
  *
  *  Edit global (non-scoped) roles.
  * 
@@ -12,9 +12,9 @@
 
 import { pwixI18n } from 'meteor/pwix:i18n';
 
-import './view_global_pane.html';
+import './pr_view_global_pane.html';
 
-Template.view_global_pane.helpers({
+Template.pr_view_global_pane.helpers({
 
     // whether we have some global roles to show
     haveGlobal( arg ){

@@ -6,6 +6,13 @@ Roles.i18n = {
     ...Roles.i18n,
     ...{
         en: {
+            accounts: {
+                add: 'Manage assigned accounts',
+                edit: 'Edit the scoped accounts',
+                remove: 'Remove this account',
+                res_error: 'Unfortunately an error occured at update time. Please retry later',
+                res_success: 'The accounts assignments have been successfully updated'
+            },
             dialogs: {
                 cancel: 'Cancel',
                 close: 'Close',
@@ -15,6 +22,7 @@ Roles.i18n = {
                 norole: 'It seems you don\'t have any particular role at the moment.',
                 roles_tab: 'Roles',
                 save: 'Save',
+                scoped_dialog_title: 'Editing the scoped user accounts',
                 view_title: 'View user\'s roles',
                 view_title_mail: 'View roles for %s',
             },

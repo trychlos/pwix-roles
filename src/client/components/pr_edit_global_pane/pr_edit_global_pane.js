@@ -1,5 +1,5 @@
 /*
- * pwix:roles/src/client/components/edit_global_pane/edit_global_pane.js
+ * pwix:roles/src/client/components/pr_edit_global_pane/pr_edit_global_pane.js
  *
  *  Edit global (non-scoped) roles.
  * 
@@ -10,9 +10,9 @@
  *  - pr_prefix: the prefix of the checkbox nodes
  */
 
-import './edit_global_pane.html';
+import './pr_edit_global_pane.html';
 
-Template.edit_global_pane.helpers({
+Template.pr_edit_global_pane.helpers({
     // parms to the pr_tree component to edit global roles
     parmsTree(){
         return {
@@ -21,7 +21,7 @@ Template.edit_global_pane.helpers({
     }
 });
 
-Template.edit_global_pane.events({
+Template.pr_edit_global_pane.events({
     'pr-change .pr-edit-global-pane'( event, instance ){
         // non-reactively update the passed-in roles
         const $tree = instance.$( event.currentTarget ).find( '.'+this.pr_div );

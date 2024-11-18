@@ -1,5 +1,5 @@
 /*
- * pwix:roles/src/client/components/view_scoped_pane/view_scoped_pane.js
+ * pwix:roles/src/client/components/pr_view_scoped_pane/pr_view_scoped_pane.js
  *
  *  Edit scoped roles.
  *  We display the scoped roles as a list of accordions <role> <scope>
@@ -17,9 +17,9 @@ import _ from 'lodash';
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { Random } from 'meteor/random';
 
-import './view_scoped_pane.html';
+import './pr_view_scoped_pane.html';
 
-Template.view_scoped_pane.onCreated( function(){
+Template.pr_view_scoped_pane.onCreated( function(){
     const self = this;
 
     self.PR = {
@@ -70,14 +70,14 @@ Template.view_scoped_pane.onCreated( function(){
     });
 });
 
-Template.view_scoped_pane.onRendered( function(){
+Template.pr_view_scoped_pane.onRendered( function(){
     const self = this;
 
     // open the first accordion (if any)
     self.$( '.pr-view-scoped-pane .accordion-collapse' ).first().addClass( 'show' );
 });
 
-Template.view_scoped_pane.helpers({
+Template.pr_view_scoped_pane.helpers({
     // the identifier of the accordion div, once for the whole pane
     accordionId(){
         return Template.instance().PR.accordionId;

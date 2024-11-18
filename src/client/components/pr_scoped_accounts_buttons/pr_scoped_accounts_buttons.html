@@ -1,0 +1,15 @@
+<template name="pr_scoped_accounts_buttons">
+    <div class="pr-scoped-accounts-buttons d-flex flex-column">
+
+        {{#if haveEditTree }}
+            <button class="btn btn-primary js-edit" type="button" {{ editDisabled }}>{{ i18n key="accounts.edit" }}</button>
+        {{/if}}
+        {{#if haveAddAccount }}
+            <button class="btn btn-sm btn-outline-primary js-add" type="button" {{ addDisabled }}>{{ i18n key="accounts.add" }}</button>
+        {{/if}}
+        {{#if haveRemoveAccount }}
+            <button class="btn btn-sm btn-outline-primary js-remove ui-mt05" type="button" {{ removeDisabled }}>{{ i18n key="accounts.remove" }}</button>
+        {{/if}}
+
+    </div>
+</template>

@@ -1,5 +1,5 @@
 /*
- * pwix:roles/src/client/components/edit_scoped_pane/edit_scoped_pane.js
+ * pwix:roles/src/client/components/pr_edit_scoped_pane/pr_edit_scoped_pane.js
  *
  *  Edit scoped roles.
  *  We display the scoped roles as a list of accordions <role> <scope>
@@ -20,9 +20,9 @@ import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Roles } from 'meteor/pwix:roles';
 
-import './edit_scoped_pane.html';
+import './pr_edit_scoped_pane.html';
 
-Template.edit_scoped_pane.onCreated( function(){
+Template.pr_edit_scoped_pane.onCreated( function(){
     const self = this;
 
     self.PR = {
@@ -138,14 +138,14 @@ Template.edit_scoped_pane.onCreated( function(){
     });
 });
 
-Template.edit_scoped_pane.onRendered( function(){
+Template.pr_edit_scoped_pane.onRendered( function(){
     const self = this;
 
     // open the first accordion (if any)
     self.$( '.pr-edit-scoped-pane .accordion-collapse' ).first().addClass( 'show' );
 });
 
-Template.edit_scoped_pane.helpers({
+Template.pr_edit_scoped_pane.helpers({
     // the identifier of the accordion div, once for the whole pane
     accordionId(){
         return Template.instance().PR.accordionId;
@@ -241,7 +241,7 @@ Template.edit_scoped_pane.helpers({
     }
 });
 
-Template.edit_scoped_pane.events({
+Template.pr_edit_scoped_pane.events({
     // change the currently selected scope
     'change .js-scope'( event, instance ){
         const $parent = instance.$( event.currentTarget ).closest( '.accordion-header' );

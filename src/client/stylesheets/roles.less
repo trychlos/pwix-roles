@@ -63,3 +63,30 @@
         font-style: italic;
     }
 }
+
+.pr-scoped-accounts-panel {
+    .encloser > .left {
+        border: 1px solid lightgray;
+        border-radius: 0.25em;
+        padding: 1em;
+    }
+    .encloser > .right {
+        margin-left: 1em;
+    }
+    .pr-tree {
+        li.jstree-node,
+        .jstree-wholerow,
+        a.jstree-anchor {
+            line-height: 1.8em;
+            min-height: 1.8em;
+        }
+        li.jstree-node svg.type-role {
+            height: 1em;
+            color: var( --bs-primary );
+        }
+        li.jstree-node svg.type-account {
+            height: 1em;
+            color: var( --bs-info );
+        }
+    }
+}

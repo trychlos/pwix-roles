@@ -79,6 +79,11 @@ Meteor.methods({
         return await Roles.s.removeUserAssignmentsFromRoles( roles, opts, this.userId );
     },
 
+    // replace all assignements for a scope
+    async 'Roles.resetScopedAssignments'( scope, assignements ){
+        return await Roles.s.resetScopedAssignments( scope, assignements, this.userId );
+    },
+
     // replace the user's roles with a new set
     async 'Roles.setUserRoles'( user, roles ){
         return await Roles.s.setUserRoles( user, roles, this.userId );

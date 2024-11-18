@@ -17,8 +17,8 @@ import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import '../pr_tree/pr_tree.js';
-import '../view_global_pane/view_global_pane.js';
-import '../view_scoped_pane/view_scoped_pane.js';
+import '../pr_view_global_pane/pr_view_global_pane.js';
+import '../pr_view_scoped_pane/pr_view_scoped_pane.js';
 
 import './prViewPanel.html';
 
@@ -105,7 +105,8 @@ Template.prViewPanel.helpers({
             roles: PR.roles,
             pr_div: PR.global_div,
             pr_prefix: PR.global_prefix,
-            pr_edit: false
+            pr_edit: false,
+            pr_selectable: false
         };
     },
 
@@ -116,23 +117,25 @@ Template.prViewPanel.helpers({
             {
                 name: 'roles_global_tab',
                 navLabel: pwixI18n.label( I18N, 'tabs.global_title' ),
-                paneTemplate: 'view_global_pane',
+                paneTemplate: 'pr_view_global_pane',
                 paneData: {
                     roles: PR.roles,
                     pr_div: PR.global_div,
                     pr_prefix: PR.global_prefix,
-                    pr_edit: false
+                    pr_edit: false,
+                    pr_selectable: false
                 }
             },
             {
                 name: 'roles_scoped_tab',
                 navLabel: pwixI18n.label( I18N, 'tabs.scoped_title' ),
-                paneTemplate: 'view_scoped_pane',
+                paneTemplate: 'pr_view_scoped_pane',
                 paneData: {
                     roles: PR.roles,
                     pr_div: PR.scoped_div,
                     pr_prefix: PR.scoped_prefix,
-                    pr_edit: false
+                    pr_edit: false,
+                    pr_selectable: false
                 }
             }
         ];
