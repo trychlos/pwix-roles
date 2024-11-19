@@ -15,7 +15,7 @@
  *      (can be a deep copy of the initial roles - so ready to be edited)
  *  - pr_div: the class name of the main div
  *  - pr_prefix: the prefix of the nodes, defaulting to none
- *  - pr_edit: whether we want be able to edit, defaulting to true
+ *  - pr_editable: whether we want be able to edit, defaulting to true
  *  - pr_selectable: whether we want be able to select rows, defaulting to true
  *  - pr_multiple: whether we can select multiple rows, defaulting to false
  *  - withCheckboxes: whether to display a checkbox in front of each role, defaulting to true
@@ -59,7 +59,7 @@ Template.pr_tree.onCreated( function(){
         withIcons: new ReactiveVar( false ),
 
         // whether the tree is readonly
-        readOnly: new ReactiveVar( false ),
+        editable: new ReactiveVar( false ),
 
         // whether the rows are selectable
         selectable: new ReactiveVar( true ),
@@ -80,17 +80,28 @@ Template.pr_tree.onCreated( function(){
         //  doesn't trigger the event when checkboxes are programatically checked
         triggerChangeEvent: true,
 
+        // disable roles children
+        disableChildrenById( id ){
+            self.PR.disableChildrenByNode( self.PR.$tree.get().jstree( true ).get_node( self.PR.pr_prefix.get()+id ));
+        },
+
+        // disable roles children
+        disableChildrenByNode( node ){
+            if( node ){
+                node.children_d.forEach(( id ) => {
+                    self.PR.$tree.get().jstree( true ).disable_node( id );
+                });
+            }
+        },
+
         // we have explicitely or programatically checked an item (but cascade doesn't come here)
         //  data = { node, selected, event, jsTree instance }
+        // note too that the event is not triggered when editable is false
         tree_checkbox_check( data ){
-            const $tree = self.PR.$tree.get();
-            data.node.children_d.every(( id ) => {
-                $tree.jstree( true ).disable_node( id );
-                return true;
-            });
+            self.PR.disableChildrenByNode( data.node );
             if( self.PR.triggerChangeEvent ){
                 //console.debug( 'triggering pr-change due to checkbox check' );
-                $tree.trigger( 'pr-change' );
+                self.PR.$tree.get().trigger( 'pr-change' );
             }
         },
 
@@ -157,7 +168,10 @@ Template.pr_tree.onCreated( function(){
                 "children": [],
                 "icon": self.PR.withIcons.get(),
                 "doc": role,
-                "type": 'R'
+                "type": 'R',
+                "li_attr": {
+                    class: self.PR.editable.get() ? 'pr-editable-true' : 'pr-editable-false'
+                }
             });
         },
 
@@ -214,7 +228,7 @@ Template.pr_tree.onCreated( function(){
 
     // setup the edition flag
     self.autorun(() => {
-        self.PR.readOnly.set( Template.currentData().pr_edit === false );
+        self.PR.editable.set( Template.currentData().pr_editable !== false );
     });
 
     // setup the selectable flag
@@ -306,6 +320,8 @@ Template.pr_tree.onRendered( function(){
     self.autorun(() => {
         const $tree = self.PR.$tree.get();
         if( $tree ){
+            // types are always defined, but only used when managing accounts assignments
+            //  in this case only, we show type icons
             let types = {
                 'A': {},
                 'R': {}
@@ -341,7 +357,8 @@ Template.pr_tree.onRendered( function(){
                     three_state: false,
                     cascade: 'down',
                     whole_node: true,
-                    tie_selection: false
+                    tie_selection: !self.PR.editable.get(), // false
+                    keep_selected_style: !self.PR.editable.get()
                 },
                 // node is the last selected node whose selection triggers this event
                 //  at the time, get_selected() returns the already/previously selected nodes
@@ -391,6 +408,7 @@ Template.pr_tree.onRendered( function(){
             })
             // 'check_node.jstree' data = { node, selected, event, jsTree instance }
             .on( 'check_node.jstree', ( event, data ) => {
+                console.debug( event.type, data );
                 self.PR.tree_checkbox_check( data );
             })
             // 'uncheck_node.jstree' data = { node, selected, event, jsTree instance }
@@ -493,6 +511,26 @@ Template.pr_tree.onRendered( function(){
             }
             self.PR.tree_checked( true );
             self.PR.tree_accounts( false );
+        }
+    });
+
+    // when we have read-only checkboxes, have to explicitely disable children because the check_node event is not triggered in this case
+    self.autorun(() => {
+        if( self.PR.tree_checked() && self.PR.haveCheckboxes.get() && !self.PR.editable.get()){
+            const wantScoped = Template.currentData().wantScoped === true;
+            const roles = Template.currentData().roles.get();
+            if( wantScoped ){
+                const scope = Template.currentData().scope;
+                if( scope ){
+                    roles.scoped[scope].direct.forEach(( role ) => {
+                        self.PR.disableChildrenById( role );
+                    });
+                }
+            } else {
+                roles.global.direct.forEach(( role ) => {
+                    self.PR.disableChildrenById( role );
+                });
+            }
         }
     });
 

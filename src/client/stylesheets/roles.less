@@ -4,19 +4,11 @@
 .prView-body {
 
     .jstree-checkbox {
-        margin-right: 0.5em;
+        margin-right: 0.25em;
     }
-    li.pr-disabled,
-    li.pr-view-inherited{
+    li.pr-disabled {
         color: gray;
         font-style: italic;
-    }
-
-    .pr-tab {
-        padding-top: 1em;
-        ul {
-            line-height: 1.75em;
-        }
     }
     // have some padding for the accordion
     .pr-edit-scoped-pane > div {
@@ -62,6 +54,19 @@
         align-items: center;
         font-style: italic;
     }
+    .pr-edit-scoped-pane,
+    .pr-view-scoped-pane {
+        .scoped-item:not( :first-child ){
+            margin-top: 0.25em;
+        }
+    }
+    // readonly checkboxes
+    li.pr-editable-false {
+        .jstree-disabled.jstree-clicked,
+        .jstree-wholerow-clicked {
+            background: none;
+        }
+    }
 }
 
 .pr-scoped-accounts-panel {
@@ -92,7 +97,5 @@
 }
 
 .pr-tree {
-    //height:100%;
     overflow-y: auto;
-    max-height: 60vh;
 }

@@ -29,7 +29,9 @@ Template.pr_view_global_pane.helpers({
     // parms to the pr_tree component to edit global roles
     parmsTree(){
         return {
-            ...this
+            ...this,
+            pr_editable: false,
+            pr_selectable: false
         };
     }
 });

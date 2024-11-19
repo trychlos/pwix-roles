@@ -114,7 +114,9 @@ Template.pr_view_scoped_pane.helpers({
         return {
             ...this,
             wantScoped: true,
-            scope: Template.instance().PR.byId( it )
+            scope: Template.instance().PR.byId( it ),
+            pr_editable: false,
+            pr_selectable: false
         };
     },
 

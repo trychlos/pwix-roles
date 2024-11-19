@@ -105,7 +105,7 @@ Template.prViewPanel.helpers({
             roles: PR.roles,
             pr_div: PR.global_div,
             pr_prefix: PR.global_prefix,
-            pr_edit: false,
+            pr_editable: false,
             pr_selectable: false
         };
     },
@@ -122,7 +122,7 @@ Template.prViewPanel.helpers({
                     roles: PR.roles,
                     pr_div: PR.global_div,
                     pr_prefix: PR.global_prefix,
-                    pr_edit: false,
+                    pr_editable: false,
                     pr_selectable: false
                 }
             },
@@ -134,7 +134,7 @@ Template.prViewPanel.helpers({
                     roles: PR.roles,
                     pr_div: PR.scoped_div,
                     pr_prefix: PR.scoped_prefix,
-                    pr_edit: false,
+                    pr_editable: false,
                     pr_selectable: false
                 }
             }
