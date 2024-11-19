@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.7.0-rc
+### 1.7.0
 
-    Release date: 
+    Release date: 2024-11-19
 
     - Define new prScopedAccountsPanel component, thus bumping minor candidate version number
     - Fix 'pwix_roles_count_by_roles' publication when an account has redondant assignments
@@ -151,4 +151,4 @@
 
 ---
 P. Wieser
-- Last updated on 2024, Oct. 4th
+- Last updated on 2024, Nov. 19th
