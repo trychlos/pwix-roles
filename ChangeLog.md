@@ -11,6 +11,7 @@
     - Fix the stylesheet to make the tree scrollable
     - Allow multiple account assignements selection
     - No more allow checboxes changes on view mode
+    - No more leave an empty prView div after roles view
 
 ### 1.6.2
 

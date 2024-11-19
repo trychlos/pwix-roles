@@ -141,18 +141,21 @@ Template.pr_tree.onCreated( function(){
         //  and run the creation of waiting children
         //  data = { node, parent, position, jsTree instance }
         tree_create_done( data ){
-            const role = data.node.original.doc;
-            self.PR.tree_nodes_created[ role.name ] = data.node;
-            delete self.PR.tree_nodes_asked[ role.name ];
-            if( Object.keys( self.PR.tree_nodes_waiting ).includes( role.name )){
-                self.PR.tree_nodes_waiting[ role.name ].forEach(( child ) => {
-                    self.PR.tree_create_ask( child, role );
-                });
-                delete self.PR.tree_nodes_waiting[ role.name ];
-            }
-            // when we have created all the nodes...
-            if( Object.keys( self.PR.tree_nodes_waiting ).length === 0 ){
-                self.PR.tree_populated( true );
+            //console.debug( 'tree_create_done', data );
+            if( data.node.type === 'R' ){
+                const role = data.node.original.doc;
+                self.PR.tree_nodes_created[ role.name ] = data.node;
+                delete self.PR.tree_nodes_asked[ role.name ];
+                if( Object.keys( self.PR.tree_nodes_waiting ).includes( role.name )){
+                    self.PR.tree_nodes_waiting[ role.name ].forEach(( child ) => {
+                        self.PR.tree_create_ask( child, role );
+                    });
+                    delete self.PR.tree_nodes_waiting[ role.name ];
+                }
+                // when we have created all the nodes...
+                if( Object.keys( self.PR.tree_nodes_waiting ).length === 0 ){
+                    self.PR.tree_populated( true );
+                }
             }
         },
 
@@ -177,7 +180,9 @@ Template.pr_tree.onCreated( function(){
 
         // delete a node
         //  a node has been deleted
+        //  seems that deletion is sync
         tree_delete_node( data ){
+            //console.debug( 'tree_delete_node', data );
         },
 
         // getter/setter: whether the creation of the accounts is done (if apply)
@@ -546,6 +551,7 @@ Template.pr_tree.onRendered( function(){
                 const amInstance = AccountsHub.instances['users'];
                 // first reset the tree
                 ( self.PR.prevAccounts || [] ).forEach(( it ) => {
+                    //console.debug( 'delete_node', prefix+it._id );
                     $tree.jstree( true ).delete_node( prefix+it._id );
                 });
                 // then re-add the accounts members
@@ -553,6 +559,7 @@ Template.pr_tree.onRendered( function(){
                     const node = $tree.jstree( true ).get_node( prefix+it.role._id );
                     if( node ){
                         promises.push( amInstance.preferredLabel( it.user._id ).then(( doc ) => {
+                            //console.debug( 'create_node', prefix+it._id );
                             $tree.jstree( true ).create_node( node, {
                                 "id": prefix+it._id,
                                 "text": doc.label,

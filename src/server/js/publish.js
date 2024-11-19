@@ -127,7 +127,7 @@ function _maintainUsersPerRole( cb ){
             cb();
         },
         changed( newDoc, oldDoc ){
-            console.debug( 'roleAssignment changed', arguments );
+            //console.debug( 'roleAssignment changed', arguments );
             //_remove( newDoc.user._id );
             if( newDoc.inheritedRoles ){
                 _set( newDoc.user._id, newDoc.inheritedRoles );

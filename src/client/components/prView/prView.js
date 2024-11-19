@@ -59,7 +59,10 @@ Template.prView.onRendered( function(){
         if( self.PR.title ){
             title = self.PR.title.get();
         }
-        Modal.set({ title: title });
+        Modal.set({
+            target: self.$( '.prView' ),
+            title: title
+        });
     });
 });
 
@@ -67,5 +70,11 @@ Template.prView_footer.helpers({
     // i18n namespace
     i18n( opts ){
         return pwixI18n.label( I18N, opts.hash.key );
+    }
+});
+
+Template.prView.events({
+    'md-close .prView'( event, instance ){
+        $( '.prView' ).remove();
     }
 });

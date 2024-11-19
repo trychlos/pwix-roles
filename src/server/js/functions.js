@@ -130,7 +130,7 @@ Roles.s = {
         const allowed = true;   // BAD!
         let res = null;
         if( allowed ){
-            res = [];
+            res = {};
             res.deleted = await Meteor.roleAssignment.removeAsync({ scope: scope });
             res.assigned = 0;
             for await( it of assignments ){

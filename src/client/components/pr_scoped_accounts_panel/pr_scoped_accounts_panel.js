@@ -172,10 +172,10 @@ Template.pr_scoped_accounts_panel.helpers({
     parmsTree(){
         return {
             roles: Template.instance().PR.userRoles,
-            pr_editable: false,
             pr_div: Template.instance().PR.scoped_div+( Template.instance().PR.editMode.get() ? '-edit' : '-view' ),
+            pr_editable: false,
             pr_selectable: Boolean( this.pr_selectable !== false ),
-            pr_multiple: Boolean( this.pr_selectable === true ),
+            pr_multiple: Boolean( this.pr_selectable !== false ),
             wantScoped: true,
             scope: this.scope,
             withCheckboxes: false,
