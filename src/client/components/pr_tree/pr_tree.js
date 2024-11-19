@@ -17,6 +17,7 @@
  *  - pr_prefix: the prefix of the nodes, defaulting to none
  *  - pr_edit: whether we want be able to edit, defaulting to true
  *  - pr_selectable: whether we want be able to select rows, defaulting to true
+ *  - pr_multiple: whether we can select multiple rows, defaulting to false
  *  - withCheckboxes: whether to display a checkbox in front of each role, defaulting to true
  *  - accounts: an optional ReactiveVar which contains the array of accounts assignments from 'role-assignment' collection
  * 
@@ -60,8 +61,11 @@ Template.pr_tree.onCreated( function(){
         // whether the tree is readonly
         readOnly: new ReactiveVar( false ),
 
-        // whether the tree is readonly
+        // whether the rows are selectable
         selectable: new ReactiveVar( true ),
+
+        // whether the user can select multiple rows
+        multiple: new ReactiveVar( false ),
 
         // whether we want checkboxes
         haveCheckboxes: new ReactiveVar( true ),
@@ -223,6 +227,11 @@ Template.pr_tree.onCreated( function(){
         self.PR.haveCheckboxes.set( Template.currentData().withCheckboxes !== false );
     });
 
+    // setup the multiple flag
+    self.autorun(() => {
+        self.PR.multiple.set( Template.currentData().pr_multiple === true );
+    });
+
     // make sure roles are set as a ReactiveVar
     self.autorun(() => {
         const roles = Template.currentData().roles;
@@ -325,7 +334,7 @@ Template.pr_tree.onRendered( function(){
                                 return false;
                         }
                     },
-                    multiple: false
+                    multiple: self.PR.multiple.get(),
                 },
                 plugins: plugins,
                 checkbox: {
@@ -334,8 +343,33 @@ Template.pr_tree.onRendered( function(){
                     whole_node: true,
                     tie_selection: false
                 },
+                // node is the last selected node whose selection triggers this event
+                //  at the time, get_selected() returns the already/previously selected nodes
+                //  so the whole selection is the union of node + get_selected()
+                // allow only one selected role, or several accounts
                 conditionalselect( node, event ){
-                    return self.PR.selectable.get();
+                    if( !self.PR.selectable.get()){
+                        return false;
+                    }
+                    if( !self.PR.multiple.get()){
+                        return true;
+                    }
+                    if( node.type === 'R' ){
+                        $tree.jstree( true ).deselect_all();
+                        return true;
+                    }
+                    let haveRole = false;
+                    $tree.jstree( true ).get_selected( true ).every(( it ) => {
+                        if( it.type === 'R' ){
+                            haveRole = true;
+                        }
+                        return !haveRole;
+                    });
+                    if( haveRole ){
+                        $tree.jstree( true ).deselect_all();
+                        return true;
+                    }
+                    return true;
                 },
                 sort: function( a, b ){
                     const node_a = this.get_node( a );
@@ -377,7 +411,7 @@ Template.pr_tree.onRendered( function(){
             })
             // 'select_node.jstree' data = { node, jsTree instance }
             .on( 'select_node.jstree', ( event, { event2, instance, node, selected }) => {
-                $tree.trigger( 'pr-rowselect', { node: node });
+                $tree.trigger( 'pr-rowselect', { node: node, selected: $tree.jstree( true ).get_selected( true ) });
             });
         }
     });

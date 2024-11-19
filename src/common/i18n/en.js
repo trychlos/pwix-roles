@@ -9,7 +9,7 @@ Roles.i18n = {
             accounts: {
                 add: 'Manage assigned accounts',
                 edit: 'Edit the scoped accounts',
-                remove: 'Remove this account',
+                remove: 'Remove these accounts',
                 res_error: 'Unfortunately an error occured at update time. Please retry later',
                 res_success: 'The accounts assignments have been successfully updated'
             },

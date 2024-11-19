@@ -55,7 +55,9 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
         enableRemove: new ReactiveVar( false ),
 
         // last row selected
-        selectedNode: new ReactiveVar( null )
+        selectedNode: new ReactiveVar( null ),
+        // full selection
+        selectedArray: new ReactiveVar( null ),
     };
 
     // keep the scope as the event handlers data context are those of the sender
@@ -173,6 +175,7 @@ Template.pr_scoped_accounts_panel.helpers({
             pr_edit: false,
             pr_div: Template.instance().PR.scoped_div+( Template.instance().PR.editMode.get() ? '-edit' : '-view' ),
             pr_selectable: Boolean( this.pr_selectable !== false ),
+            pr_multiple: Boolean( this.pr_selectable === true ),
             wantScoped: true,
             scope: this.scope,
             withCheckboxes: false,
@@ -235,25 +238,30 @@ Template.pr_scoped_accounts_panel.events({
         }
     },
 
-    // remove the current account
+    // remove the currently selected accounts
     //  node.id is the user account identifier to be removed from node.parent
     'click .js-remove'( event, instance ){
-        const node = instance.PR.selectedNode.get();
-        if( node.type === 'A' ){
-            let assignments = [];
-            ( instance.PR.accountsAssignments.get() || [] ).forEach(( it ) => {
-                if( it._id !== node.id ){
-                    assignments.push( it );
-                }
-            });
-            instance.PR.accountsAssignments.set( assignments );
-        } else {
-            console.warn( 'expects a \'A\' node, got '+node.type );
-        }
-},
+        const nodes = instance.PR.selectedArray.get();
+        let accountsAssignments = instance.PR.accountsAssignments.get() || [];
+        nodes.forEach(( it ) => {
+            if( it.type === 'A' ){
+                let assignments = [];
+                accountsAssignments.forEach(( ac ) => {
+                    if( ac._id !== it.id ){
+                        assignments.push( ac );
+                    }
+                });
+                accountsAssignments = assignments;
+            } else {
+                console.warn( 'expects a \'A\' node, got '+it.type );
+            }
+        });
+        instance.PR.accountsAssignments.set( accountsAssignments );
+    },
 
     // handle the selection in the tree
     'pr-rowselect .pr-scoped-accounts-panel'( event, instance, data ){
         instance.PR.selectedNode.set( data.node );
+        instance.PR.selectedArray.set( data.selected );
     }
 });

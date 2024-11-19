@@ -9,7 +9,7 @@ Roles.i18n = {
             accounts: {
                 add: 'Gérer les comptes assignés',
                 edit: 'Editer les comptes sur le périmètre',
-                remove: 'Enlever ce compte',
+                remove: 'Enlever ces comptes',
                 res_error: 'Une erreur a été détectée lors de la mise à jour. Merci de réessayer ultérieurement',
                 res_success: 'L\'assignation des comptes aux rôles a été effectuée avec succès'
             },

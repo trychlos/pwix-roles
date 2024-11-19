@@ -11,7 +11,7 @@
  *  - accounts: a ReactiveVar which contains the accounts per role for the scope
  */
 
-import _ from 'lodash';
+import _, { truncate } from 'lodash';
 
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -64,6 +64,7 @@ Template.pr_scoped_accounts_dialog.helpers({
             roles: this.roles,
             accounts: Template.instance().PR.accounts,
             pr_selectable: true,
+            pr_multiple: true,
             editMode: true,
             wantScoped: true,
             withCheckboxes: false

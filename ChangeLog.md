@@ -8,6 +8,8 @@
 
     - Define new prScopedAccountsPanel component, thus bumping minor candidate version number
     - Fix 'pwix_roles_count_by_roles' publication when an account has redondant assignments
+    - Fix the stylesheet to make the tree scrollable
+    - Allow multiple account assignements selection
 
 ### 1.6.2
 
