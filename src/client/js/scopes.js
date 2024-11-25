@@ -10,7 +10,7 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 
-Roles._scopes = {
+Roles.scopes = {
     labels: new ReactiveDict(),
     // a subcription to the used scopes
     handle: null,
@@ -18,7 +18,7 @@ Roles._scopes = {
 
     // returns the label
     label( id ){
-        let label = Roles._scopes.labels.get( id );
+        let label = Roles.scopes.labels.get( id );
         if( !label ){
             let promises = [];
             const scopeLabelFn = Roles.configure().scopeLabelFn;
@@ -26,7 +26,7 @@ Roles._scopes = {
                 promises.push( scopeLabelFn( id ).then(( res ) => {
                     if( res && _.isString( res )){
                         label = res;
-                        Roles._scopes.label.set( id, res );
+                        Roles.scopes.label.set( id, res );
                     }
                 }));
             }
@@ -47,9 +47,9 @@ Meteor.startup(() => {
             res = _.isArray( res ) ? res : [res];
             res.forEach(( it ) => {
                 if( _.isString( it )){
-                    Roles._scopes.labels.set( it, null );
+                    Roles.scopes.labels.set( it, null );
                 } else if( _.isObject( it ) && it._id ){
-                    Roles._scopes.labels.set( it._id, it.label || null );
+                    Roles.scopes.labels.set( it._id, it.label || null );
                 } else {
                     console.warn( 'expect a { _id, label } object, found', it );
                 }
@@ -57,18 +57,18 @@ Meteor.startup(() => {
         });
     } else {
         const scopesPub = Roles.configure().scopesPub || 'pwix_roles_used_scopes';
-        Roles._scopes.handle = Meteor.subscribe( scopesPub );
-        Roles._scopes.collection = new Mongo.Collection( scopesPub );
+        Roles.scopes.handle = Meteor.subscribe( scopesPub );
+        Roles.scopes.collection = new Mongo.Collection( scopesPub );
     }
     // if we have subscribed to a publication ?
-    if( Roles._scopes.handle ){
+    if( Roles.scopes.handle ){
         Tracker.autorun(() => {
-            if( Roles._scopes.handle.ready()){
-                Roles._scopes.collection.find().fetchAsync().then(( fetched ) => {
+            if( Roles.scopes.handle.ready()){
+                Roles.scopes.collection.find().fetchAsync().then(( fetched ) => {
                     //console.debug( 'fetched', fetched );
-                    Roles._scopes.labels.clear();
+                    Roles.scopes.labels.clear();
                     fetched.forEach(( it ) => {
-                        Roles._scopes.labels.set( it._id, it.label || null );
+                        Roles.scopes.labels.set( it._id, it.label || null );
                     });
                 });
             }
@@ -78,5 +78,5 @@ Meteor.startup(() => {
 
 // track the scopes list
 Tracker.autorun(() => {
-    console.debug( 'scopes', Roles._scopes.labels.all());
+    console.debug( 'scopes', Roles.scopes.labels.all());
 });

@@ -151,7 +151,7 @@ Template.prEditPanel.onCreated( function(){
     self.autorun(() => {
         const scoped = self.PR.roles.get().scoped;
         const haveNone = Object.keys( scoped ).includes( self.PR.scoped_none ) > 0;
-        const haveScopes = Object.keys( Roles._scopes.labels.all()).length > 0;
+        const haveScopes = Object.keys( Roles.scopes.labels.all()).length > 0;
         self.PR.enabledPlus.set( !haveNone && haveScopes );
     });
 });

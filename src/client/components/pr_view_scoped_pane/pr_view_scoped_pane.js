@@ -123,6 +123,6 @@ Template.pr_view_scoped_pane.helpers({
     // the label to be displayed in the accordion
     scopeLabel( it ){
         const scope = Template.instance().PR.byId( it );
-        return Roles._scopes.label( scope );
+        return Roles.scopes.label( scope );
     }
 });

@@ -80,7 +80,7 @@ Template.pr_edit_scoped_pane.onCreated( function(){
             if( scope ){
                 const dataContext = Template.currentData();
                 Bootbox.confirm({
-                    message: pwixI18n.label( I18N, 'panels.remove_scope_confirm', Roles._scopes.label( scope )),
+                    message: pwixI18n.label( I18N, 'panels.remove_scope_confirm', Roles.scopes.label( scope )),
                     title: pwixI18n.label( I18N, 'panels.remove_scope_title' )
                 }, ( res ) => {
                     if( res ){
@@ -180,7 +180,7 @@ Template.pr_edit_scoped_pane.helpers({
 
     // whether there is at least one available scope
     haveScopes(){
-        return Object.keys( Roles._scopes.labels.all()).length > 0;
+        return Object.keys( Roles.scopes.labels.all()).length > 0;
     },
 
     // string translation
@@ -208,7 +208,7 @@ Template.pr_edit_scoped_pane.helpers({
     // the label to be displayed for the scope in the select box
     //  it is an object from scopesList, with or without a label
     optionLabel( scope ){
-        return Roles._scopes.label( scope );
+        return Roles.scopes.label( scope );
     },
 
     // the label to be displayed for the scope in the select box
@@ -237,7 +237,7 @@ Template.pr_edit_scoped_pane.helpers({
 
     // list of scope ids
     scopesList(){
-        return Object.keys( Roles._scopes.labels.all());
+        return Object.keys( Roles.scopes.labels.all());
     }
 });
 

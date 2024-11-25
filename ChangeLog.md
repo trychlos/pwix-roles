@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - Rename internal Roles._scopes to Roles.scopes
 
 ### 1.7.0
 
