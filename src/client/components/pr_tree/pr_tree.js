@@ -413,7 +413,6 @@ Template.pr_tree.onRendered( function(){
             })
             // 'check_node.jstree' data = { node, selected, event, jsTree instance }
             .on( 'check_node.jstree', ( event, data ) => {
-                console.debug( event.type, data );
                 self.PR.tree_checkbox_check( data );
             })
             // 'uncheck_node.jstree' data = { node, selected, event, jsTree instance }
