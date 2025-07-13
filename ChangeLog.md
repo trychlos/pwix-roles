@@ -9,6 +9,7 @@
     - Rename internal Roles._scopes to Roles.scopes
     - Extend uuid dependency to v11.0.0, thus bumping minor candidate version number
     - Remove debug code
+    - Update to new AccountsHub.getInstance() reactive function
 
 ### 1.7.0
 

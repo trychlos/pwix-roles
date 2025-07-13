@@ -404,6 +404,7 @@ Template.pr_tree.onRendered( function(){
                 types: types
             })
             // 'ready.jstree' data = jsTree instance
+            // TypeError: $tree.jstree(...).on is not a function...!?
             .on( 'ready.jstree', ( event, data ) => {
                 self.PR.tree_ready( true );
             })
@@ -547,7 +548,7 @@ Template.pr_tree.onRendered( function(){
             if( accounts ){
                 const $tree = self.PR.$tree.get();
                 const prefix = self.PR.pr_prefix.get();
-                const amInstance = AccountsHub.instances['users'];
+                const amInstance = AccountsHub.getInstance( 'users' );
                 // first reset the tree
                 ( self.PR.prevAccounts || [] ).forEach(( it ) => {
                     //console.debug( 'delete_node', prefix+it._id );
