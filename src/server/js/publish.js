@@ -2,8 +2,6 @@
  * pwix:roles/src/server/js/publish.js
  */
 
-import { Roles as alRoles } from 'meteor/alanning:roles';
-
 // publishes the roles of the specified user (or of all users)
 //  requires at least a connected user
 Meteor.publish( 'pwix_roles_user_assignments', async function( user=null ){

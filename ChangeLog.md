@@ -10,6 +10,7 @@
     - Extend uuid dependency to v11.0.0, thus bumping minor candidate version number
     - Remove debug code
     - Update to new AccountsHub.getInstance() reactive function
+    - Fix the initial publication name
 
 ### 1.7.0
 
