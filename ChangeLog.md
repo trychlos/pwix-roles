@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.8.0-rc
+### 1.8.0
 
-    Release date: 
+    Release date: 2026- 2-10
 
     - Rename internal Roles._scopes to Roles.scopes
     - Extend uuid dependency to v11.0.0, thus bumping minor candidate version number
@@ -161,4 +161,4 @@
 
 ---
 P. Wieser
-- Last updated on 2024, Nov. 19th
+- Last updated on 2026, Feb. 10th
