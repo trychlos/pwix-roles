@@ -23,8 +23,11 @@ While `alanning:roles` provides primitives to execute CRUD operations on the rol
 
 ### Installation
 
+This Meteor package is installable with the usual command:
+
 ```sh
     meteor add pwix:roles
+    meteor npm install lodash uuid --save
 ```
 
 ### Definition of the roles hierarchy
@@ -501,13 +504,14 @@ Instead we check npm versions of installed packages at runtime, on server startu
 
 Dependencies as of v 1.8.0:
 
-```
+```js
     'lodash': '^4.17.0',
     'uuid': '^9.0.0 || ^10.0.0 || ^11.0.0'
 ```
 
 Each of these dependencies should be installed at application level:
-```
+
+```js
     meteor npm install <package> --save
 ```
 

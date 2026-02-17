@@ -28,10 +28,22 @@ Roles._defaults = {
  */
 Roles.configure = function( o ){
     if( o && _.isObject( o )){
-        _conf = _.merge( Roles._defaults, _conf, o );
-        Roles._conf.set( _conf );
-        _verbose( Roles.C.Verbose.CONFIGURE, 'pwix:roles configure() with', o );
+        // check that keys exist
+        let built_conf = {};
+        Object.keys( o ).forEach(( it ) => {
+            if( Object.keys( Roles._defaults ).includes( it )){
+                built_conf[it] = o[it];
+            } else {
+                console.warn( 'pwix:roles configure() ignore unmanaged key \''+it+'\'' );
+            }
+        });
+        if( Object.keys( built_conf ).length ){
+            _conf = _.merge( Roles._defaults, _conf, built_conf );
+            Roles._conf.set( _conf );
+            _verbose( Roles.C.Verbose.CONFIGURE, 'pwix:roles configure() with', built_conf );
+        }
     }
+    // also acts as a getter
     return Roles._conf.get();
 }
 
