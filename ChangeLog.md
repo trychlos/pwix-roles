@@ -7,6 +7,7 @@
     Release date: 
 
     - configure() now warns for unmanaged keys
+    - Guard against absent jstree() plugin
 
 ### 1.8.0
 
