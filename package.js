@@ -1,6 +1,6 @@
 Package.describe({
     name: 'pwix:roles',
-    version: '1.8.1-rc.0',
+    version: '1.9.0-rc.0',
     summary: 'An encapsulation of alanning:roles',
     git: 'https://github.com/trychlos/pwix-roles',
     documentation: 'README.md'
@@ -33,6 +33,7 @@ function configure( api ){
     api.use( 'pwix:bootbox@1.5.0' );
     api.use( 'pwix:i18n@1.5.7' );
     api.use( 'pwix:jstree@1.0.6' );
+    api.use( 'pwix:logger@1.0.0-rc' );
     api.use( 'pwix:modal@1.10.0 || 2.0.0' );
     api.use( 'pwix:plus-button@1.0.0' );
     api.use( 'pwix:tabbed@1.0.0-rc' );

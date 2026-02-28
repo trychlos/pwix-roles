@@ -10,12 +10,15 @@
  *  As a side effect, if a user is provided as a full document, then the mail address is displayed in the dialog title.
  */
 
+import { Logger } from 'meteor/pwix:logger';
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { Modal } from 'meteor/pwix:modal';
 
 import '../prViewPanel/prViewPanel.js';
 
 import './prView.html';
+
+const logger = Logger.get();
 
 Template.prView.onCreated( function(){
     const self = this;
@@ -44,7 +47,7 @@ Template.prView.onCreated( function(){
             if( title instanceof ReactiveVar ){
                 self.PR.title = title;
             } else {
-                console.warn( 'expect title be a ReactiveVar, found', title );
+                logger.warn( 'expect title be a ReactiveVar, found', title );
             }
         }
     });

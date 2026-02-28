@@ -17,7 +17,10 @@
  *      unless the to-be-cleaned role has been directly assigned to a user : logs a UPPERCASE warning!
  */
 
+import { Logger } from 'meteor/pwix:logger';
 import { Roles as alRoles } from 'meteor/alanning:roles';
+
+const logger = Logger.get();
 
 let rolesAllRoles = [];         // when defining new roles and when removing obsolete ones
 let rolesAssignments = [];      // when completing the inheritance and when removing obsolete ones
@@ -27,7 +30,7 @@ async function f_DefineNewRoles(){
 
     function f_msg(){
         if( !msg ){
-            _verbose( Roles.C.Verbose.MAINTAIN, 'pwix:roles/src/server/js/maintain.js defining not-yet existing roles...' );
+            logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.MAINTAIN }, 'f_DefineNewRoles() defining not-yet existing roles...' );
             msg = true;
         }
     }
@@ -52,9 +55,9 @@ async function f_DefineNewRoles(){
     async function f_define( o, parent ){
         if( o.name ){
             if( f_definedRole( o.name )){
-                _verbose( Roles.C.Verbose.MAINTAIN, '   '+o.name+' already defined' );
+                logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.MAINTAIN }, 'f_define()   '+o.name+' already defined' );
             } else {
-                _verbose( Roles.C.Verbose.MAINTAIN, '   defining '+o.name );
+                logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.MAINTAIN }, 'f_define()   defining '+o.name );
                 await alRoles.createRoleAsync( o.name, { unlessExists: true });
                 if( parent ){
                     await alRoles.addRolesToParentAsync( o.name, parent );
@@ -72,7 +75,7 @@ async function f_DefineNewRoles(){
      * f_DefineNewRoles() main code
      */
 
-    _verbose( Roles.C.Verbose.MAINTAIN, 'pwix:roles/src/server/js/maintain.js defining not-yet existing roles...' );
+    logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.MAINTAIN }, 'f_DefineNewRoles() defining not-yet existing roles...' );
 
     // get currently defined roles
     // each role is listed with its direct children; this is not a recursive tree
@@ -88,7 +91,7 @@ async function f_DefineNewRoles(){
         }));
     }
 
-    _verbose( Roles.C.Verbose.MAINTAIN, 'pwix:roles/src/server/js/maintain.js defined roles all exist: fine' );
+    logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.MAINTAIN }, 'f_DefineNewRoles() defined roles all exist: fine' );
 }
 
 async function f_InheritanceCompleteness(){
@@ -99,7 +102,7 @@ async function f_InheritanceCompleteness(){
         let result = [];
 
         function f_children( array, role, found ){
-            //console.log( 'role', role );
+            //logger.log( 'role', role );
             array.every(( o ) => {
                 if( o.name === role ){
                     result.push({ _id: o.name });
@@ -108,7 +111,7 @@ async function f_InheritanceCompleteness(){
                     }
                     return false;
                 }
-                //console.log( o );
+                //logger.log( o );
                 if( found ){
                     result.push({ _id: o.name });
                 }
@@ -146,7 +149,7 @@ async function f_InheritanceCompleteness(){
         const collectionNames = f_ids( collection );
         for( let i=0 ; i<computed.length ; ++i ){
             if( !collectionNames.includes( computed[i]._id )){
-                //console.log( 'i='+i, computed[i] );
+                //logger.log( 'i='+i, computed[i] );
                 ok = false;
                 break;
             }
@@ -158,18 +161,18 @@ async function f_InheritanceCompleteness(){
      * maintain the roles assignment completeness - make sure the inherited roles are complete
      */
 
-    _verbose( Roles.C.Verbose.MAINTAIN, 'pwix:roles/src/server/js/maintain.js maintaining the roles inheritage completeness...' );
+    logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.MAINTAIN }, 'f_InheritanceCompleteness() maintaining the roles inheritage completeness...' );
 
     Meteor.roleAssignment.find().fetchAsync()
         .then(( fetched ) => {
             let promises = [];
             fetched.forEach(( o ) => {
-                //console.log( o );
+                //logger.log( o );
                 const inherited = f_inherited( o.role._id );
                 const equals = f_compare( inherited, o.inheritedRoles );
-                //console.log( o.role._id, inherited, typeof inherited, inherited.length, o.inheritedRoles, typeof o.inheritedRoles, o.inheritedRoles.length, equals );
+                //logger.log( o.role._id, inherited, typeof inherited, inherited.length, o.inheritedRoles, typeof o.inheritedRoles, o.inheritedRoles.length, equals );
                 if( !equals ){
-                    _verbose( Roles.C.Verbose.MAINTAIN, '   updating id='+o._id, o.role._id, 'user='+o.user._id );
+                    logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.MAINTAIN }, 'f_InheritanceCompleteness()   updating id='+o._id, o.role._id, 'user='+o.user._id );
                     promises.push( Meteor.roleAssignment.updateAsync({ _id: o._id }, { $set: { inheritedRoles: inherited }}));
                     o.inheritedRoles = [ ...inherited ];
                 }
@@ -178,7 +181,7 @@ async function f_InheritanceCompleteness(){
             Promise.allSettled( promises );
         });
 
-    _verbose( Roles.C.Verbose.MAINTAIN, 'pwix:roles/src/server/js/maintain.js roles inheritance is complete: fine.' );
+    logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.MAINTAIN }, 'f_InheritanceCompleteness() inheritance is complete: fine.' );
 }
 
 // make sure we do not keep obsolete AND unused roles
@@ -196,6 +199,6 @@ Meteor.startup( function(){
                 f_CleanupObsoleteRoles();
             });
     } else {
-        console.debug( 'pwix:roles maintainHierarchy=false' );
+        logger.log( 'found maintainHierarchy=\'false\', do not even try' );
     }
 });

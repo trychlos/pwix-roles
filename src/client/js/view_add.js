@@ -2,6 +2,10 @@
  * pwix:roles/src/cient/js/view_add.js
  */
 
+import { Logger } from 'meteor/pwix:logger';
+
+const logger = Logger.get();
+
 /**
  * @summary Let the caller provides a function whose result will be added as a HTML string to the prView content.
  *  This result will be displayed as a distinct tab in the dialog.
@@ -15,7 +19,7 @@
  *      and must return a Promise which must eventually resolves to the HTML pane content
  */
 Roles.viewAdd = function( o ){
-    _verbose( Roles.C.Verbose.VIEWADD, 'pwix:roles adding a view callback' );
+    logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.VIEWADD }, 'adding a view callback' );
     if( !Object.keys( Roles._client ).includes( 'viewCbs' )){
         Roles._client.viewCbs = [];
     }

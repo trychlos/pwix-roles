@@ -31,8 +31,11 @@ import { strict as assert } from 'node:assert';
 import jstree from 'jstree';
 
 import { AccountsHub } from 'meteor/pwix:accounts-hub';
+import { Logger } from 'meteor/pwix:logger';
 
 import './pr_tree.html';
+
+const logger = Logger.get();
 
 Template.pr_tree.onCreated( function(){
     const self = this;
@@ -101,7 +104,7 @@ Template.pr_tree.onCreated( function(){
         tree_checkbox_check( data ){
             self.PR.disableChildrenByNode( data.node );
             if( self.PR.triggerChangeEvent ){
-                //console.debug( 'triggering pr-change due to checkbox check' );
+                //logger.debug( 'triggering pr-change due to checkbox check' );
                 self.PR.$tree.get().trigger( 'pr-change' );
             }
         },
@@ -113,7 +116,7 @@ Template.pr_tree.onCreated( function(){
             data.node.children_d.forEach(( id ) => {
                 $tree.jstree( true ).enable_node( id );
             });
-            //console.debug( 'triggering pr-change due to checkbox uncheck' );
+            //logger.debug( 'triggering pr-change due to checkbox uncheck' );
             $tree.trigger( 'pr-change' );
         },
 
@@ -142,7 +145,7 @@ Template.pr_tree.onCreated( function(){
         //  and run the creation of waiting children
         //  data = { node, parent, position, jsTree instance }
         tree_create_done( data ){
-            //console.debug( 'tree_create_done', data );
+            //logger.debug( 'tree_create_done', data );
             if( data.node.type === 'R' ){
                 const role = data.node.original.doc;
                 self.PR.tree_nodes_created[ role.name ] = data.node;
@@ -183,7 +186,7 @@ Template.pr_tree.onCreated( function(){
         //  a node has been deleted
         //  seems that deletion is sync
         tree_delete_node( data ){
-            //console.debug( 'tree_delete_node', data );
+            //logger.debug( 'tree_delete_node', data );
         },
 
         // getter/setter: whether the creation of the accounts is done (if apply)
@@ -286,27 +289,27 @@ Template.pr_tree.onCreated( function(){
 
     // track the ready status
     self.autorun(() => {
-        self.PR.traceStatus && console.debug( 'tree_ready', self.PR.tree_ready());
+        self.PR.traceStatus && logger.debug( 'tree_ready', self.PR.tree_ready());
     });
 
     // track the populated status
     self.autorun(() => {
-        self.PR.traceStatus && console.debug( 'tree_populated', self.PR.tree_populated());
+        self.PR.traceStatus && logger.debug( 'tree_populated', self.PR.tree_populated());
     });
 
     // track the checked status
     self.autorun(() => {
-        self.PR.traceStatus && console.debug( 'tree_checked', self.PR.tree_checked());
+        self.PR.traceStatus && logger.debug( 'tree_checked', self.PR.tree_checked());
     });
 
     // track the accounts status
     self.autorun(() => {
-        self.PR.traceStatus && console.debug( 'tree_accounts', self.PR.tree_accounts());
+        self.PR.traceStatus && logger.debug( 'tree_accounts', self.PR.tree_accounts());
     });
 
     // track the built status
     self.autorun(() => {
-        self.PR.traceStatus && console.debug( 'tree_built', self.PR.tree_built());
+        self.PR.traceStatus && logger.debug( 'tree_built', self.PR.tree_built());
     });
 });
 
@@ -439,7 +442,7 @@ Template.pr_tree.onRendered( function(){
                     $tree.trigger( 'pr-rowselect', { node: node, selected: $tree.jstree( true ).get_selected( true ) });
                 });
             } else {
-                console.warn( 'pwix:roles $tree doesn\'t have jstree()', $tree );
+                logger.warn( '$tree doesn\'t have jstree()', $tree );
             }
         }
     });
@@ -452,7 +455,7 @@ Template.pr_tree.onRendered( function(){
         const $tree = self.PR.$tree.get();
         const roles = Template.currentData().roles.get();
         if( $tree && self.PR.tree_ready() && !self.PR.tree_populated() && roles ){
-            self.PR.traceBuild && console.debug( 'populate the tree', roles );
+            self.PR.traceBuild && logger.debug( 'populate the tree', roles );
             // reset the tree
             $tree.jstree( true ).delete_node( Object.values( self.PR.tree_nodes_created ));
             self.PR.tree_nodes_asked = {};
@@ -466,7 +469,7 @@ Template.pr_tree.onRendered( function(){
             //  - the current user has it which means he is allowed to give it
             async function f_role( role, parent=null, scoped=false ){
                 Roles.userIsInRoles( Meteor.userId(), role.name, { anyScope: true }).then(( res ) => {
-                    //console.debug( role.name, res );
+                    //logger.debug( role.name, res );
                     if( res && (( wantScoped && ( role.scoped === true || scoped === true )) || ( !wantScoped && !role.scoped && !scoped ))){
                         self.PR.tree_create_ask.bind( self )( role, parent );
                     }
@@ -492,9 +495,9 @@ Template.pr_tree.onRendered( function(){
         const roles = Template.currentData().roles.get();
         if( self.PR.tree_populated() && !self.PR.tree_checked()){
             const haveCheckboxes = self.PR.haveCheckboxes.get();
-            self.PR.traceBuild && console.debug( 'set checkboxes', haveCheckboxes );
+            self.PR.traceBuild && logger.debug( 'set checkboxes', haveCheckboxes );
             if( haveCheckboxes ){
-                //console.debug( 'populating with', roles.global.direct );
+                //logger.debug( 'populating with', roles.global.direct );
                 self.PR.triggerChangeEvent = false;
                 const $tree = self.PR.$tree.get();
                 $tree.jstree( true ).show_checkboxes();
@@ -548,7 +551,7 @@ Template.pr_tree.onRendered( function(){
     self.autorun(() => {
         if( self.PR.tree_checked() && !self.PR.tree_accounts()){
             let accounts = Template.currentData().accounts?.get();
-            self.PR.traceBuild && console.debug( 'set accounts', accounts );
+            self.PR.traceBuild && logger.debug( 'set accounts', accounts );
             let promises = [];
             if( accounts ){
                 const $tree = self.PR.$tree.get();
@@ -556,7 +559,7 @@ Template.pr_tree.onRendered( function(){
                 const amInstance = AccountsHub.getInstance( 'users' );
                 // first reset the tree
                 ( self.PR.prevAccounts || [] ).forEach(( it ) => {
-                    //console.debug( 'delete_node', prefix+it._id );
+                    //logger.debug( 'delete_node', prefix+it._id );
                     $tree.jstree( true ).delete_node( prefix+it._id );
                 });
                 // then re-add the accounts members
@@ -564,7 +567,7 @@ Template.pr_tree.onRendered( function(){
                     const node = $tree.jstree( true ).get_node( prefix+it.role._id );
                     if( node ){
                         promises.push( amInstance.preferredLabel( it.user._id ).then(( doc ) => {
-                            //console.debug( 'create_node', prefix+it._id );
+                            //logger.debug( 'create_node', prefix+it._id );
                             $tree.jstree( true ).create_node( node, {
                                 "id": prefix+it._id,
                                 "text": doc.label,
@@ -575,7 +578,7 @@ Template.pr_tree.onRendered( function(){
                             return true;
                         }));
                     } else {
-                        console.warn( 'node not found', it );
+                        logger.warn( 'node not found', it );
                     }
                 });
             }
@@ -590,7 +593,7 @@ Template.pr_tree.onRendered( function(){
     // at end, open all nodes
     self.autorun(() => {
         if( self.PR.tree_accounts() && !self.PR.tree_built()){
-            self.PR.traceBuild && console.debug( 'open all' );
+            self.PR.traceBuild && logger.debug( 'open all' );
             const $tree = self.PR.$tree.get();
             $tree.jstree( true ).open_all();
             self.PR.tree_built( true );
@@ -607,7 +610,7 @@ Template.pr_tree.helpers({
 
 Template.pr_tree.events({
     'pr-delete .pr-tree'( event, instance ){
-        //console.debug( 'deleting pr-tree' );
+        //logger.debug( 'deleting pr-tree' );
         const $tree = instance.PR.$tree.get();
         if( $tree ){
             $tree.jstree( true ).destroy();

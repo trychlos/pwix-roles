@@ -8,7 +8,10 @@
 
 import _ from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { Tracker } from 'meteor/tracker';
+
+const logger = Logger.get();
 
 // only available on the client
 let _current = {
@@ -55,7 +58,7 @@ Tracker.autorun(() => {
 
 // track subscription ready
 Tracker.autorun(() => {
-    //console.debug( 'handle ready', _current.handle.ready());
+    //logger.debug( 'handle ready', _current.handle.ready());
 });
 
 // the current user roles is a reactive data source
@@ -66,7 +69,7 @@ Tracker.autorun(() => {
         const userId = Meteor.userId();
         if( userId === _current.val.userId ){
             Meteor.roleAssignment.find({ 'user._id': userId }).fetchAsync().then(( fetched ) => {
-                //console.debug( 'fetched', fetched );
+                //logger.debug( 'fetched', fetched );
                 _current.val.scoped = {};
                 _current.val.global = { all: [], direct: [] };
                 fetched.forEach(( it ) => {
@@ -102,5 +105,5 @@ Roles.current = function(){
 
 // trace changes
 Tracker.autorun(() => {
-    _verbose( Roles.C.Verbose.CURRENT, 'pwix:roles current()', Roles.current());
+    logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.CURRENT }, 'current()', Roles.current());
 });

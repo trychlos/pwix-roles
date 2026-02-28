@@ -13,6 +13,7 @@
 
 import _, { truncate } from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tolert } from 'meteor/pwix:tolert';
@@ -20,6 +21,8 @@ import { Tolert } from 'meteor/pwix:tolert';
 import '../pr_scoped_accounts_panel/pr_scoped_accounts_panel.js';
 
 import './pr_scoped_accounts_dialog.html';
+
+const logger = Logger.get();
 
 Template.pr_scoped_accounts_dialog.onCreated( function(){
     const self = this;
@@ -76,7 +79,6 @@ Template.pr_scoped_accounts_dialog.events({
     // submit
     //  event triggered in case of a modal
     'md-click .pr-scoped-accounts-dialog'( event, instance, data ){
-        //console.debug( event, data );
         if( data.button.id === Modal.C.Button.OK ){
             instance.$( event.currentTarget ).trigger( 'iz-submit' );
         }
@@ -93,7 +95,7 @@ Template.pr_scoped_accounts_dialog.events({
         // update the role assignments
         Meteor.callAsync( 'Roles.resetScopedAssignments', this.scope, instance.PR.accounts.get()).then(( res ) => {
             if( res ){
-                console.debug( 'res', res );
+                //logger.debug( 'res', res );
                 Tolert.success( pwixI18n.label( I18N, 'accounts.res_success' ));
             } else  {
                 Tolert.error( pwixI18n.label( I18N, 'accounts.res_error' ));

@@ -11,6 +11,7 @@
 
 import _ from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { PlusButton } from 'meteor/pwix:plus-button';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -20,6 +21,8 @@ import '../pr_edit_scoped_plus/pr_edit_scoped_plus.js';
 import '../pr_tree/pr_tree.js';
 
 import './prEditPanel.html';
+
+const logger = Logger.get();
 
 Template.prEditPanel.onCreated( function(){
     const self = this;
@@ -51,7 +54,7 @@ Template.prEditPanel.onCreated( function(){
          * @returns {Array} the list of global roles checked in the prEditPanel
          */
         global(){
-            //console.debug( 'self.PR.roles.get()',self.PR.roles.get());
+            //logger.debug( 'self.PR.roles.get()',self.PR.roles.get());
             return self.PR.roles.get().global.direct;
         },
         /**
@@ -74,7 +77,7 @@ Template.prEditPanel.onCreated( function(){
                     direct: scoped[scope]
                 };
             });
-            //console.debug( 'roles', roles );
+            //logger.debug( 'roles', roles );
             return roles;
         },
         /**
@@ -142,9 +145,9 @@ Template.prEditPanel.onCreated( function(){
 
     // track edited roles
     self.autorun(() => {
-        //console.debug( 'edited roles', self.PR.roles.get());
-        //console.debug( 'edited roles global', self.PR.roles.get().global.direct );
-        //console.debug( 'edited roles scoped', self.PR.roles.get().scoped );
+        //logger.debug( 'edited roles', self.PR.roles.get());
+        //logger.debug( 'edited roles global', self.PR.roles.get().global.direct );
+        //logger.debug( 'edited roles scoped', self.PR.roles.get().scoped );
     });
 
     // disable the 'plus' button while we have an unset scope or no available scope at all

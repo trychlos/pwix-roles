@@ -60,7 +60,7 @@ Meteor.publish( 'pwix_roles_used_scopes', async function(){
     if( allowed ){
         pwix_roles_used_scopes_pub( this );
     }
-    //console.log( 'pwix.roles.pub.used_scopes not allowed', this.userId );
+    //logger.log( 'pwix.roles.pub.used_scopes not allowed', this.userId );
     this.ready();
     return false;
 });
@@ -117,7 +117,7 @@ function _maintainUsersPerRole( cb ){
 
     const roleHandle = Meteor.roleAssignment.find({}).observeAsync({
         added( doc ){
-            //console.debug( 'roleAssignment added', arguments );
+            //logger.debug( 'roleAssignment added', arguments );
             //_remove( doc.user._id );
             if( doc.inheritedRoles ){
                 _set( doc.user._id, doc.inheritedRoles );
@@ -125,7 +125,7 @@ function _maintainUsersPerRole( cb ){
             cb();
         },
         changed( newDoc, oldDoc ){
-            //console.debug( 'roleAssignment changed', arguments );
+            //logger.debug( 'roleAssignment changed', arguments );
             //_remove( newDoc.user._id );
             if( newDoc.inheritedRoles ){
                 _set( newDoc.user._id, newDoc.inheritedRoles );
@@ -133,7 +133,7 @@ function _maintainUsersPerRole( cb ){
             cb();
         },
         removed( doc ){
-            //console.debug( 'roleAssignment removed', arguments );
+            //logger.debug( 'roleAssignment removed', arguments );
             // roleAssignment removed [Arguments] { '0': 'R5uZPzretL5hF2diB' }
             _remove( doc.user._id );
             cb();
@@ -148,7 +148,7 @@ function _maintainUsersPerRole( cb ){
         },
         // when removing a user, remove it from all recorded roles
         removed( user ){
-            //console.debug( 'users removed', user );
+            //logger.debug( 'users removed', user );
             _remove( user._id );
             cb();
         }
@@ -174,12 +174,12 @@ function _maintainUsersPerRole( cb ){
 Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
     // maybe the application may protect that
     if( !await Roles.isAllowed( 'pwix.roles.pub.count_by_roles', this.userId, roles )){
-        //console.log( 'pwix.roles.pub.count_by_roles not allowed', this.userId );
+        //logger.log( 'pwix.roles.pub.count_by_roles not allowed', this.userId );
         this.ready();
         return false;
     }
 
-    //console.debug( 'pwix_roles_count_by_roles', roles );
+    //logger.debug( 'pwix_roles_count_by_roles', roles );
     const self = this;
     const collectionName = 'pwix_roles_count_by_roles';
     const rolesArray = Array.isArray( roles ) ? roles : [ roles ];
@@ -191,15 +191,15 @@ Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
 
     const _publish = function(){
         if( initialized ){
-            //console.debug( '_publish', _rolesHash );
+            //logger.debug( '_publish', _rolesHash );
             Object.keys( _rolesHash ).every(( role ) => {
                 if( rolesArray.includes( role )){
                     if( first ){
                         self.added( collectionName, role, { role: role, count: _rolesHash[role].length });
-                        //console.debug( 'publish cb adding', { role: role, count: _rolesHash[role].length });
+                        //logger.debug( 'publish cb adding', { role: role, count: _rolesHash[role].length });
                     } else {
                         self.changed( collectionName, role, { role: role, count: _rolesHash[role].length });
-                        //console.debug( 'publish cb changing', { role: role, count: _rolesHash[role].length });
+                        //logger.debug( 'publish cb changing', { role: role, count: _rolesHash[role].length });
                     }
                 }
                 return true;
@@ -208,10 +208,10 @@ Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
                 if( !Object.keys( _rolesHash ).includes( role )){
                     if( first ){
                         self.added( collectionName, role, { role: role, count: 0 });
-                        //console.debug( 'publish cb adding', { role: role, count: 0 });
+                        //logger.debug( 'publish cb adding', { role: role, count: 0 });
                     } else {
                         self.changed( collectionName, role, { role: role, count: 0 });
-                        //console.debug( 'publish cb changing', { role: role, count: 0 });
+                        //logger.debug( 'publish cb changing', { role: role, count: 0 });
                     }
                 }
                 return true;

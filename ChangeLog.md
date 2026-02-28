@@ -2,12 +2,13 @@
 
 ## ChangeLog
 
-### 1.8.1-rc.0
+### 1.9.0-rc.0
 
     Release date: 
 
     - configure() now warns for unmanaged keys
     - Guard against absent jstree() plugin
+    - Use pwix:logger universal logger, thus bumping minor candidate version number
 
 ### 1.8.0
 

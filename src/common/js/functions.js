@@ -4,7 +4,10 @@
 
 import _ from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { Roles as alRoles } from 'meteor/alanning:roles';
+
+const logger = Logger.get();
 
 /*
  * Enumerate the configured role hierarchy, calling the provided callback for each and every role.
@@ -24,7 +27,7 @@ Roles._enumerate = function( cb, args=null ){
         });
     }
     _enum( Roles.configure().roles.hierarchy || [] );
-}
+};
 
 /*
  * Filter the provided array to remove inherited roles
@@ -32,7 +35,6 @@ Roles._enumerate = function( cb, args=null ){
  * @returns {Array}
  */
 Roles._filter = function( array ){
-    //console.debug( 'filter in', array );
     let filtered = [];
     function f_filter( role ){
         if( !filtered.includes( role )){
@@ -54,10 +56,6 @@ Roles._filter = function( array ){
         f_filter( role );
         return true;
     });
-    //console.debug( 'filter out', filtered );
-    //if( filtered.length === 0 && array.length > 0 ){
-    //    throw new Error( 'error' );
-    //}
     return filtered;
 };
 
@@ -96,17 +94,17 @@ Roles._idsFromUsers = function( users ){
             } else if( u._id ){
                 ids.push( u._id );
             } else {
-                console.error( 'expected an _id, not found', u );
+                logger.error( '_idsFromUsers() expected an _id, not found', u );
             }
             return true;
         });
     } else if( users._id ){
         ids.push( users._id );
     } else {
-        console.error( 'expected an _id, not found', users );
+        logger.error( '_idsFromUsers() expected an _id, not found', users );
     }
     return ids;
-}
+};
 
 /*
  * @param {String} a
@@ -115,7 +113,7 @@ Roles._idsFromUsers = function( users ){
  */
 Roles._isParent = function( a, b ){
     return Roles._parents( b ).includes( a );
-}
+};
 
 /*
  * Build an array which contains the ordered list of the parent(s) of the specified role
@@ -145,9 +143,9 @@ Roles._parents = function( role ){
         parents = [];
         return f_search( o );
     });
-    //console.log( 'Roles._parents of', role, 'are', parents );
+    //logger.log( 'Roles._parents of', role, 'are', parents );
     return parents;
-}
+};
 
 /*
  * Extract from the provided array the roles configured as scoped
@@ -180,7 +178,6 @@ Roles._sort = function( array ){
     let sorted = [];
     function f_sort( o ){
         // if the role is included in the input array, then all chilren are inherited
-        //console.debug( o );
         if( array.includes( o.name )){
             sorted.push( o.name );
         } else if( o.children ){
@@ -191,12 +188,10 @@ Roles._sort = function( array ){
         }
     }
     const h = Roles._conf && Roles.configure().roles && Roles.configure().roles.hierarchy ? Roles.configure().roles.hierarchy : [];
-    //console.debug( h );
     h.forEach(( o ) => {
         f_sort( o );
         return true;
     });
-    //console.debug( 'sorted', sorted );
     return sorted;
 };
 
@@ -224,7 +219,7 @@ Roles._userHierarchy = function( roles ){
         return true;
     });
     return filtered
-}
+};
 
 /**
  * @summary Add roles to the users
@@ -235,7 +230,7 @@ Roles._userHierarchy = function( roles ){
  */
 Roles.addUsersToRoles = async function( users, roles, options={} ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.addUsersToRoles', users, roles, options ) : alRoles.addUsersToRolesAsync( users, roles, options ));
-}
+};
 
 /**
  * @summary Compare the roles assigned to two users and compute the highest side
@@ -253,9 +248,9 @@ Roles.compareLevels = async function( userA, userB ){
     const rolesB = await Roles.directRolesForUser( userB );
     const levelB = Roles.highestLevel( rolesB );
     const res = levelA < levelB ? +1 : ( levelA > levelB ? -1 : 0 );
-    //console.debug( userA, rolesA, levelA, userB, rolesB, levelB, res );
+    //logger.debug( userA, rolesA, levelA, userB, rolesB, levelB, res );
     return res;
-}
+};
 
 /**
  * @summary Returns the direct roles of the user
@@ -266,7 +261,7 @@ Roles.compareLevels = async function( userA, userB ){
  */
 Roles.directRolesForUser = async function( user, options={} ){
     return Roles._filter( await Roles.getRolesForUser( user, options ) || [] );
-}
+};
 
 /**
  * @locus Anywhere
@@ -292,9 +287,8 @@ Roles.flat = function(){
         f_explore( o );
         return true;
     });
-    //console.debug( h, full );
     return full;
-}
+};
 
 /**
  * @locus Anywhere
@@ -304,7 +298,7 @@ Roles.flat = function(){
  */
 Roles.getRolesForUser = async function( user, options={} ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.getRolesForUser', user, options ) : Roles.s.getRolesForUser( user, options ));
-}
+};
 
 /**
  * @locus Anywhere
@@ -313,7 +307,7 @@ Roles.getRolesForUser = async function( user, options={} ){
  */
 Roles.getUsersInScope = async function( scope ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.getUsersInScope', scope ) : Roles.s.getUsersInScope( scope ));
-}
+};
 
 /**
  * @summary Compute the highest level among the provided list of roles
@@ -327,15 +321,15 @@ Roles.highestLevel = function( roles ){
     let lowestLevel = Number.MAX_VALUE;
     const hierarchy = Roles.configure().roles?.hierarchy || [];
     roles.forEach(( role ) => {
-        //console.debug( 'role', role );
+        //logger.debug( 'role', role );
         let roleLevel = Number.MAX_VALUE;
         const f_rec = function( it, level=0 ){
             let found = false;
-            //console.debug( 'examining', it, 'at', level );
+            //logger.debug( 'examining', it, 'at', level );
             if( it.name === role ){
                 roleLevel = level;
                 found = true;
-                //console.debug( 'found at level', level );
+                //logger.debug( 'found at level', level );
             }
             if( !found && it.children ){
                 it.children.forEach(( child ) => {
@@ -353,7 +347,7 @@ Roles.highestLevel = function( roles ){
         }
     });
     return lowestLevel;
-}
+};
 
 /**
  * @param {String} action
@@ -368,7 +362,7 @@ Roles.isAllowed = async function( action, userId=null ){
         allowed = await fn( action, userId );
     }
     return allowed;
-}
+};
 
 /**
  * @param {String} role
@@ -385,22 +379,22 @@ Roles.isRoleScoped = function( role ){
         return cont;
     });
     return scoped;
-}
+};
 
 /**
  * @param {Object} user a user identifier or a user object
  */
 Roles.removeAllRolesFromUser = async function( user ){
-    console.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
+    logger.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
     return await Roles.removeAssignedRolesFromUser( user );
-}
+};
 
 /**
  * @param {Object} user a user identifier or a user object
  */
 Roles.removeAssignedRolesFromUser = async function( user ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.removeAssignedRolesFromUser', user ) : Roles.s.removeAssignedRolesFromUser( user ));
-}
+};
 
 /**
  * @param {Array|String} roles a role or an array of roles
@@ -408,9 +402,9 @@ Roles.removeAssignedRolesFromUser = async function( user ){
  *  - scope: the relevant scope, all scopes if not set
  */
 Roles.removeUserAssignmentsForRoles = async function( roles, opts ){
-    console.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
+    logger.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
     return await Roles.removeUserAssignmentsFromRoles( roles, opts );
-}
+};
 
 /**
  * @locus Anywhere
@@ -420,7 +414,7 @@ Roles.removeUserAssignmentsForRoles = async function( roles, opts ){
  */
 Roles.removeUserAssignmentsFromRoles = async function( roles, opts ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.removeUserAssignmentsFromRoles', roles, opts ) : Roles.s.removeUserAssignmentsFromRoles( roles, opts ));
-}
+};
 
 /**
  * @locus Anywhere
@@ -435,7 +429,7 @@ Roles.scopedRoles = function(){
         return true;
     });
     return scoped;
-}
+};
 
 /**
  * @locus Anywhere
@@ -444,7 +438,7 @@ Roles.scopedRoles = function(){
  */
 Roles.setUserRoles = async function( user, roles ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.setUserRoles', user, roles ) : Roles.s.setUserRoles( user, roles ));
-}
+};
 
 /**
  * @summary Provide a default to allowFn() permissions manager
@@ -503,7 +497,7 @@ Roles.suggestedPermissions = function(){
             }
         }
     };
-}
+};
 
 /**
  * @locus Anywhere
@@ -511,7 +505,7 @@ Roles.suggestedPermissions = function(){
  */
 Roles.usedScopes = async function(){
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.usedScopes' ) : Roles.s.usedScopes());
-}
+};
 
 /**
  * Check if user has specified roles.
@@ -529,5 +523,5 @@ Roles.userIsInRoles = async function( user, roles, options={} ){
         result = await alRoles.userIsInRoleAsync( user, roles, options );
     }
     return result;
-}
+};
 

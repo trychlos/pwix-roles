@@ -4,10 +4,13 @@
 
 import _ from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { Roles as alRoles } from 'meteor/alanning:roles';
 
+const logger = Logger.get();
+
 //const rolesAssignment = Mongo.Collection( 'role-assignment' );
-//console.log( Mongo );
+//logger.log( Mongo );
 
 Meteor.methods({
     // assign the role(s) to the user(s)
@@ -16,10 +19,10 @@ Meteor.methods({
         const allowed = await Roles.isAllowed( 'pwix.roles.method.addUsersToRoles', this.userId, users );
         if( allowed ){
             const res = await alRoles.addUsersToRolesAsync( users, roles, options );
-            //console.log( 'pwix.roles.method.addUsersToRoles()', res );    // undefined
+            //logger.log( 'pwix.roles.method.addUsersToRoles()', res );    // undefined
             return res;
         }
-        //console.log( 'pwix.roles.method.addUsersToRoles not allowed' );
+        //logger.log( 'pwix.roles.method.addUsersToRoles not allowed' );
         return null;
     },
 
@@ -28,10 +31,10 @@ Meteor.methods({
         const allowed = await Roles.isAllowed( 'pwix.roles.method.countUsersInRoles', this.userId );
         if( allowed ){
             const res = await alRoles.getUsersInRoleAsync( roles, options ).count();
-            //console.log( 'pwix.roles.method.countUsersInRoles', roles, res );
+            //logger.log( 'pwix.roles.method.countUsersInRoles', roles, res );
             return res;
         }
-        //console.log( 'pwix.roles.method.countUsersInRoles not allowed' );
+        //logger.log( 'pwix.roles.method.countUsersInRoles not allowed' );
         return null;
     },
 
@@ -40,10 +43,10 @@ Meteor.methods({
         const allowed = await Roles.isAllowed( 'pwix.roles.method.createRole', this.userId );
         if( allowed ){
             const res = alRoles.createRoleAsync( role, options );
-            //console.log( 'pwix.roles.method.createRole', res );
+            //logger.log( 'pwix.roles.method.createRole', res );
             return res;
         }
-        //console.log( 'pwix.roles.method.createRole not allowed' );
+        //logger.log( 'pwix.roles.method.createRole not allowed' );
         return null;
     },
 
@@ -59,7 +62,7 @@ Meteor.methods({
 
     // remove all roles for the user
     async 'Roles.removeAllRolesFromUser'( user ){
-        console.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
+        logger.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
         return await Roles.s.removeAssignedRolesFromUser( user, this.userId );
     },
 
@@ -70,7 +73,7 @@ Meteor.methods({
 
     // remove all assignments for a role
     async 'Roles.removeUserAssignmentsForRoles'( roles, opts ){
-        console.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
+        logger.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
         return await Roles.s.removeUserAssignmentsFromRoles( roles, opts, this.userId );
     },
 

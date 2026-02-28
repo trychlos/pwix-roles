@@ -2,7 +2,10 @@
  * pwix:roles/src/client/js/ready.js
  */
 
+import { Logger } from 'meteor/pwix:logger';
 import { Tracker } from 'meteor/tracker';
+
+const logger = Logger.get();
 
 // client only
 _ready = {
@@ -35,5 +38,5 @@ Roles.ready = function(){
 
 // trace changes
 Tracker.autorun(() => {
-    _verbose( Roles.C.Verbose.READY, 'pwix:roles ready()', Roles.ready());
+    logger.verbose({ verbosity: Roles.configure().verbosity, against: Roles.C.Verbose.READY }, 'ready()', Roles.ready());
 });

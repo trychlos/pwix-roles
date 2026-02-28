@@ -32,7 +32,6 @@ Template.pr_edit_global_pane.events({
             return true;
         });
         roles.global.direct = Roles._filter( roles.global.all );
-        //console.debug( 'roles.global', roles.global );
         instance.$( event.currentTarget ).trigger( 'pr-global-state', { global: Roles.EditPanel.global() });
     }
 });

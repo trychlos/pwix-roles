@@ -6,9 +6,12 @@
 
 import _ from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
+
+const logger = Logger.get();
 
 Roles.scopes = {
     labels: new ReactiveDict(),
@@ -51,7 +54,7 @@ Meteor.startup(() => {
                 } else if( _.isObject( it ) && it._id ){
                     Roles.scopes.labels.set( it._id, it.label || null );
                 } else {
-                    console.warn( 'expect a { _id, label } object, found', it );
+                    logger.warn( 'expect a { _id, label } object, found', it );
                 }
             });
         });
@@ -65,7 +68,7 @@ Meteor.startup(() => {
         Tracker.autorun(() => {
             if( Roles.scopes.handle.ready()){
                 Roles.scopes.collection.find().fetchAsync().then(( fetched ) => {
-                    //console.debug( 'fetched', fetched );
+                    //logger.debug( 'fetched', fetched );
                     Roles.scopes.labels.clear();
                     fetched.forEach(( it ) => {
                         Roles.scopes.labels.set( it._id, it.label || null );
@@ -78,5 +81,5 @@ Meteor.startup(() => {
 
 // track the scopes list
 Tracker.autorun(() => {
-    console.debug( 'scopes', Roles.scopes.labels.all());
+    logger.debug( 'scopes', Roles.scopes.labels.all());
 });

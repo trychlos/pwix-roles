@@ -12,6 +12,7 @@
 
 import _ from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -21,6 +22,8 @@ import '../pr_view_global_pane/pr_view_global_pane.js';
 import '../pr_view_scoped_pane/pr_view_scoped_pane.js';
 
 import './prViewPanel.html';
+
+const logger = Logger.get();
 
 Template.prViewPanel.onCreated( function(){
     const self = this;
@@ -87,7 +90,7 @@ Template.prViewPanel.onCreated( function(){
 
     // track the changes in the roles
     self.autorun(() => {
-        //console.debug( self.PR.roles.get());
+        //logger.debug( self.PR.roles.get());
     });
 });
 

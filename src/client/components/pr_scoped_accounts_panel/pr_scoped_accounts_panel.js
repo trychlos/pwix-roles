@@ -17,6 +17,7 @@
 
 import _ from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -24,8 +25,9 @@ import '../pr_scoped_accounts_dialog/pr_scoped_accounts_dialog.js';
 import '../pr_scoped_accounts_buttons/pr_scoped_accounts_buttons.js';
 import '../pr_tree/pr_tree.js';
 
-
 import './pr_scoped_accounts_panel.html';
+
+const logger = Logger.get();
 
 Template.pr_scoped_accounts_panel.onCreated( function(){
     const self = this;
@@ -150,7 +152,7 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
 
     // track the accountsSelected ids
     self.autorun(() => {
-        //console.debug( 'accountsSelected', self.PR.accountsSelected.get());
+        //logger.debug( 'accountsSelected', self.PR.accountsSelected.get());
     });
 });
 
@@ -234,7 +236,7 @@ Template.pr_scoped_accounts_panel.events({
                 $target: instance.$( '.pr-scoped-accounts-panel' )
             });
         } else {
-            console.warn( 'expects a \'R\' node, got '+node.type );
+            logger.warn( 'expects a \'R\' node, got '+node.type );
         }
     },
 
@@ -253,7 +255,7 @@ Template.pr_scoped_accounts_panel.events({
                 });
                 accountsAssignments = assignments;
             } else {
-                console.warn( 'expects a \'A\' node, got '+it.type );
+                logger.warn( 'expects a \'A\' node, got '+it.type );
             }
         });
         instance.PR.accountsAssignments.set( accountsAssignments );

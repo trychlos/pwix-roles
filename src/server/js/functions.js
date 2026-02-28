@@ -5,7 +5,10 @@
 import _ from 'lodash';
 const assert = require( 'assert' ).strict;
 
+import { Logger } from 'meteor/pwix:logger';
 import { Roles as alRoles } from 'meteor/alanning:roles';
+
+const logger = Logger.get();
 
 Roles.s = {
     // get roles for the user
@@ -13,15 +16,15 @@ Roles.s = {
     // returns Promise null if an error occurred
     async getRolesForUser( user, options, userId=null ){
         try {
-            const allowed = await Roles.isAllowed('pwix.roles.fn.getRolesForUser', userId, user );
+            const allowed = await Roles.isAllowed( 'getRolesForUser', userId, user );
             if( allowed ){
                 return await alRoles.getRolesForUserAsync( user, options );
             }
-            //console.log( 'pwix.roles.fn.getRolesForUser', user, 'not allowed' );
+            //logger.log( 'getRolesForUser', user, 'not allowed' );
             return null;
         }
         catch( e ){
-            console.error( 'pwix.roles.fn.getRolesForUser', e );
+            logger.error( 'getRolesForUser()', e );
             return null;
         }
     },
@@ -31,7 +34,7 @@ Roles.s = {
     async getUsersInScope( scope, userId=null ){
         assert( scope && scope.length && _.isString( scope ), 'expect a scope, got', scope );
         try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.getUsersInScope', userId );
+            const allowed = await Roles.isAllowed( 'getUsersInScope', userId );
             if( allowed ){
                 const fetched = await Meteor.roleAssignment.find({ scope: scope }).fetchAsync();
                 result = [];
@@ -41,11 +44,11 @@ Roles.s = {
                 });
                 return result;
             }
-            //console.log( 'pwix.roles.fn.getUsersInScope not allowed' );
+            //logger.log( 'getUsersInScope not allowed' );
             return null;
         }
         catch( e ){
-            console.error( 'pwix.roles.fn.getUsersInScope', e );
+            logger.error( 'getUsersInScope()', e );
             return null;
         }
     },
@@ -53,7 +56,7 @@ Roles.s = {
     // remove all roles for the user
     //  returns a Promise which resolves to true|false
     async removeAllRolesFromUser( user ){
-        console.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
+        logger.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );
         return await Roles.s.removeAssignedRolesFromUser( user );
     },
 
@@ -61,7 +64,7 @@ Roles.s = {
     //  returns true|false, or null if an error occurred
     async removeAssignedRolesFromUser( user, userId=null ){
         try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.removeAssignedRolesFromUser', userId )
+            const allowed = await Roles.isAllowed( 'removeAssignedRolesFromUser', userId )
             if( allowed ){
                 if( user ){
                     let id = null;
@@ -72,20 +75,20 @@ Roles.s = {
                     }
                     if( id ){
                         const countDeleted = await Meteor.roleAssignment.removeAsync({ 'user._id': id });
-                        console.debug( 'pwix.roles.fn.removeAssignedRolesFromUser', user, countDeleted );
+                        logger.debug( 'removeAssignedRolesFromUser()', user, countDeleted );
                         return countDeleted !== null;
                     }
-                    console.warn( 'pwix.roles.fn.removeAssignedRolesFromUser() unable to find an identifier', user );
+                    logger.warn( 'removeAssignedRolesFromUser() unable to find an identifier', user );
                     return null;
                 }
-                console.warn( 'pwix.roles.fn.removeAssignedRolesFromUser() user is falsy', user );
+                logger.warn( 'removeAssignedRolesFromUser() user is falsy', user );
                 return null;
             }
-            //console.log( 'pwix.roles.fn.removeAssignedRolesFromUser not allowed' );
+            //logger.log( 'removeAssignedRolesFromUser() not allowed' );
             return null;
         }
         catch( e ) {
-            console.error( 'pwix.roles.fn.removeAssignedRolesFromUser', e );
+            logger.error( 'removeAssignedRolesFromUser()', e );
             return null;
         }
     },
@@ -93,7 +96,7 @@ Roles.s = {
     // remove all assignments for the role(s)
     //  returns a Promise which resolves an array of the result for each role
     async removeUserAssignmentsForRoles( roles, opts, userId=null ){
-        console.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
+        logger.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
         return await Roles.s.removeUserAssignmentsFromRoles( roles, opts, userId );
     },
 
@@ -101,7 +104,7 @@ Roles.s = {
     //  returns a Promise which resolves to an array of the result for each role, or null if an error occurred
     async removeUserAssignmentsFromRoles( roles, opts={}, userId=null ){
         try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.removeUserAssignmentsFromRoles', userId );
+            const allowed = await Roles.isAllowed( 'removeUserAssignmentsFromRoles', userId );
             if( allowed ){
                 let promises = [];
                 const rolesArray = _.isArray( roles ) ? roles : [roles];
@@ -116,11 +119,11 @@ Roles.s = {
                 });
                 return Promise.allSettled( promises );
             }
-            //console.log( 'pwix.roles.fn.removeUserAssignmentsFromRoles not allowed' );
+            //logger.log( 'removeUserAssignmentsFromRoles() not allowed' );
             return null;
         }
         catch( e ) {
-            console.error( 'pwix.roles.fn.removeUserAssignmentsFromRoles', e );
+            logger.error( 'removeUserAssignmentsFromRoles()', e );
             return null;
         }
     },
@@ -138,7 +141,7 @@ Roles.s = {
                 res.assigned += 1;
             };
         }
-        console.debug( 'res', res );
+        logger.debug( 'res', res );
         return res;
     },
 
@@ -148,7 +151,7 @@ Roles.s = {
         let targetId = null;
         let isAllowed = false;
         try {
-            return Roles.isAllowed( 'pwix.roles.fn.setUserRoles', userId )
+            return Roles.isAllowed( 'setUserRoles', userId )
                 .then(( allowed ) => {
                     isAllowed = allowed;
                     if( allowed ){
@@ -156,11 +159,11 @@ Roles.s = {
                         if( targetId ){
                             return Roles.s.removeAssignedRolesFromUser( user );
                         } else {
-                            console.warn( 'pwix.roles.fn.setUserRoles unable to get a user identifier from provided user argument', user );
+                            logger.warn( 'setUserRoles unable to get a user identifier from provided user argument', user );
                             return null;
                         }
                     } else {
-                        //console.log( 'pwix.roles.fn.setUserRoles not allowed' );
+                        //logger.log( 'setUserRoles not allowed' );
                         return null;
                     }
                 })
@@ -186,7 +189,7 @@ Roles.s = {
                 });
         }
         catch( e ) {
-            console.error( 'pwix.roles.fn.setUserRoles', e );
+            logger.error( 'setUserRoles()', e );
             return null;
         }
     },
@@ -194,15 +197,15 @@ Roles.s = {
     // returns the list of used scopes
     async usedScopes( userId=null){
         try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.usedScopes', userId );
+            const allowed = await Roles.isAllowed( 'usedScopes', userId );
             if( allowed ){
                 return await Meteor.roleAssignment.rawCollection().distinct( 'scope' );
             }
-            //console.log( 'pwix.roles.fn.usedScopes not allowed' );
+            //logger.log( 'usedScopes not allowed' );
             return null;
         }
         catch( e ) {
-            console.error( 'pwix.roles.fn.usedScopes', e );
+            logger.error( 'usedScopes()', e );
             return null;
         }
     }

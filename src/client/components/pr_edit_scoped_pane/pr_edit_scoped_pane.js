@@ -15,12 +15,15 @@
 import _ from 'lodash';
 
 import { Bootbox } from 'meteor/pwix:bootbox';
+import { Logger } from 'meteor/pwix:logger';
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Roles } from 'meteor/pwix:roles';
 
 import './pr_edit_scoped_pane.html';
+
+const logger = Logger.get();
 
 Template.pr_edit_scoped_pane.onCreated( function(){
     const self = this;
@@ -54,7 +57,7 @@ Template.pr_edit_scoped_pane.onCreated( function(){
                 delete roles.scoped[oldScope];
                 Template.currentData().roles.set( roles );
             } else {
-                console.warn( 'identifier not found', id );
+                logger.warn( 'identifier not found', id );
             }
         },
 
@@ -91,7 +94,7 @@ Template.pr_edit_scoped_pane.onCreated( function(){
                     }
                 });
             } else {
-                console.warn( 'identifier not found', id );
+                logger.warn( 'identifier not found', id );
             }
         },
 
@@ -129,7 +132,7 @@ Template.pr_edit_scoped_pane.onCreated( function(){
 
     // track the current scoped roles
     self.autorun(() => {
-        //console.debug( 'scoped', Template.currentData().roles.get().scoped );
+        //logger.debug( 'scoped', Template.currentData().roles.get().scoped );
     });
 
     // do we have the pwix:forms package ?

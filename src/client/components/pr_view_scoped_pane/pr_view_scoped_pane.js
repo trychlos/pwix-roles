@@ -14,10 +14,13 @@
 
 import _ from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { pwixI18n } from 'meteor/pwix:i18n';
 import { Random } from 'meteor/random';
 
 import './pr_view_scoped_pane.html';
+
+const logger = Logger.get();
 
 Template.pr_view_scoped_pane.onCreated( function(){
     const self = this;
@@ -66,7 +69,7 @@ Template.pr_view_scoped_pane.onCreated( function(){
 
     // track the current scoped roles
     self.autorun(() => {
-        //console.debug( Template.currentData().roles.get().scoped );
+        //logger.debug( Template.currentData().roles.get().scoped );
     });
 });
 

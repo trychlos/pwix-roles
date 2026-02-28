@@ -4,7 +4,10 @@
 
 import _ from 'lodash';
 
+import { Logger } from 'meteor/pwix:logger';
 import { ReactiveVar } from 'meteor/reactive-var';
+
+const logger = Logger.get();
 
 let _conf = {};
 Roles._conf = new ReactiveVar( _conf );
@@ -34,13 +37,13 @@ Roles.configure = function( o ){
             if( Object.keys( Roles._defaults ).includes( it )){
                 built_conf[it] = o[it];
             } else {
-                console.warn( 'pwix:roles configure() ignore unmanaged key \''+it+'\'' );
+                logger.warn( 'configure() ignore unmanaged key \''+it+'\'' );
             }
         });
         if( Object.keys( built_conf ).length ){
             _conf = _.merge( Roles._defaults, _conf, built_conf );
             Roles._conf.set( _conf );
-            _verbose( Roles.C.Verbose.CONFIGURE, 'pwix:roles configure() with', built_conf );
+            logger.verbose({ verbosity: _conf.verbosity, against: Roles.C.Verbose.CONFIGURE }, 'configure() with', built_conf );
         }
     }
     // also acts as a getter
