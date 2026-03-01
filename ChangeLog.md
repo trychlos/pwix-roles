@@ -9,6 +9,7 @@
     - configure() now warns for unmanaged keys
     - Guard against absent jstree() plugin
     - Use pwix:logger universal logger, thus bumping minor candidate version number
+    - Fix permissions of the publications
 
 ### 1.8.0
 

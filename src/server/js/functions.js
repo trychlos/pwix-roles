@@ -16,7 +16,7 @@ Roles.s = {
     // returns Promise null if an error occurred
     async getRolesForUser( user, options, userId=null ){
         try {
-            const allowed = await Roles.isAllowed( 'getRolesForUser', userId, user );
+            const allowed = await Roles.isAllowed( 'pwix.roles.fn.getRolesForUser', userId, user );
             if( allowed ){
                 return await alRoles.getRolesForUserAsync( user, options );
             }
@@ -34,7 +34,7 @@ Roles.s = {
     async getUsersInScope( scope, userId=null ){
         assert( scope && scope.length && _.isString( scope ), 'expect a scope, got', scope );
         try {
-            const allowed = await Roles.isAllowed( 'getUsersInScope', userId );
+            const allowed = await Roles.isAllowed( 'pwix.roles.fn.getUsersInScope', userId );
             if( allowed ){
                 const fetched = await Meteor.roleAssignment.find({ scope: scope }).fetchAsync();
                 result = [];
@@ -64,7 +64,7 @@ Roles.s = {
     //  returns true|false, or null if an error occurred
     async removeAssignedRolesFromUser( user, userId=null ){
         try {
-            const allowed = await Roles.isAllowed( 'removeAssignedRolesFromUser', userId )
+            const allowed = await Roles.isAllowed( 'pwix.roles.fn.removeAssignedRolesFromUser', userId )
             if( allowed ){
                 if( user ){
                     let id = null;
@@ -104,7 +104,7 @@ Roles.s = {
     //  returns a Promise which resolves to an array of the result for each role, or null if an error occurred
     async removeUserAssignmentsFromRoles( roles, opts={}, userId=null ){
         try {
-            const allowed = await Roles.isAllowed( 'removeUserAssignmentsFromRoles', userId );
+            const allowed = await Roles.isAllowed( 'pwix.roles.fn.removeUserAssignmentsFromRoles', userId );
             if( allowed ){
                 let promises = [];
                 const rolesArray = _.isArray( roles ) ? roles : [roles];
@@ -151,7 +151,7 @@ Roles.s = {
         let targetId = null;
         let isAllowed = false;
         try {
-            return Roles.isAllowed( 'setUserRoles', userId )
+            return Roles.isAllowed( 'pwix.roles.fn.setUserRoles', userId )
                 .then(( allowed ) => {
                     isAllowed = allowed;
                     if( allowed ){
@@ -197,7 +197,7 @@ Roles.s = {
     // returns the list of used scopes
     async usedScopes( userId=null){
         try {
-            const allowed = await Roles.isAllowed( 'usedScopes', userId );
+            const allowed = await Roles.isAllowed( 'pwix.roles.fn.usedScopes', userId );
             if( allowed ){
                 return await Meteor.roleAssignment.rawCollection().distinct( 'scope' );
             }
