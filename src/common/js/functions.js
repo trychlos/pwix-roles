@@ -10,6 +10,19 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 const logger = Logger.get();
 
 /*
+ * Setup the 'o' object with an item fetched from roleAssignments collection
+ * locus: anywhere
+ */
+Roles._doSetup = function( it, o ){
+    o.direct.push( it.role._id );
+    if( it.inheritedRoles && _.isArray( it.inheritedRoles )){
+        it.inheritedRoles.forEach(( role ) => {
+            o.all.push( role._id );
+        });
+    }
+};
+
+/*
  * Enumerate the configured role hierarchy, calling the provided callback for each and every role.
  *  Enumeration may be stopped by the callback returning false.
  */
@@ -233,20 +246,41 @@ Roles.addUsersToRoles = async function( users, roles, options={} ){
 };
 
 /**
+ * @locus Anywhere
+ * @param {Object|String} target the targeted user as a user document or a user identifier
+ * @param {Object|String} requester an optional requester user as a user document or a user identifier
+ *  this is ignored on client side as we use the currently connected user
+ *  this is mandatory on server side
+ * @returns {Object} an object with following keys:
+ *  - global: the global roles as an object with following keys:
+ *    > all: an array of all roles
+ *    > direct: an array of direct roles
+ *  - scoped: the scoped roles as an object keyed by the scope identifier, with folloging keys
+ *    > all: an array of all roles for this scope
+ *    > direct: an array of direct roles for this scope
+ */
+Roles.allRolesForUser = async function( target, requester ){
+    return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.allRolesForUser', target ) : Roles.s.allRolesForUser( target, requester ));
+};
+
+/**
  * @summary Compare the roles assigned to two users and compute the highest side
  * @locus Anywhere
  * @param {Object|String} a user identifier or document
  * @param {Object|String} ab user identifier or document
+ * @param {Object} opts an optional options object with following keys:
+ *  - scope: the scope identifier we are interested in, default to null (global scope)
  * @returns {Integer}
  *  -1 if highest role of user a is lower than highest role of user b
  *   0 if highest role of user a is same level than highest role of user b
  *  +1 if highest role of user a is higher than highest role of user b
  */
-Roles.compareLevels = async function( userA, userB ){
-    const rolesA = await Roles.directRolesForUser( userA );
-    const levelA = Roles.highestLevel( rolesA );
-    const rolesB = await Roles.directRolesForUser( userB );
-    const levelB = Roles.highestLevel( rolesB );
+Roles.compareLevels = async function( userA, userB, opts ){
+    opts = opts || {};
+    const rolesA = await Roles.allRolesForUser( userA, userA );
+    const levelA = Roles.highestLevel( opts.scope ? rolesA.scoped[opts.scope].direct : rolesA.global.direct );
+    const rolesB = await Roles.allRolesForUser( userB, userB );
+    const levelB = Roles.highestLevel( opts.scope ? rolesB.scoped[opts.scope].direct : rolesB.global.direct );
     const res = levelA < levelB ? +1 : ( levelA > levelB ? -1 : 0 );
     //logger.debug( userA, rolesA, levelA, userB, rolesB, levelB, res );
     return res;
@@ -260,6 +294,7 @@ Roles.compareLevels = async function( userA, userB ){
  * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */
 Roles.directRolesForUser = async function( user, options={} ){
+    logger.warn( 'directRolesForUser() is obsoleted started with v1.9. Please use allRolesForUser()' );
     return Roles._filter( await Roles.getRolesForUser( user, options ) || [] );
 };
 
@@ -297,6 +332,7 @@ Roles.flat = function(){
  * @returns {Array} an array of roles documents
  */
 Roles.getRolesForUser = async function( user, options={} ){
+    logger.warn( 'getRolesForUser() is obsoleted started with v1.9. Please use allRolesForUser()' );
     return await ( Meteor.isClient ? Meteor.callAsync( 'Roles.getRolesForUser', user, options ) : Roles.s.getRolesForUser( user, options ));
 };
 
@@ -451,6 +487,8 @@ Roles.suggestedPermissions = function(){
         pwix: {
             roles: {
                 fn: {
+                    // whether the user 'userId' can access the 'user' roles ?
+                    // whatever be his own roles, userId is always allowed to access them (even if he doesn't have any permission, he is still allowed to read his own perms)
                     async getRolesForUser( userId, user ){
                         return userId !== null;
                     },

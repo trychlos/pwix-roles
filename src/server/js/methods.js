@@ -26,6 +26,11 @@ Meteor.methods({
         return null;
     },
 
+    // return all roles for the user
+    async 'Roles.allRolesForUser'( target ){
+        return await Roles.s.allRolesForUser( target, this.userId );
+    },
+
     // returns the count of users which have at least one of the specified roles
     async 'Roles.countUsersInRoles'( roles, options={} ){
         const allowed = await Roles.isAllowed( 'pwix.roles.method.countUsersInRoles', this.userId );
@@ -52,6 +57,7 @@ Meteor.methods({
 
     // return roles for the user
     async 'Roles.getRolesForUser'( user, options ){
+        logger.warn( 'getRolesForUser() is obsoleted started with v1.9. Please use allRolesForUser()' );
         return await Roles.s.getRolesForUser( user, options, this.userId );
     },
 

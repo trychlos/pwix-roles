@@ -10,6 +10,7 @@
     - Guard against absent jstree() plugin
     - Use pwix:logger universal logger, thus bumping minor candidate version number
     - Fix permissions of the publications
+    - Deprecate Roles.directRolesForUser() and Roles.getRolesForUser() to the advantage of new Roles.allRolesForUser()
 
 ### 1.8.0
 

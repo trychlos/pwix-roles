@@ -33,14 +33,6 @@ let _current = {
             all: [],
             direct: []
         };
-    },
-    doSetup( it, o ){
-        o.direct.push( it.role._id );
-        if( it.inheritedRoles && _.isArray( it.inheritedRoles )){
-            it.inheritedRoles.forEach(( role ) => {
-                o.all.push( role._id );
-            });
-        }
     }
 };
 
@@ -75,9 +67,9 @@ Tracker.autorun(() => {
                 fetched.forEach(( it ) => {
                     if( it.scope ){
                         _current.val.scoped[it.scope] = _current.val.scoped[it.scope] || { all: [], direct: [] };
-                        _current.doSetup( it, _current.val.scoped[it.scope] );
+                        Roles._doSetup( it, _current.val.scoped[it.scope] );
                     } else {
-                        _current.doSetup( it, _current.val.global );
+                        Roles._doSetup( it, _current.val.global );
                     }
                 });
                 _current.dep.changed();

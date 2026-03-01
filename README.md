@@ -124,6 +124,12 @@ Known configuration options are:
     - `pwix.roles.pub.used_scopes`
     - `pwix.roles.pub.count_by_roles`
 
+- `assignmentsCollection`
+
+    The name of the collection where roles assigned to a user are kept.
+
+    Defaults to `role-assignment`.
+
 - `maintainHierarchy`
 
     Whether the package should update the recorded hierarchy to match the provided one:

@@ -14,6 +14,7 @@ Roles._conf = new ReactiveVar( _conf );
 
 Roles._defaults = {
     allowFn: null,
+    assignmentsCollection: 'role-assignment',
     maintainHierarchy: true,
     roles: {},
     scopeLabelFn: null,

@@ -42,8 +42,6 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
 
         // in view mode, the current user and its (scoped) roles
         userRoles: new ReactiveVar( null ),
-        userId: null,
-        userHandle: new ReactiveVar( null ),
 
         // in view mode, the current scoped accounts
         accountsAssignments: new ReactiveVar( null ),
@@ -83,41 +81,9 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
         if( self.PR.editMode.get()){
             self.PR.userRoles.set( Template.currentData().roles );
         } else {
-            self.PR.userId = Meteor.userId();
-            if( self.PR.userId ){
-                self.PR.userHandle.set( self.subscribe( 'pwix_roles_user_assignments', self.PR.userId ));
-            }
-        }
-    });
-
-    // in view mode, get the scoped roles of the current user
-    self.autorun(() => {
-        if( !self.PR.editMode.get()){
-            const handle = self.PR.userHandle.get();
-            if( handle && handle.ready()){
-                let roles = { scoped: {}, global: { all: [], direct: [] }};
-                const _setup = function( it, o ){
-                    o.all = o.all || [];
-                    o.direct = o.direct || [];
-                    o.direct.push( it.role._id );
-                    if( it.inheritedRoles && _.isArray( it.inheritedRoles )){
-                        it.inheritedRoles.forEach(( role ) => {
-                            o.all.push( role._id );
-                        });
-                    }
-                };
-                Roles.getRolesForUser( self.PR.userId, { anyScope: true, fullObjects: true }).then(( res ) => {
-                    res.forEach(( it ) => {
-                        if( it.scope ){
-                            roles.scoped[it.scope] = roles.scoped[it.scope] || {};
-                            _setup( it, roles.scoped[it.scope] );
-                        } else {
-                            _setup( it, roles.global );
-                        }
-                    });
-                    self.PR.userRoles.set( roles );
-                });
-            }
+            Roles.allRolesForUser( Meteor.userId()).then(( roles ) => {
+                self.PR.userRoles.set( _.cloneDeep( roles ));
+            });
         }
     });
 

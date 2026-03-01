@@ -41,8 +41,6 @@ Template.prEditPanel.onCreated( function(){
         // initial roles of the specified user as an object { scoped: { <scope>: { all<Array>, direct<Array } }, global: { all<Array>, direct<Array } }
         //  (same structure than current)
         roles: new ReactiveVar({ scoped: {}, global: { all: [], direct: [] }}),
-        userId: null,
-        handle: null,
 
         // have to name the Tabbed component to be able to save/restore the last active pane
         tabbedName: 'pwix:roles/pr-edit-panel',
@@ -97,47 +95,12 @@ Template.prEditPanel.onCreated( function(){
         }
     };
 
-    // if a user is specified, then subscribe to its assigned roles
-    self.autorun(() => {
-        const user = Template.currentData().user;
-        self.PR.userId = null;
-        if( user ){
-            if( _.isObject( user )){
-                self.PR.userId = user._id;
-            }
-            if( _.isString( user )){
-                self.PR.userId = user;
-            }
-        }
-        if( self.PR.userId ){
-            self.PR.handle = self.subscribe( 'pwix_roles_user_assignments', self.PR.userId );
-        }
-    });
-
     // when assigned roles subscription is ready, fetch them
     //  take a deep copy as this will be the edition starting point
     self.autorun(() => {
-        if( self.PR.handle && self.PR.handle.ready()){
-            let roles = { scoped: {}, global: { all: [], direct: [] }};
-            const _setup = function( it, o ){
-                o.all = o.all || [];
-                o.direct = o.direct || [];
-                o.direct.push( it.role._id );
-                if( it.inheritedRoles && _.isArray( it.inheritedRoles )){
-                    it.inheritedRoles.forEach(( role ) => {
-                        o.all.push( role._id );
-                    });
-                }
-            };
-            Roles.getRolesForUser( self.PR.userId, { anyScope: true, fullObjects: true }).then(( res ) => {
-                res.forEach(( it ) => {
-                    if( it.scope ){
-                        roles.scoped[it.scope] = roles.scoped[it.scope] || {};
-                        _setup( it, roles.scoped[it.scope] );
-                    } else {
-                        _setup( it, roles.global );
-                    }
-                });
+        const user = Template.currentData().user;
+        if( user ){
+            Roles.allRolesForUser( user ).then(( roles ) => {
                 self.PR.roles.set( _.cloneDeep( roles ));
             });
         }
