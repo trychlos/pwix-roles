@@ -24,6 +24,11 @@
  * Triggers:
  * - pr-change
  * - pr-rowselect
+ * 
+ * Note relative to triggered exceptions:
+ * We too often get an exception like "TypeError: $tree.jstree(...).<any_method_here> is not a function"
+ * We try to catch most of them. Happens that 1) we cannot reproduce and 2) they are possibly due a) to the HMR b) to an issue between jquery and jstree.
+ * 2026- 3- 1: decide to ignore them
  */
 
 import _ from 'lodash';
@@ -86,15 +91,23 @@ Template.pr_tree.onCreated( function(){
 
         // disable roles children
         disableChildrenById( id ){
-            self.PR.disableChildrenByNode( self.PR.$tree.get().jstree( true ).get_node( self.PR.pr_prefix.get()+id ));
+            try {
+                self.PR.disableChildrenByNode( self.PR.$tree.get().jstree( true ).get_node( self.PR.pr_prefix.get()+id ));
+            } catch( e ){
+                logger.notice( e );
+            }
         },
 
         // disable roles children
         disableChildrenByNode( node ){
-            if( node ){
-                node.children_d.forEach(( id ) => {
-                    self.PR.$tree.get().jstree( true ).disable_node( id );
-                });
+            try {
+                if( node ){
+                    node.children_d.forEach(( id ) => {
+                        self.PR.$tree.get().jstree( true ).disable_node( id );
+                    });
+                }
+            } catch( e ){
+                logger.notice( e );
             }
         },
 
@@ -103,21 +116,31 @@ Template.pr_tree.onCreated( function(){
         // note too that the event is not triggered when editable is false
         tree_checkbox_check( data ){
             self.PR.disableChildrenByNode( data.node );
-            if( self.PR.triggerChangeEvent ){
-                //logger.debug( 'triggering pr-change due to checkbox check' );
-                self.PR.$tree.get().trigger( 'pr-change' );
+            try {
+                if( self.PR.triggerChangeEvent ){
+                    //logger.debug( 'triggering pr-change due to checkbox check' );
+                    self.PR.$tree.get().trigger( 'pr-change' );
+                }
+            } catch( e ){
+                logger.notice( e );
             }
         },
 
         // we have explicitely or programatically unchecked an item (but cascade doesn't come here)
         //  data = { node, selected, event, jsTree instance }
         tree_checkbox_uncheck( data ){
-            const $tree = self.PR.$tree.get();
-            data.node.children_d.forEach(( id ) => {
-                $tree.jstree( true ).enable_node( id );
-            });
-            //logger.debug( 'triggering pr-change due to checkbox uncheck' );
-            $tree.trigger( 'pr-change' );
+            try {
+                const $tree = self.PR.$tree.get();
+                if( $tree ){
+                    data.node.children_d.forEach(( id ) => {
+                        $tree.jstree( true ).enable_node( id );
+                    });
+                    //logger.debug( 'triggering pr-change due to checkbox uncheck' );
+                    $tree.trigger( 'pr-change' );
+                }
+            } catch( e ){
+                logger.notice( e );
+            }
         },
 
         // ask for create a new node for the tree
@@ -168,18 +191,24 @@ Template.pr_tree.onCreated( function(){
         tree_create_node( role, parent=null ){
             self.PR.tree_nodes_asked[role.name] = role;
             const parent_node = parent ? self.PR.tree_nodes_created[ parent.name ] : null;
-            const $tree = self.PR.$tree.get();
-            $tree.jstree( true ).create_node( parent_node, {
-                "id": self.PR.pr_prefix.get() + role.name,
-                "text": role.name,
-                "children": [],
-                "icon": self.PR.withIcons.get(),
-                "doc": role,
-                "type": 'R',
-                "li_attr": {
-                    class: self.PR.editable.get() ? 'pr-editable-true' : 'pr-editable-false'
+            try {
+                const $tree = self.PR.$tree.get();
+                if( $tree ){
+                    $tree.jstree( true ).create_node( parent_node, {
+                        "id": self.PR.pr_prefix.get() + role.name,
+                        "text": role.name,
+                        "children": [],
+                        "icon": self.PR.withIcons.get(),
+                        "doc": role,
+                        "type": 'R',
+                        "li_attr": {
+                            class: self.PR.editable.get() ? 'pr-editable-true' : 'pr-editable-false'
+                        }
+                    });
                 }
-            });
+            } catch( e ){
+                logger.notice( e );
+            }
         },
 
         // delete a node
@@ -348,101 +377,103 @@ Template.pr_tree.onRendered( function(){
             if( self.PR.haveCheckboxes.get()){
                 plugins.push( 'checkbox' );
             }
-            if( $tree.jstree ){
-                $tree.jstree({
-                    core: {
-                        check_callback( operation, node, node_parent, node_position, more ){
-                            switch( operation ){
-                                case 'create_node':
-                                case 'delete_node':
-                                    return true;
-                                default:
-                                    return false;
-                            }
+            try {
+                if( $tree.jstree ){
+                    $tree.jstree({
+                        core: {
+                            check_callback( operation, node, node_parent, node_position, more ){
+                                switch( operation ){
+                                    case 'create_node':
+                                    case 'delete_node':
+                                        return true;
+                                    default:
+                                        return false;
+                                }
+                            },
+                            multiple: self.PR.multiple.get(),
                         },
-                        multiple: self.PR.multiple.get(),
-                    },
-                    plugins: plugins,
-                    checkbox: {
-                        three_state: false,
-                        cascade: 'down',
-                        whole_node: true,
-                        tie_selection: !self.PR.editable.get(), // false
-                        keep_selected_style: !self.PR.editable.get()
-                    },
-                    // node is the last selected node whose selection triggers this event
-                    //  at the time, get_selected() returns the already/previously selected nodes
-                    //  so the whole selection is the union of node + get_selected()
-                    // allow only one selected role, or several accounts
-                    conditionalselect( node, event ){
-                        if( !self.PR.selectable.get()){
-                            return false;
-                        }
-                        if( !self.PR.multiple.get()){
-                            return true;
-                        }
-                        if( node.type === 'R' ){
-                            $tree.jstree( true ).deselect_all();
-                            return true;
-                        }
-                        let haveRole = false;
-                        $tree.jstree( true ).get_selected( true ).every(( it ) => {
-                            if( it.type === 'R' ){
-                                haveRole = true;
+                        plugins: plugins,
+                        checkbox: {
+                            three_state: false,
+                            cascade: 'down',
+                            whole_node: true,
+                            tie_selection: !self.PR.editable.get(), // false
+                            keep_selected_style: !self.PR.editable.get()
+                        },
+                        // node is the last selected node whose selection triggers this event
+                        //  at the time, get_selected() returns the already/previously selected nodes
+                        //  so the whole selection is the union of node + get_selected()
+                        // allow only one selected role, or several accounts
+                        conditionalselect( node, event ){
+                            if( !self.PR.selectable.get()){
+                                return false;
                             }
-                            return !haveRole;
-                        });
-                        if( haveRole ){
-                            $tree.jstree( true ).deselect_all();
+                            if( !self.PR.multiple.get()){
+                                return true;
+                            }
+                            if( node.type === 'R' ){
+                                $tree.jstree( true ).deselect_all();
+                                return true;
+                            }
+                            let haveRole = false;
+                            $tree.jstree( true ).get_selected( true ).every(( it ) => {
+                                if( it.type === 'R' ){
+                                    haveRole = true;
+                                }
+                                return !haveRole;
+                            });
+                            if( haveRole ){
+                                $tree.jstree( true ).deselect_all();
+                                return true;
+                            }
                             return true;
-                        }
-                        return true;
-                    },
-                    sort: function( a, b ){
-                        const node_a = this.get_node( a );
-                        const node_b = this.get_node( b );
-                        const type = node_a.type > node_b.type ? 1 : ( node_a.type < node_b.type ? -1 : 0 );
-                        const label_a = String( node_a.text ).toString().toUpperCase();
-                        const label_b = String( node_b.text ).toString().toUpperCase();
-                        return type ? type : ( label_a > label_b ? 1 : ( label_a < label_b ? -1 : 0 ));
-                    },
-                    types: types
-                })
-                // 'ready.jstree' data = jsTree instance
-                // TypeError: $tree.jstree(...).on is not a function...!?
-                .on( 'ready.jstree', ( event, data ) => {
-                    self.PR.tree_ready( true );
-                })
-                // 'create_node.jstree' data = { node, parent, position, jsTree instance }
-                .on( 'create_node.jstree', ( event, data ) => {
-                    self.PR.tree_create_done( data );
-                })
-                // 'check_node.jstree' data = { node, selected, event, jsTree instance }
-                .on( 'check_node.jstree', ( event, data ) => {
-                    self.PR.tree_checkbox_check( data );
-                })
-                // 'uncheck_node.jstree' data = { node, selected, event, jsTree instance }
-                .on( 'uncheck_node.jstree', ( event, data ) => {
-                    self.PR.tree_checkbox_uncheck( data );
-                })
-                // 'delete_node.jstree' data = { node, parent, jsTree instance }
-                .on( 'delete_node.jstree', ( event, data ) => {
-                    self.PR.tree_delete_node( data );
-                })
-                // 'enable_checkbox.jstree' data = { node, jsTree instance }
-                .on( 'enable_node.jstree', ( event, data ) => {
-                    $tree.jstree( true ).get_node( data.node.id, true ).removeClass( 'pr-disabled' );
-                })
-                // 'disable_checkbox.jstree' data = { node, jsTree instance }
-                .on( 'disable_node.jstree', ( event, data ) => {
-                    $tree.jstree( true ).get_node( data.node.id, true ).addClass( 'pr-disabled' );
-                })
-                // 'select_node.jstree' data = { node, jsTree instance }
-                .on( 'select_node.jstree', ( event, { event2, instance, node, selected }) => {
-                    $tree.trigger( 'pr-rowselect', { node: node, selected: $tree.jstree( true ).get_selected( true ) });
-                });
-            } else {
-                logger.warn( '$tree doesn\'t have jstree()', $tree );
+                        },
+                        sort: function( a, b ){
+                            const node_a = this.get_node( a );
+                            const node_b = this.get_node( b );
+                            const type = node_a.type > node_b.type ? 1 : ( node_a.type < node_b.type ? -1 : 0 );
+                            const label_a = String( node_a.text ).toString().toUpperCase();
+                            const label_b = String( node_b.text ).toString().toUpperCase();
+                            return type ? type : ( label_a > label_b ? 1 : ( label_a < label_b ? -1 : 0 ));
+                        },
+                        types: types
+                    })
+                    // 'ready.jstree' data = jsTree instance
+                    // TypeError: $tree.jstree(...).on is not a function...!?
+                    .on( 'ready.jstree', ( event, data ) => {
+                        self.PR.tree_ready( true );
+                    })
+                    // 'create_node.jstree' data = { node, parent, position, jsTree instance }
+                    .on( 'create_node.jstree', ( event, data ) => {
+                        self.PR.tree_create_done( data );
+                    })
+                    // 'check_node.jstree' data = { node, selected, event, jsTree instance }
+                    .on( 'check_node.jstree', ( event, data ) => {
+                        self.PR.tree_checkbox_check( data );
+                    })
+                    // 'uncheck_node.jstree' data = { node, selected, event, jsTree instance }
+                    .on( 'uncheck_node.jstree', ( event, data ) => {
+                        self.PR.tree_checkbox_uncheck( data );
+                    })
+                    // 'delete_node.jstree' data = { node, parent, jsTree instance }
+                    .on( 'delete_node.jstree', ( event, data ) => {
+                        self.PR.tree_delete_node( data );
+                    })
+                    // 'enable_checkbox.jstree' data = { node, jsTree instance }
+                    .on( 'enable_node.jstree', ( event, data ) => {
+                        $tree.jstree( true ).get_node( data.node.id, true ).removeClass( 'pr-disabled' );
+                    })
+                    // 'disable_checkbox.jstree' data = { node, jsTree instance }
+                    .on( 'disable_node.jstree', ( event, data ) => {
+                        $tree.jstree( true ).get_node( data.node.id, true ).addClass( 'pr-disabled' );
+                    })
+                    // 'select_node.jstree' data = { node, jsTree instance }
+                    .on( 'select_node.jstree', ( event, { event2, instance, node, selected }) => {
+                        $tree.trigger( 'pr-rowselect', { node: node, selected: $tree.jstree( true ).get_selected( true ) });
+                    });
+                }
+            } catch( e ){
+                logger.notice( e );
             }
         }
     });
