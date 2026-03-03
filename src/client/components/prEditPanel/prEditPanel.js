@@ -95,7 +95,7 @@ Template.prEditPanel.onCreated( function(){
         }
     };
 
-    // when assigned roles subscription is ready, fetch them
+    // doesn't subscribe, but fetch all current roles at once
     //  take a deep copy as this will be the edition starting point
     self.autorun(() => {
         const user = Template.currentData().user;

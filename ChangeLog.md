@@ -12,6 +12,7 @@
     - Fix permissions of the publications
     - Deprecate Roles.directRolesForUser() and Roles.getRolesForUser() to the advantage of new Roles.allRolesForUser()
     - Set a guard when calling $tree.jstree()
+    - Migrate from vakata/jstree to @tacman1123/jstree-esm
 
 ### 1.8.0
 

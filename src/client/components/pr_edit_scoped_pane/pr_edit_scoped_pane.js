@@ -13,6 +13,7 @@
  */
 
 import _ from 'lodash';
+import { callTree } from '@tacman1123/jstree-esm';
 
 import { Bootbox } from 'meteor/pwix:bootbox';
 import { Logger } from 'meteor/pwix:logger';
@@ -78,7 +79,7 @@ Template.pr_edit_scoped_pane.onCreated( function(){
         },
 
         // after user confirmation, remove a scope and its roles
-        removeScope( event, id, $tree ){
+        removeScope( event, id, tree ){
             const scope = self.PR.byId( id );
             if( scope ){
                 const dataContext = Template.currentData();
@@ -87,7 +88,7 @@ Template.pr_edit_scoped_pane.onCreated( function(){
                     title: pwixI18n.label( I18N, 'panels.remove_scope_title' )
                 }, ( res ) => {
                     if( res ){
-                        $tree.trigger( 'pr-delete' );
+                        self.$( tree ).trigger( 'pr-delete' );
                         const roles = dataContext.roles.get();
                         delete roles.scoped[scope];
                         dataContext.roles.set( roles );
@@ -99,12 +100,12 @@ Template.pr_edit_scoped_pane.onCreated( function(){
         },
 
         // update the check status indicator
-        // $tree and prefix must be provided to (non-reactively) update the data context roles reactive var with the checked checkboxes
-        updateStatus( scope, $tree, prefix ){
+        // tree and prefix must be provided to (non-reactively) update the data context roles reactive var with the checked checkboxes
+        updateStatus( scope, tree, prefix ){
             let scopedRoles = Template.currentData().roles.get().scoped[scope];
-            if( $tree && prefix ){
+            if( tree && prefix ){
                 let locals = [];
-                $tree.jstree( true ).get_checked_descendants( '#' ).every(( id ) => {
+                callTree( tree, 'get_checked_descendants', '#' ).every(( id ) => {
                     locals.push( id.replace( prefix, '' ));
                     return true;
                 });
@@ -267,7 +268,7 @@ Template.pr_edit_scoped_pane.events({
     'click .js-minus'( event, instance ){
         const $parent = instance.$( event.currentTarget ).closest( '.scoped-item' );
         const id = $parent.find( '.accordion-header' ).prop( 'id' ).replace( /^header-/, '' );
-        instance.PR.removeScope( event, id, $parent.find( '.'+this.pr_div ));
+        instance.PR.removeScope( event, id, $parent.find( '.'+this.pr_div )[0] );
         return false;
     },
 
@@ -276,7 +277,7 @@ Template.pr_edit_scoped_pane.events({
     'pr-change .scoped-item'( event, instance, data ){
         const $parent = instance.$( event.currentTarget ).find( '.accordion-header' );
         const id = $parent.prop( 'id' ).replace( /^header-/, '' );
-        instance.PR.updateStatus( instance.PR.byId( id ), instance.$( event.currentTarget ).find( '.'+this.pr_div ), this.pr_prefix );
+        instance.PR.updateStatus( instance.PR.byId( id ), instance.$( event.currentTarget ).find( '.'+this.pr_div )[0], this.pr_prefix );
     },
 
     // select/unselect a role and/or change a scope

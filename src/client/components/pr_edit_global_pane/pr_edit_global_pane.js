@@ -10,6 +10,8 @@
  *  - pr_prefix: the prefix of the checkbox nodes
  */
 
+import { callTree } from '@tacman1123/jstree-esm';
+
 import './pr_edit_global_pane.html';
 
 Template.pr_edit_global_pane.helpers({
@@ -25,13 +27,16 @@ Template.pr_edit_global_pane.events({
     'pr-change .pr-edit-global-pane'( event, instance ){
         // non-reactively update the passed-in roles
         const $tree = instance.$( event.currentTarget ).find( '.'+this.pr_div );
-        let roles = this.roles.get();
-        roles.global.all = []
-        $tree.jstree( true ).get_checked_descendants( '#' ).every(( id ) => {
-            roles.global.all.push( id.replace( this.pr_prefix, '' ));
-            return true;
-        });
-        roles.global.direct = Roles._filter( roles.global.all );
-        instance.$( event.currentTarget ).trigger( 'pr-global-state', { global: Roles.EditPanel.global() });
+        if( $tree.length ){
+            const tree = $tree[0];
+            let roles = this.roles.get();
+            roles.global.all = []
+            callTree( tree, 'get_checked_descendants', '#' ).every(( id ) => {
+                roles.global.all.push( id.replace( this.pr_prefix, '' ));
+                return true;
+            });
+            roles.global.direct = Roles._filter( roles.global.all );
+            instance.$( event.currentTarget ).trigger( 'pr-global-state', { global: Roles.EditPanel.global() });
+        }
     }
 });
