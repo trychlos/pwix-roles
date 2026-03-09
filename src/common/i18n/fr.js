@@ -8,9 +8,11 @@ Roles.i18n = {
         fr: {
             accounts: {
                 add: 'Gérer les comptes assignés',
-                edit: 'Editer les comptes sur le périmètre',
+                edit: 'Editer les comptes sur ce périmètre',
+                err_change_detected: 'Un autre utilisateur a modifié cet enregistrement',
+                err_not_allowed: 'L\'utilisateur n\'est pas autorisé',
                 remove: 'Enlever ces comptes',
-                res_error: 'Une erreur a été détectée lors de la mise à jour. Merci de réessayer ultérieurement',
+                res_error: 'Une erreur a été détectée lors de la mise à jour. Merci de réessayer ultérieurement (%s)',
                 res_success: 'L\'assignation des comptes aux rôles a été effectuée avec succès'
             },
             dialogs: {

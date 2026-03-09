@@ -390,12 +390,12 @@ Roles.highestLevel = function( roles ){
  * @param {String} userId
  * @returns {Boolean} true if the current user is allowed to do the action
  */
-Roles.isAllowed = async function( action, userId=null ){
+Roles.isAllowed = async function(){
     // not very desirable nor secure, but compatible
     let allowed = true;
     const fn = Roles.configure().allowFn;
     if( fn ){
-        allowed = await fn( action, userId );
+        allowed = await fn( ...arguments );
     }
     return allowed;
 };
@@ -499,6 +499,10 @@ Roles.suggestedPermissions = function(){
                         return userId !== null;
                     },
                     async removeUserAssignmentsFromRoles( userId, roles ){
+                        return userId !== null;
+                    },
+                    // whether the userId can manage scope assignments
+                    async setScopedAssignments( userId, opts ){
                         return userId !== null;
                     },
                     async setUserRoles( userId, user, roles ){

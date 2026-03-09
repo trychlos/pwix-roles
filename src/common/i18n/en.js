@@ -8,9 +8,11 @@ Roles.i18n = {
         en: {
             accounts: {
                 add: 'Manage assigned accounts',
-                edit: 'Edit the scoped accounts',
+                edit: 'Edit these scoped accounts',
+                err_change_detected: 'Another user has changed this same record',
+                err_not_allowed: 'The user is not allowed to',
                 remove: 'Remove these accounts',
-                res_error: 'Unfortunately an error occured at update time. Please retry later',
+                res_error: 'Unfortunately an error occured at update time. Please retry later (%s)',
                 res_success: 'The accounts assignments have been successfully updated'
             },
             dialogs: {

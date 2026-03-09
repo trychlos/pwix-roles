@@ -11,7 +11,7 @@
  *  - accounts: a ReactiveVar which contains the accounts per role for the scope
  */
 
-import _, { truncate } from 'lodash';
+import _ from 'lodash';
 
 import { Logger } from 'meteor/pwix:logger';
 import { pwixI18n } from 'meteor/pwix:i18n';
@@ -30,15 +30,16 @@ Template.pr_scoped_accounts_dialog.onCreated( function(){
     self.PR = {
         // whether we are running inside of a modal
         isModal: new ReactiveVar( false ),
-        // the accounts list to be edited (a deep copy of the original)
+        // a deep copy of the original at creation time, to be compared at update time and check for non external modifications
+        orig_accounts: null,
+        // the accounts list to be edited (a deep copy of the original at creation time)
         accounts: new ReactiveVar( null ),
     };
 
     // setup the item to be edited
     //  we want a clone deep of the provided item, so that we are able to cancel the edition without keeping any sort of data
-    self.autorun(() => {
-        self.PR.accounts.set( _.cloneDeep( Template.currentData().accounts.get()));
-    });
+    self.PR.accounts.set( _.cloneDeep( Template.currentData().accounts.get()));
+    self.PR.orig_accounts = _.cloneDeep( Template.currentData().accounts.get());
 });
 
 Template.pr_scoped_accounts_dialog.onRendered( function(){
@@ -92,15 +93,20 @@ Template.pr_scoped_accounts_dialog.events({
                 Modal.close();
             }
         }
+        // the tree will be deleted on modal close - inform it of that, thus preventing it to uselessly auto-update
+        instance.$( '.pr-tree' ).trigger( 'pr-on-destroy' );
         // update the role assignments
-        Meteor.callAsync( 'Roles.resetScopedAssignments', this.scope, instance.PR.accounts.get()).then(( res ) => {
+        Meteor.callAsync( 'Roles.resetScopedAssignments', this.scope, instance.PR.accounts.get(), { original: instance.PR.orig_accounts }).then(( res ) => {
             if( res ){
-                //logger.debug( 'res', res );
-                Tolert.success( pwixI18n.label( I18N, 'accounts.res_success' ));
+                Tolert.error( pwixI18n.label( I18N, 'accounts.res_error', res ));
             } else  {
-                Tolert.error( pwixI18n.label( I18N, 'accounts.res_error' ));
+                Tolert.success( pwixI18n.label( I18N, 'accounts.res_success' ));
             }
             closeFn();
         })
     }
+});
+
+Template.pr_scoped_accounts_dialog.onDestroyed( function(){
+    //logger.debug( 'onDestroyed()' );
 });

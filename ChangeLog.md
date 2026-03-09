@@ -14,6 +14,7 @@
     - Set a guard when calling $tree.jstree()
     - Migrate from vakata/jstree to @tacman1123/jstree-esm
     - Fix the stylesheet to let the tree be scrollable
+    - Fix both server function and client subscription to decrease the sgtreaming noise (thanks to ChatGPT for some suggestions)
 
 ### 1.8.0
 

@@ -60,7 +60,7 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
         // last row selected
         selectedNode: new ReactiveVar( null ),
         // full selection
-        selectedArray: new ReactiveVar( null ),
+        selectedArray: new ReactiveVar( null )
     };
 
     // keep the scope as the event handlers data context are those of the sender
@@ -96,6 +96,7 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
         if( self.PR.editMode.get()){
             self.PR.accountsAssignments = Template.currentData().accounts;
         } else {
+            //logger.debug( 'subscribing to pwix_roles_list_by_scope' );
             self.PR.accountsHandle.set( self.subscribe( 'pwix_roles_list_by_scope', Template.currentData().scope ));
         }
     });
@@ -106,6 +107,7 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
             const handle = self.PR.accountsHandle.get();
             if( handle && handle.ready()){
                 Meteor.roleAssignment.find({ scope: Template.currentData().scope }).fetchAsync().then(( fetched ) => {
+                    //logger.debug( 'fetched', fetched );
                     self.PR.accountsAssignments.set( fetched );
                 });
             }
@@ -128,6 +130,7 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
 Template.pr_scoped_accounts_panel.helpers({
 
     // parms for the buttons
+    // if view mode (at least) we must be allowed to that
     parmsButtons(){
         return {
             withEditTree: !Template.instance().PR.editMode.get(),

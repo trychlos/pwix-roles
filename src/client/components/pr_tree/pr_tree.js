@@ -82,6 +82,7 @@ Template.pr_tree.onCreated( function(){
 
         // last and last-but-one built and populated accounts members
         prevAccounts: null,
+        accountsBuildSeq: 0,
 
         // whether trigger pr-change event
         //  doesn't trigger the event when checkboxes are programatically checked
@@ -100,6 +101,14 @@ Template.pr_tree.onCreated( function(){
                     self.PR.jsTreeInstance.disable_node( id );
                 });
             }
+        },
+
+        // getter/setter: whether the creation of the accounts is done (if apply)
+        tree_accounts( done ){
+            if( done === true || done === false ){
+                self.PR.tree_accounts_rv.set( done );
+            }
+            return self.PR.tree_accounts_rv.get();
         },
 
         // we have explicitely or programatically checked an item (but cascade doesn't come here)
@@ -190,14 +199,6 @@ Template.pr_tree.onCreated( function(){
             //logger.debug( 'tree_delete_node', data );
         },
 
-        // getter/setter: whether the creation of the accounts is done (if apply)
-        tree_accounts( done ){
-            if( done === true || done === false ){
-                self.PR.tree_accounts_rv.set( done );
-            }
-            return self.PR.tree_accounts_rv.get();
-        },
-
         // getter/setter: whether the creation of the tree is done (populated+checked+accounts+opened)
         tree_built( done ){
             if( done === true || done === false ){
@@ -214,7 +215,30 @@ Template.pr_tree.onCreated( function(){
             return self.PR.tree_checked_rv.get();
         },
 
-        // getter/setter: whether the tree has been populated
+        // jsTree add to its root node a class as 'jstree-n'
+        // from our point of view, this acts as a jstree identifier which can help us debug the code
+        tree_id(){
+            let id = '';
+            if( self.PR.tree ){
+                const classes = self.PR.tree.className.split( /\s+/ );
+                classes.every(( it ) => {
+                    if( it.match( /^jstree-[\d]+/ )){
+                        id = it.substring( 7 );
+                        return false;
+                    }
+                    return true;
+                });
+            }
+            return id;
+        },
+
+        // debounce the rebuilts on accounts changes
+        tree_invalidate: _.debounce(() => {
+            self.PR.tree_accounts( false );
+            //logger.debug( 'setting tree_accounts to false', self.PR.tree_id());
+        }, 10 ),
+
+            // getter/setter: whether the tree has been populated
         tree_populated( done ){
             if( done === true || done === false ){
                 self.PR.tree_populated_rv.set( done );
@@ -262,7 +286,7 @@ Template.pr_tree.onCreated( function(){
         const rolesRv = Template.currentData().roles;
         if( !rolesRv || !( rolesRv instanceof ReactiveVar )){
             logger.error( 'expects \'roles\' be an instance of ReactiveVar, got', rolesRv, 'throwing...' );
-            throw new Error( 'Bad data type' );
+            throw new Error( 'Bad argument: rolesRv' );
         }
         const roles = rolesRv.get();
         if( !_.isEqual( roles, self.PR.prevTree )){
@@ -279,12 +303,13 @@ Template.pr_tree.onCreated( function(){
         if( accountsRv ){
             if( !( accountsRv instanceof ReactiveVar )){
                 logger.error( 'expects \'accounts\' be an instance of ReactiveVar, got', accountsRv, 'throwing...' );
-                throw new Error( 'Bad data type' );
+                throw new Error( 'Bad argument: accountsRv' );
             }
             self.PR.withIcons.set( true );
             const accounts = accountsRv.get();
             if( accounts && !_.isEqual( accounts, self.PR.prevAccounts )){
-                self.PR.tree_accounts( false );
+                //logger.debug( 'invalidating tree accounts' );
+                self.PR.tree_invalidate();
             }
         }
     });
@@ -549,37 +574,43 @@ Template.pr_tree.onRendered( function(){
     self.autorun(() => {
         const jsTreeInstance = self.PR.jsTreeInstance;
         if( jsTreeInstance && self.PR.tree_checked() && !self.PR.tree_accounts()){
-            let accounts = Template.currentData().accounts?.get();
+            const seq = ++self.PR.accountsBuildSeq;
+            const accounts = Template.currentData().accounts?.get() || [];
+            const prefix = self.PR.pr_prefix.get();
+            const amInstance = AccountsHub.getInstance('users');
             self.PR.traceBuild && logger.debug( 'set accounts', accounts );
-            let promises = [];
-            if( accounts ){
-                const prefix = self.PR.pr_prefix.get();
-                const amInstance = AccountsHub.getInstance( 'users' );
-                // first reset the tree
-                ( self.PR.prevAccounts || [] ).forEach(( it ) => {
-                    //logger.debug( 'delete_node', prefix+it._id );
-                    jsTreeInstance.delete_node( prefix+it._id );
-                });
-                // then re-add the accounts members
-                accounts.forEach(( it ) => {
-                    const node = jsTreeInstance.get_node( prefix+it.role._id );
-                    if( node ){
-                        promises.push( amInstance.preferredLabel( it.user._id ).then(( doc ) => {
-                            jsTreeInstance.create_node( node, {
-                                "id": prefix+it._id,
-                                "text": doc.label,
-                                "children": [],
-                                "doc": it,
-                                "type": 'A'
-                            });
-                            return true;
-                        }));
-                    } else {
-                        logger.warn( 'node not found', it );
+            // delete previous account nodes
+            ( self.PR.prevAccounts || [] ).forEach(( it ) => {
+                //logger.debug( 'about to delete node', self.PR.tree_id(), it._id, it.role._id );
+                jsTreeInstance.delete_node( prefix + it._id );
+            });
+            self.PR.prevAccounts = [];
+            // then re-add the accounts members
+            //logger.debug( 're-adding the accounts', self.PR.tree_id());
+            Promise.all( accounts.map( async ( it ) => {
+                const parent = jsTreeInstance.get_node( prefix+it.role._id );
+                if( !parent ){
+                    logger.warn( 'parent role not found', self.PR.tree_id(), it );
+                } else {
+                    const doc = await amInstance.preferredLabel( it.user._id );
+                    // stale build? abort
+                    if( seq !== self.PR.accountsBuildSeq || !self.PR.jsTreeInstance || !self.PR.tree ){
+                        return;
                     }
-                });
-            }
-            Promise.allSettled( promises ).then(() => {
+                    jsTreeInstance.create_node( parent, {
+                        "id": prefix+it._id,
+                        "text": doc.label,
+                        "children": [],
+                        "doc": it,
+                        "type": 'A'
+                    });
+                    //logger.debug( 'create_node', self.PR.tree_id(), it._id, it.role._id, doc.label );
+                }
+            })).then(() => {
+                if( seq !== self.PR.accountsBuildSeq || !self.PR.jsTreeInstance || !self.PR.tree ){
+                    return;
+                }
+                //logger.debug( 'promises all settled', self.PR.tree_id());
                 self.PR.prevAccounts = _.cloneDeep( accounts );
                 self.PR.tree_accounts( true );
                 self.PR.tree_built( false );
@@ -613,5 +644,19 @@ Template.pr_tree.events({
             instance.PR.tree = null;
             instance.PR.jsTreeInstance = null;
         }
+    },
+
+    // this tree will be destroyed sooner - no need to auto update
+    'pr-on-destroy .pr-tree'( event, instance ){
+        instance.PR.traceBuild && logger.debug( 'pr-tree on destroy' );
+        if( instance.PR.tree ){
+            destroyTree( instance.PR.tree );
+            instance.PR.tree = null;
+            instance.PR.jsTreeInstance = null;
+        }
     }
+});
+
+Template.pr_tree.onDestroyed( function(){
+    //logger.debug( 'onDestroyed()', this.PR.tree_id());
 });

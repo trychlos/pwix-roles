@@ -115,6 +115,7 @@ Known configuration options are:
     - `pwix.roles.fn.getUsersInScope`
     - `pwix.roles.fn.removeAssignedRolesFromUser`
     - `pwix.roles.fn.removeUserAssignmentsFromRoles`
+    - `pwix.roles.fn.setScopedAssignments`
     - `pwix.roles.fn.setUserRoles`
     - `pwix.roles.fn.usedScopes`
     - `pwix.roles.method.addUsersToRoles`

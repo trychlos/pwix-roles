@@ -7,6 +7,7 @@ const assert = require( 'assert' ).strict;
 
 import { Logger } from 'meteor/pwix:logger';
 import { Mongo } from 'meteor/mongo';
+import { pwixI18n } from 'meteor/pwix:i18n';
 import { Roles as alRoles } from 'meteor/alanning:roles';
 
 const logger = Logger.get();
@@ -23,11 +24,11 @@ Roles.s = {
     async allRolesForUser( target, requester=null ){
         if( !target || ( !_.isString( target ) && !_.isObject( target ))){
             logger.error( 'allRolesForUser() expect target be a user identifier or a user document, got', target, 'throwing...' );
-            throw new Error( 'Bad data type' );
+            throw new Error( 'Bad argument: target' );
         }
         if( !requester || ( !_.isString( requester ) && !_.isObject( requester ))){
             logger.error( 'allRolesForUser() expect requester be a user identifier or a user document, got', requester, 'throwing...' );
-            throw new Error( 'Bad data type' );
+            throw new Error( 'Bad argument: requester' );
         }
         try {
             const allowed = await Roles.isAllowed( 'pwix.roles.fn.getRolesForUser', requester, target );
@@ -36,7 +37,7 @@ Roles.s = {
                 const collection = Mongo.getCollection( collectionName );
                 if( !collection || !( collection instanceof Mongo.Collection )){
                     logger.error( 'allRolesForUser() expect collection \''+collectionName+'\' be an instance of Mongo.Collection, got', collection, 'throwing...' );
-                    throw new Error( 'Bad data type' );
+                    throw new Error( 'Bad argument: collection' );
                 }
                 let targetId = target;
                 if( _.isObject( target )){
@@ -218,20 +219,92 @@ Roles.s = {
     },
 
     // reset all assignment for a scope
-    async resetScopedAssignments( scope, assignments, userId=null ){
-        const allowed = true;   // BAD!
-        let res = null;
-        if( allowed ){
-            res = {};
-            res.deleted = await Meteor.roleAssignment.removeAsync({ scope: scope });
-            res.assigned = 0;
-            for await( it of assignments ){
-                await alRoles.addUsersToRolesAsync( it.user._id, it.role._id, { scope: scope });
-                res.assigned += 1;
-            };
+    // opts is an optional options object with following keys:
+    // - original: the original roles assignments for this scope, which should be found unchanged
+    // returns: the reason for why it has not been successful, or empty
+    async resetScopedAssignments( scope, assignments, opts={}, userId=null ){
+        if( !scope || !_.isString( scope )){
+            logger.error( 'resetScopedAssignments() expect scope be a non-empty string, got', scope, 'throwing...' );
+            throw new Error( 'Bad argument: scope' );
         }
-        logger.debug( 'res', res );
-        return res;
+        if( !assignments || !_.isArray( assignments )){
+            logger.error( 'resetScopedAssignments() expect assignments be an array, got', assignments, 'throwing...' );
+            throw new Error( 'Bad argument: assignments' );
+        }
+        const allowed = await Roles.isAllowed( 'pwix.roles.fn.setScopedAssignments', userId, { scope: scope });
+        if( !allowed ){
+            logger.debug( 'resetScopedAssignments() not allowed' );
+            return pwixI18n.label( I18N, 'accounts.err_not_allowed' );
+        }
+        const currentAssignments = await Meteor.roleAssignment.find({ scope: scope }).fetchAsync();
+        if( opts.orig ){
+            // check that current assignments are same than the original - else refuses the update
+            if( opts.orig.length !== currentAssignments.length ){
+                logger.debug( 'resetScopedAssignments() change detected' );
+                return pwixI18n.label( I18N, 'accounts.err_change_detected' );
+            }
+            let notfound = 0;
+            currentAssignments.forEach(( it ) => {
+                let found = false;
+                opts.orig.every(( o ) => {
+                    if( o._id === it._id ){
+                        found = true;
+                        return false;
+                    }
+                    return true;
+                });
+                if( !found ){
+                    notfound += 1;
+                }
+            });
+            if( notfound > 0 ){
+                logger.debug( 'resetScopedAssignments() change detected' );
+                return pwixI18n.label( I18N, 'accounts.err_change_detected' );
+            }
+        }
+        // compute the assignments to be removed and to be added
+        const to_add = [];
+        const to_remove = [];
+        assignments.forEach(( it ) => {
+            let found = false;
+            currentAssignments.every(( o ) => {
+                if( o._id === it._id ){
+                    found = true;
+                    return false;
+                }
+                return true;
+            });
+            if( !found ){
+                to_add.push( it );
+            }
+        });
+        currentAssignments.forEach(( it ) => {
+            let found = false;
+            assignments.every(( o ) => {
+                if( o._id === it._id ){
+                    found = true;
+                    return false;
+                }
+                return true;
+            });
+            if( !found ){
+                to_remove.push( it );
+            }
+        });
+        if( to_add.length === 0 && to_remove.length === 0 ){
+            logger.log( 'no detected change' );
+            return '';
+        }
+        logger.debug( 'resetScopedAssignments() to_add', to_add );
+        logger.debug( 'resetScopedAssignments() to_remove', to_remove );
+        for( const it of to_add ){
+            await alRoles.addUsersToRolesAsync( it.user._id, it.role._id, { scope: scope });
+        }
+        for( const it of to_remove ){
+            await Meteor.roleAssignment.removeAsync({ _id: it._id });
+        }
+        // no error reason -> success
+        return '';
     },
 
     // replace the roles of the user
