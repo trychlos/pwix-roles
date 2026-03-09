@@ -69,29 +69,60 @@
     }
 }
 
+.pr-scoped-accounts-dialog {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+}
+
 .pr-scoped-accounts-panel {
+    flex-grow: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    .encloser {
+        flex-grow: 1;
+        min-height: 0;
+        max-height: 100%;
+    }
+
     .encloser > .left {
+        min-width: 0;
+        max-height: 100%;
         border: 1px solid lightgray;
         border-radius: 0.25em;
-        padding: 1em;
+        padding: 0.5em;
+        padding-right: 0;
     }
     .encloser > .right {
         margin-left: 1em;
     }
     .pr-tree {
-        li.jstree-node,
-        .jstree-wholerow,
-        a.jstree-anchor {
-            line-height: 1.8em;
-            min-height: 1.8em;
-        }
-        li.jstree-node svg.type-role {
-            height: 1em;
-            color: var( --bs-primary );
-        }
-        li.jstree-node svg.type-account {
-            height: 1em;
-            color: var( --bs-info );
+        min-height: 0;
+        max-height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .wrapper {
+            min-height: 0;
+            flex-grow: 1;
+            overflow-y: auto;
+
+            li.jstree-node,
+            .jstree-wholerow,
+            a.jstree-anchor {
+                line-height: 1.8em;
+                min-height: 1.8em;
+            }
+            li.jstree-node svg.type-role {
+                height: 1em;
+                color: var( --bs-primary );
+            }
+            li.jstree-node svg.type-account {
+                height: 1em;
+                color: var( --bs-info );
+            }
         }
     }
 }

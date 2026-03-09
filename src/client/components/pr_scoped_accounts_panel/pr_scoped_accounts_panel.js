@@ -8,6 +8,7 @@
  *  This is to be run by a TenantManager-role account.
  * 
  * Parms:
+ *  - accounts: a ReactiveVar which contains accounts per role for the scope
  *  - scope: the to-be-edited scope
  *  - editMode: whether we are running in edit mode, defaulting to true
  *  - editAllowed: when in view mode (editMode=false), whether the caller allows the edition mode to be run, defaulting to true
@@ -17,6 +18,7 @@
 
 import _ from 'lodash';
 
+import { AccountsHub } from 'meteor/pwix:accounts-hub';
 import { Logger } from 'meteor/pwix:logger';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -31,6 +33,7 @@ const logger = Logger.get();
 
 Template.pr_scoped_accounts_panel.onCreated( function(){
     const self = this;
+    //logger.debug( self );
 
     self.PR = {
         // define constants used both here and in underlying panels
@@ -175,7 +178,9 @@ Template.pr_scoped_accounts_panel.events({
     },
 
     // in view mode, open the edition dialog
+    // providing this height to the modal is needed because the jsTree is built dynamically and cannot correcty compute its future height - so give it at startup
     'click .js-edit'( event, instance ){
+        const rc = instance.$( '.pr-scoped-accounts-panel' )[0].getBoundingClientRect();
         Modal.run({
             accounts: instance.PR.accountsAssignments,
             scope: instance.PR.scope.get(),
@@ -183,6 +188,7 @@ Template.pr_scoped_accounts_panel.events({
             mdBody: 'pr_scoped_accounts_dialog',
             mdButtons: [ Modal.C.Button.CANCEL, Modal.C.Button.OK ],
             mdClasses: 'modal-lg',
+            mdHeight: rc.height,
             mdTitle: pwixI18n.label( I18N, 'dialogs.scoped_dialog_title' )
         });
     },
