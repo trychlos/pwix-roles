@@ -49,7 +49,7 @@ Template.prEdit_footer.events({
         if( this.user ){
             Meteor.callAsync( 'Roles.setUserRoles', user, roles );
         }
-        Modal.close();
+        Modal.topmost().close();
         return false;
     }
 });

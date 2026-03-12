@@ -15,6 +15,7 @@
     - Migrate from vakata/jstree to @tacman1123/jstree-esm
     - Fix the stylesheet to let the tree be scrollable
     - Fix both server function and client subscription to decrease the sgtreaming noise (thanks to ChatGPT for some suggestions)
+    - Update to pwix:modal v2.5
 
 ### 1.8.0
 

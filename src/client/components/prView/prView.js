@@ -59,13 +59,13 @@ Template.prView.onRendered( function(){
     let title = pwixI18n.label( I18N, 'dialogs.myroles' );
 
     self.autorun(() => {
+        const parms = {
+            target: self.$( '.prView' )
+        };
         if( self.PR.title ){
-            title = self.PR.title.get();
+            parms.title = self.PR.title.get();
         }
-        Modal.set({
-            target: self.$( '.prView' ),
-            title: title
-        });
+        Modal.topmost().set( parms );
     });
 });
 

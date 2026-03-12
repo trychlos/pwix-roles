@@ -53,7 +53,7 @@ Template.pr_scoped_accounts_dialog.onRendered( function(){
     // set the modal target
     self.autorun(() => {
         if( self.PR.isModal.get()){
-            Modal.set({
+            Modal.topmost().set({
                 target: self.$( '.pr-scoped-accounts-dialog' )
             });
         }
@@ -90,7 +90,7 @@ Template.pr_scoped_accounts_dialog.events({
     'iz-submit .pr-scoped-accounts-dialog'( event, instance ){
         const closeFn = function(){
             if( instance.PR.isModal.get()){
-                Modal.close();
+                Modal.topmost().close();
             }
         }
         // the tree will be deleted on modal close - inform it of that, thus preventing it to uselessly auto-update
