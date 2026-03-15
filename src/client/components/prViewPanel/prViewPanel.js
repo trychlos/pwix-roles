@@ -57,7 +57,7 @@ Template.prViewPanel.onCreated( function(){
             self.PR.userId = Meteor.userId();
         }
         if( self.PR.userId ){
-            self.PR.handle = self.subscribe( 'pwix_roles_user_assignments', self.PR.userId );
+            self.PR.handle = self.subscribe( 'pwix.Roles.p.userAssignments', self.PR.userId );
         }
     });
 

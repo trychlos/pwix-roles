@@ -413,7 +413,7 @@ Note from `alanning:roles` documentation:
 
 These are Meteor Mongo methods, i.e. to be `Meteor.callAsync(...)` by the client.
 
-- `Roles.addUsersToRoles( users, roles, options )`
+- `pwix.Roles.m.addUsersToRoles( users, roles, options )`
 
     Add roles to existing roles for each user.
 
@@ -428,6 +428,24 @@ These are Meteor Mongo methods, i.e. to be `Meteor.callAsync(...)` by the client
         - `ifExists`: if true, do not throw an exception if the role does not exist
 
     This method directy calls `alanning:roles.addUsersToRoles()` function. It is just clearer that this is a server code.
+
+- `pwix.Roles.m.allRolesForUser( user )`
+
+- `pwix.Roles.m.countUsersInRoles( roles, options )`
+
+- `pwix.Roles.m.createRole( role, options )`
+
+- `pwix.Roles.m.getUsersInScope( scope )`
+
+- `pwix.Roles.m.removeAssignedRolesFromUser( user )`
+
+- `pwix.Roles.m.removeUserAssignmentsFromRoles( roles, options )`
+
+- `pwix.Roles.m.resetScopedAssignments( scope, assignments, options )`
+
+- `pwix.Roles.m.setUserRoles( user, roles )`
+
+- `pwix.Roles.m.usedScopes()`
 
 ### Blaze components
 

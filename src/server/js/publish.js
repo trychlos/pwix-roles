@@ -2,68 +2,9 @@
  * pwix:roles/src/server/js/publish.js
  */
 
-// publishes the roles of the specified user (or of all users)
-//  requires at least a connected user
-Meteor.publish( 'pwix_roles_user_assignments', async function( user=null ){
-    const allowed = await Roles.isAllowed( 'pwix.roles.pub.user_assignments', this.userId, user );
-    if( allowed ){
-        let selector = {};
-        if( user ){
-            selector['user._id'] = user._id || user;
-        }
-        return Meteor.roleAssignment.find( selector );
-    }
-    this.ready();
-    return false;
-});
+import { Logger } from 'meteor/pwix:logger';
 
-// publishes the used scopes
-//  this acts as a default if the application doesn't provide its own list of managed scopes
-//  requires at least a connected user
-
-const pwix_roles_used_scopes_pub = function( self ){
-    const collectionName = 'pwix_roles_used_scopes';
-    let scopes = {};
-
-    // `observeChanges` only returns after the initial `added` callbacks have run.
-    // Until then, we don't want to send a lot of `changed` messages
-    // hence tracking the `initializing` state.
-    let initializing = true;
-
-    const observer = Meteor.roleAssignment.find({ scope: { $ne: null }}).observeChangesAsync({
-        added( item ){
-            scopes[item.scope] = scopes[item.scope] || 0;
-            scopes[item.scope] += 1;
-            if( scopes[item.scope] === 1 ){
-                self.added( collectionName, item.scope );
-            }
-        },
-        removed( oldItem ){
-            scopes[oldItem.scope] -= 1;
-            if( !scopes[oldItem.scope] ){
-                self.removed( collectionName, scopes[oldItem.scope] );
-            }
-        }
-    });
-
-    initializing = false;
-
-    self.ready();
-
-    self.onStop( function(){
-        observer.then(( handle ) => { handle.stop(); });
-    });
-};
-
-Meteor.publish( 'pwix_roles_used_scopes', async function(){
-    const allowed = await Roles.isAllowed( 'pwix.roles.pub.used_scopes', this.userId );
-    if( allowed ){
-        pwix_roles_used_scopes_pub( this );
-    }
-    //logger.log( 'pwix.roles.pub.used_scopes not allowed', this.userId );
-    this.ready();
-    return false;
-});
+const logger = Logger.get();
 
 // this function builds and maintains the _rolesHash has with roles -> array of users
 // it returns an array of the two observer Promise handles
@@ -171,7 +112,7 @@ function _maintainUsersPerRole( cb ){
 //       }
 //     }
 //
-Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
+Meteor.publish( 'pwix.Roles.p.countByRoles', async function( roles ){
     // maybe the application may protect that
     if( !await Roles.isAllowed( 'pwix.roles.pub.count_by_roles', this.userId, roles )){
         //logger.log( 'pwix.roles.pub.count_by_roles not allowed', this.userId );
@@ -179,7 +120,7 @@ Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
         return false;
     }
 
-    //logger.debug( 'pwix_roles_count_by_roles', roles );
+    //logger.debug( 'pwix.Roles.p.countByRoles', roles );
     const self = this;
     const collectionName = 'pwix_roles_count_by_roles';
     const rolesArray = Array.isArray( roles ) ? roles : [ roles ];
@@ -234,6 +175,70 @@ Meteor.publish( 'pwix_roles_count_by_roles', async function( roles ){
 });
 
 // publishes the list of users which have a role inside of a given scope
-Meteor.publish( 'pwix_roles_list_by_scope', function( scope ){
+Meteor.publish( 'pwix.Roles.p.listByScope', function( scope ){
     return Meteor.roleAssignment.find({ scope: scope });
+});
+
+// publishes the used scopes
+//  this acts as a default if the application doesn't provide its own list of managed scopes
+//  requires at least a connected user
+
+const _used_scopes_pub = function( self ){
+    const collectionName = 'pwix_roles_used_scopes';
+    let scopes = {};
+
+    // `observeChanges` only returns after the initial `added` callbacks have run.
+    // Until then, we don't want to send a lot of `changed` messages
+    // hence tracking the `initializing` state.
+    let initializing = true;
+
+    const observer = Meteor.roleAssignment.find({ scope: { $ne: null }}).observeChangesAsync({
+        added( item ){
+            scopes[item.scope] = scopes[item.scope] || 0;
+            scopes[item.scope] += 1;
+            if( scopes[item.scope] === 1 ){
+                self.added( collectionName, item.scope );
+            }
+        },
+        removed( oldItem ){
+            scopes[oldItem.scope] -= 1;
+            if( !scopes[oldItem.scope] ){
+                self.removed( collectionName, scopes[oldItem.scope] );
+            }
+        }
+    });
+
+    initializing = false;
+
+    self.ready();
+
+    self.onStop( function(){
+        observer.then(( handle ) => { handle.stop(); });
+    });
+};
+
+Meteor.publish( 'pwix.Roles.p.usedScopes', async function(){
+    const allowed = await Roles.isAllowed( 'pwix.roles.pub.used_scopes', this.userId );
+    if( allowed ){
+        _used_scopes_pub( this );
+    }
+    //logger.log( 'pwix.roles.pub.used_scopes not allowed', this.userId );
+    this.ready();
+    return false;
+});
+
+// publishes the roles of the specified user (or of all users)
+//  requires at least a connected user
+
+Meteor.publish( 'pwix.Roles.p.userAssignments', async function( user=null ){
+    const allowed = await Roles.isAllowed( 'pwix.roles.pub.user_assignments', this.userId, user );
+    if( allowed ){
+        let selector = {};
+        if( user ){
+            selector['user._id'] = user._id || user;
+        }
+        return Meteor.roleAssignment.find( selector );
+    }
+    this.ready();
+    return false;
 });

@@ -15,8 +15,8 @@ _ready = {
 };
 
 // with v4.0.0, alanning:roles no more automatically publishes the roles for the connected user - Have to replace this feature
-//alRoles.subscription = Meteor.subscribe( 'pwix_roles_user_assignments_roles', Meteor.userId());
-_ready.handle = Meteor.subscribe( 'pwix_roles_user_assignments', Meteor.userId());
+//alRoles.subscription = Meteor.subscribe( 'pwix.Roles.p.userAssignments_roles', Meteor.userId());
+_ready.handle = Meteor.subscribe( 'pwix.Roles.p.userAssignments', Meteor.userId());
 
 // when we have got the roles of the current user
 Tracker.autorun(() => {

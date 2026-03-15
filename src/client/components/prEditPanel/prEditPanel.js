@@ -184,7 +184,7 @@ Template.prEditPanel.helpers({
 });
 
 Template.prEditPanel.events({
-    // because of the position of the plusButton in the DOM, the pr_edit_scoped_pane component cannot directly handle the clicks
+    // because of the position of the PlusButton in the DOM, the pr_edit_scoped_pane component cannot directly handle the clicks
     //  we have to get them here, and redirect to the pane
     'click .js-plus'( event, instance ){
         if( instance.PR.enabledPlus.get()){

@@ -96,8 +96,8 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
         if( self.PR.editMode.get()){
             self.PR.accountsAssignments = Template.currentData().accounts;
         } else {
-            //logger.debug( 'subscribing to pwix_roles_list_by_scope' );
-            self.PR.accountsHandle.set( self.subscribe( 'pwix_roles_list_by_scope', Template.currentData().scope ));
+            //logger.debug( 'subscribing to pwix.Roles.p.listByScope' );
+            self.PR.accountsHandle.set( self.subscribe( 'pwix.Roles.p.listByScope', Template.currentData().scope ));
         }
     });
 

@@ -47,7 +47,7 @@ Template.prEdit_footer.events({
         const roles = Roles.EditPanel.roles();
         // update the user roles if a user was provided
         if( this.user ){
-            Meteor.callAsync( 'Roles.setUserRoles', user, roles );
+            Meteor.callAsync( 'pwix.Roles.m.setUserRoles', user, roles );
         }
         Modal.topmost().close();
         return false;

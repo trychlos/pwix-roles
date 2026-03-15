@@ -10,12 +10,13 @@
     - Guard against absent jstree() plugin
     - Use pwix:logger universal logger, thus bumping minor candidate version number
     - Fix permissions of the publications
-    - Deprecate Roles.directRolesForUser() and Roles.getRolesForUser() to the advantage of new Roles.allRolesForUser()
+    - Deprecate Roles.directRolesForUser() and pwix.Roles.m.getRolesForUser() to the advantage of new pwix.Roles.m.allRolesForUser()
     - Set a guard when calling $tree.jstree()
     - Migrate from vakata/jstree to @tacman1123/jstree-esm
     - Fix the stylesheet to let the tree be scrollable
     - Fix both server function and client subscription to decrease the sgtreaming noise (thanks to ChatGPT for some suggestions)
     - Update to pwix:modal v2.5
+    - Make sure methods and publications are prefixed with a full namespace
 
 ### 1.8.0
 
@@ -72,7 +73,7 @@
 
     Release date: 2024- 7-12
 
-    - Define Roles.usedScopes() new function, bumping minor candidate version number
+    - Define pwix.Roles.m.usedScopes() new function, bumping minor candidate version number
     - Roles.configure() becomes a reactive data source
     - Introduce trace module
     - Introduce 'pr-global-state' new event
@@ -80,7 +81,7 @@
     - Add missing pwix:ui-utils and ui-fontawesome6 dependencies
     - Add scopeLabelFn, scopesFn and scopesPub configuration parameters to get known scopes
     - Define Roles.EditPanel.global(), .scoped() and .roles() function to get back the edition results
-    - Define Roles.setUserRoles() new function
+    - Define pwix.Roles.m.setUserRoles() new function
     - Obsolete and remove Roles.allAssignments publication
     - Roles.countByRole publication is renamed to pwix_roles_count_by_roles for consistency, and publishes in a collection of the same name
 
@@ -90,8 +91,8 @@
 
     - Replace bootstrap NPM dependency with a package dependency on pwix:ui-ui-bootstrap5
     - Add (missing) tracker dependency
-    - Obsolete Roles.removeUserAssignmentsForRoles() function, replaced with Roles.removeUserAssignmentsFromRoles()
-    - Obsolete Roles.removeAllRolesFromUser() function, replaced with Roles.removeAssignedRolesFromUser()
+    - Obsolete pwix.Roles.m.removeUserAssignmentsForRoles() function, replaced with pwix.Roles.m.removeUserAssignmentsFromRoles()
+    - Obsolete pwix.Roles.m.removeAllRolesFromUser() function, replaced with pwix.Roles.m.removeAssignedRolesFromUser()
     - Use async versions of last alanning:roles release
 
 ### 1.3.1
@@ -110,15 +111,15 @@
     - Exposes prEditPanel to be able to update the roles from inside an application view (thus bumping candidate version number)
     - Define the pr-change event on permissions edition
     - Define Roles.flat() new function
-    - Define Roles.removeAllRolesFromUser() new function
-    - Define Roles.addUsersToRoles() new function
-    - Define Roles.getRolesForUser() new function
+    - Define pwix.Roles.m.removeAllRolesFromUser() new function
+    - Define pwix.Roles.m.addUsersToRoles() new function
+    - Define pwix.Roles.m.getRolesForUser() new function
     - Fix the the prView selector in the stylesheet
     - Roles.current() now tracks the role whatever be the scope
     - Let a role be used several times inside of the roles hierarchy
     - Define new Role.isRoleScoped() function
     - Improve Roles.current() content, adding scoped and globals categories
-    - Define new Roles.removeUserAssignmentsForRoles() function
+    - Define new pwix.Roles.m.removeUserAssignmentsForRoles() function
     - Meteor 3.0 ready
     - Deprecate deanius:promise package
 

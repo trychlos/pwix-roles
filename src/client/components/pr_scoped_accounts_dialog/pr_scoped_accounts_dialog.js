@@ -96,7 +96,7 @@ Template.pr_scoped_accounts_dialog.events({
         // the tree will be deleted on modal close - inform it of that, thus preventing it to uselessly auto-update
         instance.$( '.pr-tree' ).trigger( 'pr-on-destroy' );
         // update the role assignments
-        Meteor.callAsync( 'Roles.resetScopedAssignments', this.scope, instance.PR.accounts.get(), { original: instance.PR.orig_accounts }).then(( res ) => {
+        Meteor.callAsync( 'pwix.Roles.m.resetScopedAssignments', this.scope, instance.PR.accounts.get(), { original: instance.PR.orig_accounts }).then(( res ) => {
             if( res ){
                 Tolert.error( pwixI18n.label( I18N, 'accounts.res_error', res ));
             } else  {

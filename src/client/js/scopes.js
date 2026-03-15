@@ -43,36 +43,39 @@ Roles.scopes = {
 
 // at startup time, tries to ask the application the list of available scopes
 //  scopesFn expects an array of ids, or of objects { _id [, label] }
-Meteor.startup(() => {
-    const scopesFn = Roles.configure().scopesFn;
-    if( scopesFn && typeof scopesFn === 'function' ){
-        scopesFn().then(( res ) => {
-            res = _.isArray( res ) ? res : [res];
-            res.forEach(( it ) => {
-                if( _.isString( it )){
-                    Roles.scopes.labels.set( it, null );
-                } else if( _.isObject( it ) && it._id ){
-                    Roles.scopes.labels.set( it._id, it.label || null );
-                } else {
-                    logger.warn( 'expect a { _id, label } object, found', it );
-                }
-            });
-        });
-    } else {
-        const scopesPub = Roles.configure().scopesPub || 'pwix_roles_used_scopes';
-        Roles.scopes.handle = Meteor.subscribe( scopesPub );
-        Roles.scopes.collection = new Mongo.Collection( scopesPub );
-    }
-    // if we have subscribed to a publication ?
-    if( Roles.scopes.handle ){
-        Tracker.autorun(() => {
-            if( Roles.scopes.handle.ready()){
-                Roles.scopes.collection.find().fetchAsync().then(( fetched ) => {
-                    //logger.debug( 'fetched', fetched );
-                    Roles.scopes.labels.clear();
-                    fetched.forEach(( it ) => {
-                        Roles.scopes.labels.set( it._id, it.label || null );
+Tracker.autorun(() => {
+    if( Roles.ready()){
+        Tracker.nonreactive(() => {
+            const scopesFn = Roles.configure().scopesFn;
+            if( scopesFn && _.isFunction( scopesFn )){
+                scopesFn().then(( res ) => {
+                    res = _.isArray( res ) ? res : [res];
+                    res.forEach(( it ) => {
+                        if( _.isString( it )){
+                            Roles.scopes.labels.set( it, null );
+                        } else if( _.isObject( it ) && it._id ){
+                            Roles.scopes.labels.set( it._id, it.label || null );
+                        } else {
+                            logger.warn( 'expect a { _id, label } object, found', it );
+                        }
                     });
+                });
+            } else {
+                const scopesPub = Roles.configure().scopesPub || 'pwix.Roles.p.usedScopes';
+                Roles.scopes.handle = Meteor.subscribe( scopesPub );
+                Roles.scopes.collection = new Mongo.Collection( 'pwix_roles_used_scopes' );
+            }
+            // if we have subscribed to a publication ?
+            if( Roles.scopes.handle ){
+                Tracker.autorun(() => {
+                    if( Roles.scopes.handle.ready()){
+                        Roles.scopes.collection.find().fetchAsync().then(( fetched ) => {
+                            Roles.scopes.labels.clear();
+                            fetched.forEach(( it ) => {
+                                Roles.scopes.labels.set( it._id, it.label || null );
+                            });
+                        });
+                    }
                 });
             }
         });

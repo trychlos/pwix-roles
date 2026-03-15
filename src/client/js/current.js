@@ -42,7 +42,7 @@ Tracker.autorun(() => {
     if( userId !== _current.val.userId ){
         _current.currentClear();
         if( userId ){
-            _current.handle = Meteor.subscribe( 'pwix_roles_user_assignments', userId );
+            _current.handle = Meteor.subscribe( 'pwix.Roles.p.userAssignments', userId );
             _current.val.userId = userId;
         }
     }
