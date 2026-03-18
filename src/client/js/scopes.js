@@ -63,7 +63,8 @@ Tracker.autorun(() => {
             } else {
                 const scopesPub = Roles.configure().scopesPub || 'pwix.Roles.p.usedScopes';
                 Roles.scopes.handle = Meteor.subscribe( scopesPub );
-                Roles.scopes.collection = new Mongo.Collection( 'pwix_roles_used_scopes' );
+                const scopesCollection = Roles.configure().scopesCollection || 'pwix_roles_used_scopes';
+                Roles.scopes.collection = new Mongo.Collection( scopesCollection );
             }
             // if we have subscribed to a publication ?
             if( Roles.scopes.handle ){

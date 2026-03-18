@@ -164,6 +164,10 @@ Known configuration options are:
 
     This function defaults to null. When null, the package will try to take known scopes from used scopes.
 
+- `scopesCollection`
+
+    The name of the collection used by the `scopesPub` publication, defaulting to `pwix_roles_used_scopes`.
+
 - `scopesPub`
 
     The name of a publication which is expected to publish the list of managed scopes as an array of:
@@ -173,7 +177,7 @@ Known configuration options are:
 
     in a collection of the same name.
 
-    This name defaults to null. When null, the package will try to take known scopes from used scopes.
+    This name defaults to `pwix.Roles.p.usedScopes`. In that case, the package will try to take known scopes from used scopes.
 
 - `verbosity`
 

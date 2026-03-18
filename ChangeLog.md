@@ -17,6 +17,7 @@
     - Fix both server function and client subscription to decrease the sgtreaming noise (thanks to ChatGPT for some suggestions)
     - Update to pwix:modal v2.5
     - Make sure methods and publications are prefixed with a full namespace
+    - Define new scopesCollection configuration parameter
 
 ### 1.8.0
 
