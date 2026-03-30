@@ -30,7 +30,7 @@
 import _ from 'lodash';
 import { createTree, getTree, callTree, destroyTree } from '@tacman1123/jstree-esm';
 
-import { AccountsHub } from 'meteor/pwix:accounts-hub';
+import { AccountsCore } from 'meteor/pwix:accounts-core';
 import { Logger } from 'meteor/pwix:logger';
 
 import './pr_tree.html';
@@ -577,7 +577,6 @@ Template.pr_tree.onRendered( function(){
             const seq = ++self.PR.accountsBuildSeq;
             const accounts = Template.currentData().accounts?.get() || [];
             const prefix = self.PR.pr_prefix.get();
-            const amInstance = AccountsHub.getInstance('users');
             self.PR.traceBuild && logger.debug( 'set accounts', accounts );
             // delete previous account nodes
             ( self.PR.prevAccounts || [] ).forEach(( it ) => {
@@ -592,7 +591,7 @@ Template.pr_tree.onRendered( function(){
                 if( !parent ){
                     logger.warn( 'parent role not found', self.PR.tree_id(), it );
                 } else {
-                    const doc = await amInstance.preferredLabel( it.user._id );
+                    const doc = await AccountsCore.preferredLabel( 'users', it.user._id );
                     // stale build? abort
                     if( seq !== self.PR.accountsBuildSeq || !self.PR.jsTreeInstance || !self.PR.tree ){
                         return;

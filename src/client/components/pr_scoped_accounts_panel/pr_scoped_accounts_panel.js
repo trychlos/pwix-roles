@@ -18,7 +18,7 @@
 
 import _ from 'lodash';
 
-import { AccountsHub } from 'meteor/pwix:accounts-hub';
+import { AccountsCore } from 'meteor/pwix:accounts-core';
 import { Logger } from 'meteor/pwix:logger';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -207,7 +207,7 @@ Template.pr_scoped_accounts_panel.events({
                 }
             });
             instance.PR.accountsSelected.set( selected );
-            AccountsHub.runAccountsSelection( instance.PR.accountsSelected, {
+            AccountsCore.runAccountsSelection( instance.PR.accountsSelected, {
                 $target: instance.$( '.pr-scoped-accounts-panel' )
             });
         } else {

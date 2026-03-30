@@ -2,7 +2,7 @@
  * pwix:roles/src/collections/aliases/aliases.js
  */
 import { Mongo } from 'meteor/mongo';
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from 'meteor/aldeed:simple-schema';
 
 export const rolesAliases = new Mongo.Collection( 'role-aliases' );
 
