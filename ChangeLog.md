@@ -14,12 +14,13 @@
     - Set a guard when calling $tree.jstree()
     - Migrate from vakata/jstree to @tacman1123/jstree-esm
     - Fix the stylesheet to let the tree be scrollable
-    - Fix both server function and client subscription to decrease the sgtreaming noise (thanks to ChatGPT for some suggestions)
+    - Fix both server function and client subscription to decrease the streaming noise (thanks to ChatGPT for some suggestions)
     - Update to pwix:modal v2.5
     - Make sure methods and publications are prefixed with a full namespace
     - Define new scopesCollection configuration parameter
     - Rename pwix:accounts-hub dependency to pwix:accounts-core
     - Add meteor/check dependency
+    - Add pwix:forms weak dependency
 
 ### 1.8.0
 

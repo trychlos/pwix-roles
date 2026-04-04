@@ -32,6 +32,7 @@ function configure( api ){
     api.use( 'mongo', 'server' );
     api.use( 'pwix:accounts-core@1.0.0 || 2.0.0-rc.0' );
     api.use( 'pwix:bootbox@1.5.0' );
+    api.use( 'pwix:forms@1.6.0', { weak: true });
     api.use( 'pwix:i18n@1.5.7' );
     api.use( 'pwix:jstree@1.0.6' );
     api.use( 'pwix:logger@1.0.0-rc' );
