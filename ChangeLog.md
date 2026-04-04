@@ -18,7 +18,8 @@
     - Update to pwix:modal v2.5
     - Make sure methods and publications are prefixed with a full namespace
     - Define new scopesCollection configuration parameter
-    - Rename pwix:accounts-hub dependency to pwix:accounts-core, upgrading it to 2.0.0-rc.0
+    - Rename pwix:accounts-hub dependency to pwix:accounts-core
+    - Add meteor/check dependency
 
 ### 1.8.0
 
