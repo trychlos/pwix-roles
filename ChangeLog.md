@@ -21,6 +21,7 @@
     - Rename pwix:accounts-hub dependency to pwix:accounts-core
     - Add meteor/check dependency
     - Add pwix:forms weak dependency
+    - Add guards to limit rebuilts to only those which are useful
 
 ### 1.8.0
 

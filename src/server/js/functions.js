@@ -5,6 +5,7 @@
 import _ from 'lodash';
 const assert = require( 'assert' ).strict;
 
+import { check, Match } from 'meteor/check';
 import { Logger } from 'meteor/pwix:logger';
 import { Mongo } from 'meteor/mongo';
 import { pwixI18n } from 'meteor/pwix:i18n';
@@ -22,23 +23,14 @@ Roles.s = {
     //     > all: an array of all roles for this scope
     //     > direct: an array of direct roles for this scope
     async allRolesForUser( target, requester=null ){
-        if( !target || ( !_.isString( target ) && !_.isObject( target ))){
-            logger.error( 'allRolesForUser() expect target be a user identifier or a user document, got', target, 'throwing...' );
-            throw new Error( 'Bad argument: target' );
-        }
-        if( !requester || ( !_.isString( requester ) && !_.isObject( requester ))){
-            logger.error( 'allRolesForUser() expect requester be a user identifier or a user document, got', requester, 'throwing...' );
-            throw new Error( 'Bad argument: requester' );
-        }
+        check( target, Match.OneOf( Match.NonEmptyString, Object ));
+        check( requester, Match.OneOf( Match.NonEmptyString, Object ));
         try {
             const allowed = await Roles.isAllowed( 'pwix.roles.fn.getRolesForUser', requester, target );
             if( allowed ){
                 const collectionName = Roles.configure().assignmentsCollection;
                 const collection = Mongo.getCollection( collectionName );
-                if( !collection || !( collection instanceof Mongo.Collection )){
-                    logger.error( 'allRolesForUser() expect collection \''+collectionName+'\' be an instance of Mongo.Collection, got', collection, 'throwing...' );
-                    throw new Error( 'Bad argument: collection' );
-                }
+                check( collection, Mongo.Collection );
                 let targetId = target;
                 if( _.isObject( target )){
                     targetId = target._id;

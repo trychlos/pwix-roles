@@ -284,14 +284,11 @@ Template.pr_tree.onCreated( function(){
     // track the received roles -> have to rebuild the tree on changes
     self.autorun(() => {
         const rolesRv = Template.currentData().roles;
-        if( !rolesRv || !( rolesRv instanceof ReactiveVar )){
-            logger.error( 'expects \'roles\' be an instance of ReactiveVar, got', rolesRv, 'throwing...' );
-            throw new Error( 'Bad argument: rolesRv' );
-        }
+        check( rolesRv, ReactiveVar );
         const roles = rolesRv.get();
         if( !_.isEqual( roles, self.PR.prevTree )){
             self.PR.prevTree = _.cloneDeep( roles );
-            self.PR.traceBuild && logger.debug( 'roles has changed, re-populating tree' );
+            self.PR.traceBuild && logger.debug( Template.currentData().pr_div, 'roles has changed, re-populating tree', self.PR.prevTree, roles );
             self.PR.tree_populated( false );
         }
     });
@@ -301,14 +298,11 @@ Template.pr_tree.onCreated( function(){
     self.autorun(() => {
         const accountsRv = Template.currentData().accounts;
         if( accountsRv ){
-            if( !( accountsRv instanceof ReactiveVar )){
-                logger.error( 'expects \'accounts\' be an instance of ReactiveVar, got', accountsRv, 'throwing...' );
-                throw new Error( 'Bad argument: accountsRv' );
-            }
+            check( accountsRv, ReactiveVar );
             self.PR.withIcons.set( true );
             const accounts = accountsRv.get();
             if( accounts && !_.isEqual( accounts, self.PR.prevAccounts )){
-                //logger.debug( 'invalidating tree accounts' );
+                self.PR.traceBuild && logger.debug( Template.currentData().pr_div, 'invalidating tree accounts' );
                 self.PR.tree_invalidate();
             }
         }
@@ -476,9 +470,8 @@ Template.pr_tree.onRendered( function(){
     //  the built structure includes all the roles the current user has
     self.autorun(() => {
         const jsTreeInstance = self.PR.jsTreeInstance;
-        const roles = Template.currentData().roles.get();
-        if( jsTreeInstance && self.PR.tree_ready() && !self.PR.tree_populated() && roles ){
-            self.PR.traceBuild && logger.debug( 'populate the tree', Template.currentData().pr_div, roles );
+        if( jsTreeInstance && self.PR.tree_ready() && !self.PR.tree_populated()){
+            self.PR.traceBuild && logger.debug( 'populating roles hierarchy', Template.currentData().pr_div );
             // reset the tree
             jsTreeInstance.delete_node( Object.values( self.PR.tree_nodes_created ));
             self.PR.tree_nodes_asked = {};
@@ -520,7 +513,7 @@ Template.pr_tree.onRendered( function(){
         const jsTreeInstance = self.PR.jsTreeInstance;
         if( jsTreeInstance && self.PR.tree_populated() && !self.PR.tree_checked()){
             const haveCheckboxes = self.PR.haveCheckboxes.get();
-            self.PR.traceBuild && logger.debug( 'set checkboxes', haveCheckboxes );
+            self.PR.traceBuild && logger.debug( 'setting actual roles of the user', haveCheckboxes );
             if( haveCheckboxes ){
                 //logger.debug( 'populating with', roles.global.direct );
                 self.PR.triggerChangeEvent = false;

@@ -33,7 +33,9 @@ Template.pr_edit_scoped_pane.onCreated( function(){
         // the main div
         accordionId: Random.id(),
         // whether we have the pwix:forms package
-        haveForms: new ReactiveVar( false ),
+        haveForms: Package['pwix:forms'] && Package['pwix:forms'].Forms,
+        // the previous initialized scopes
+        prevScopes: null,
 
         // does our edited roles already target the given scope identifier ?
         //  returns the scope
@@ -62,17 +64,17 @@ Template.pr_edit_scoped_pane.onCreated( function(){
             }
         },
 
-        // a new scope is created
-        //  attach to each scope object a label ReactiveVar and an invariant identifier
+        // either at initialization or when a new scope is created
+        //  attach to each scope object an invariant identifier and a ReactiveVar for the status of this scope
         newScope( key=null, value=null ){
             key = key || Template.currentData().pr_none;
             value = value || { all: [], direct: [] };
             value.DYN = value.DYN || {};
             if( !value.DYN.id ){
                 // make sure the identifier begins with a letter
-                value.DYN.id = 'pr'+Random.id();
+                value.DYN.id = 'pr_'+Random.id();
             }
-            if( !value.DYN.checkStatus && self.PR.haveForms.get()){
+            if( !value.DYN.checkStatus && self.PR.haveForms ){
                 value.DYN.checkStatus = new ReactiveVar( null );
             }
             return { key: key, value: value };
@@ -123,22 +125,22 @@ Template.pr_edit_scoped_pane.onCreated( function(){
 
     // the scope identifier cannot be a node identifier has it can be null when new, or be modified
     //  so allocate a new internal identifier which will be used in the HTML code
+    //  the 'roles' object and prevScopes are automatically updated
     self.autorun(() => {
         const scoped = Template.currentData().roles.get().scoped;
-        Object.keys( scoped ).forEach(( it ) => {
-            const res = self.PR.newScope( it, scoped[it] );
-            scoped[it] = res.value;
-        });
+        if( !_.isEqual( scoped, self.PR.prevScopes )){
+            //logger.debug( 'scoped has changed regarding prevScopes' );
+            self.PR.prevScopes = scoped;
+            Object.keys( scoped ).forEach(( it ) => {
+                const res = self.PR.newScope( it, scoped[it] );
+                scoped[it] = res.value;
+            });
+        }
     });
 
     // track the current scoped roles
     self.autorun(() => {
         //logger.debug( 'scoped', Template.currentData().roles.get().scoped );
-    });
-
-    // do we have the pwix:forms package ?
-    self.autorun(() => {
-        self.PR.haveForms.set( Package['pwix:forms'] && Package['pwix:forms'].Forms );
     });
 });
 
@@ -174,7 +176,7 @@ Template.pr_edit_scoped_pane.helpers({
     // whether the pwix:forms package is present
     //  if yes then we will display a check status indicator
     haveForms(){
-        return Template.instance().PR.haveForms.get();
+        return Template.instance().PR.haveForms;
     },
 
     // whether the user already has any scoped role

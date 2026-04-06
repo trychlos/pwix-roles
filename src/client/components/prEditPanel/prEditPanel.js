@@ -11,6 +11,7 @@
 
 import _ from 'lodash';
 
+import { check, Match } from 'meteor/check';
 import { Logger } from 'meteor/pwix:logger';
 import { PlusButton } from 'meteor/pwix:plus-button';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -34,6 +35,8 @@ Template.prEditPanel.onCreated( function(){
         scoped_div: 'pr-scoped',
         scoped_prefix: 'prscoped_',
         scoped_none: 'NONE',
+        userId: new ReactiveVar( null ),
+        handle: null,
 
         // whether the plus button is enabled
         enabledPlus: new ReactiveVar( true ),
@@ -55,6 +58,7 @@ Template.prEditPanel.onCreated( function(){
             //logger.debug( 'self.PR.roles.get()',self.PR.roles.get());
             return self.PR.roles.get().global.direct;
         },
+
         /**
          * @returns {Object} an object with following keys:
          *  - scoped        {Object}    a per-scope object where each key is a scope, and the value is an object with following keys:
@@ -78,6 +82,7 @@ Template.prEditPanel.onCreated( function(){
             //logger.debug( 'roles', roles );
             return roles;
         },
+
         /**
          * @returns {Object} where keys are the scopes, and values an array of direct roles
          *  NB: doesn't want return the checked roles for a new 'NONE' scope
@@ -95,13 +100,37 @@ Template.prEditPanel.onCreated( function(){
         }
     };
 
-    // doesn't subscribe, but fetch all current roles at once
-    //  take a deep copy as this will be the edition starting point
+    // get user identifier
     self.autorun(() => {
         const user = Template.currentData().user;
-        if( user ){
-            Roles.allRolesForUser( user ).then(( roles ) => {
-                self.PR.roles.set( _.cloneDeep( roles ));
+        self.PR.userId.set( user ? ( _.isString( user ) ? user : user._id ) : null );
+    });
+
+    // subscribe to the roles of the user
+    self.autorun(() => {
+        if( !self.PR.handle ){
+            self.PR.handle = self.subscribe( 'pwix.Roles.p.userAssignments', self.PR.userId.get());
+        }
+    });
+
+    // build the expected data structure
+    self.autorun(() => {
+        if( self.PR.handle && self.PR.handle.ready()){
+            const collectionName = Roles.configure().assignmentsCollection;
+            const collection = Mongo.getCollection( collectionName );
+            check( collection, Mongo.Collection );
+            collection.find({ 'user._id': self.PR.userId.get() }).fetchAsync().then(( fetched ) => {
+                let roles = { global: { direct: [], all: [] }, scoped: {}};
+                for( const it of fetched ){
+                    if( it.scope ){
+                        roles.scoped[it.scope] = roles.scoped[it.scope] || { all: [], direct: [] };
+                        Roles._doSetup( it, roles.scoped[it.scope] );
+                    } else {
+                        Roles._doSetup( it, roles.global );
+                    }
+                }
+                //logger.debug( 'fetched and built', roles );
+                self.PR.roles.set( roles );
             });
         }
     });
@@ -201,4 +230,8 @@ Template.prEditPanel.events({
             instance.$( '.pr-edit-scoped-plus' ).addClass( 'ui-hidden' );
         }
     }
+});
+
+Template.prEditPanel.onDestroyed( function(){
+    delete Roles.EditPanel;
 });

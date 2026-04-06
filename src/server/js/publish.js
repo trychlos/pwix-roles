@@ -237,7 +237,10 @@ Meteor.publish( 'pwix.Roles.p.userAssignments', async function( user=null ){
         if( user ){
             selector['user._id'] = user._id || user;
         }
-        return Meteor.roleAssignment.find( selector );
+        const collectionName = Roles.configure().assignmentsCollection;
+        const collection = Mongo.getCollection( collectionName );
+        check( collection, Mongo.Collection );
+        return collection.find( selector );
     }
     this.ready();
     return false;
