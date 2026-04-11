@@ -241,9 +241,16 @@ Template.pr_edit_scoped_pane.helpers({
         };
     },
 
-    // list of scope ids
+    // returns the scope labels case-insensitively sorted
     scopesList(){
-        return Object.keys( Roles.scopes.labels.all());
+        const list = Object.keys( Roles.scopes.labels.all());
+        return list.sort(( a, b ) => {
+            const A = Roles.scopes.label( a ).toUpperCase();
+            const B = Roles.scopes.label( b ).toUpperCase();
+            if( A < B ) return -1;
+            if( A > B ) return +1;
+            return 0;
+        });
     }
 });
 

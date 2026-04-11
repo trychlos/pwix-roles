@@ -44,7 +44,7 @@ Template.pr_view_scoped_pane.onCreated( function(){
         },
 
         // a new scope is created
-        //  attach to each scope object a label ReactiveVar and an invariant identifier
+        //  attach to each scope object a label and an invariant identifier
         newScope( key=null, value=null ){
             key = key || Template.currentData().pr_none;
             value = value || { all: [], direct: [] };
@@ -52,6 +52,8 @@ Template.pr_view_scoped_pane.onCreated( function(){
             if( !value.DYN.id ){
                 // make sure the identifier begins with a letter
                 value.DYN.id = 'pr'+Random.id();
+                // have a scope lable
+                value.DYN.label = Roles.scopes.label( key );
             }
             return { key: key, value: value };
         }
@@ -59,12 +61,24 @@ Template.pr_view_scoped_pane.onCreated( function(){
 
     // the scope identifier cannot be a node identifier has it can be null when new, or be modified
     //  so allocate a new internal identifier which will be used in the HTML code
+    //  attach to each role a DYN which contains the label-ordered scopes
     self.autorun(() => {
-        const scoped = Template.currentData().roles.get().scoped;
+        const roles = Template.currentData().roles.get();
+        const scoped = roles.scoped;
         Object.keys( scoped ).forEach(( it ) => {
             const res = self.PR.newScope( it, scoped[it] );
             scoped[it] = res.value;
         });
+        roles.DYN = roles.DYN || {};
+        roles.DYN.ordered_scopes = Object.keys( roles.scoped );
+        roles.DYN.ordered_scopes.sort(( a, b ) => {
+            const A = roles.scoped[a].DYN.label.toUpperCase();
+            const B = roles.scoped[b].DYN.label.toUpperCase();
+            if( A < B ) return -1;
+            if( A > B ) return +1;
+            return 0;
+        });
+        logger.debug( 'roles', roles );
     });
 
     // track the current scoped roles
@@ -95,10 +109,10 @@ Template.pr_view_scoped_pane.helpers({
     //  we iterate on our internal invariant identifier
     editedList(){
         let items = [];
-        const scoped = this.roles.get().scoped;
-        Object.keys( scoped ).forEach(( it ) => {
-            items.push( scoped[it].DYN.id );
-        });
+        const roles = this.roles.get();
+        for( const scope of roles.DYN.ordered_scopes ){
+            items.push( roles.scoped[scope].DYN.id );
+        }
         return items;
     },
 

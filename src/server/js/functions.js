@@ -303,49 +303,32 @@ Roles.s = {
     //  return true|false, or null if an error occurred
     async setUserRoles( user, roles, userId=null ){
         let targetId = null;
-        let isAllowed = false;
+        let res = false;
         try {
-            return Roles.isAllowed( 'pwix.roles.fn.setUserRoles', userId )
-                .then(( allowed ) => {
-                    isAllowed = allowed;
-                    if( allowed ){
-                        targetId = _.isString( user ) ? user : ( user._id ? user._id : null );
-                        if( targetId ){
-                            return Roles.s.removeAssignedRolesFromUser( user );
-                        } else {
-                            logger.warn( 'setUserRoles unable to get a user identifier from provided user argument', user );
-                            return null;
-                        }
-                    } else {
-                        //logger.log( 'setUserRoles not allowed' );
-                        return null;
-                    }
-                })
-                .then(() => {
-                    if( isAllowed && targetId ){
-                        return alRoles.setUserRolesAsync( user, roles.global.direct, { anyScope: true });
-                    }
-                })
-                .then(() => {
-                    if( isAllowed && targetId ){
-                        return Promise.allSettled( Object.keys( roles.scoped ).map( async ( it ) => {
-                            return await alRoles.setUserRolesAsync( user, roles.scoped[it].direct, { scope: it });
-                        }));
-                    }
-                })
-                .then(() => {
-                    if( isAllowed && targetId ){
-                        return Meteor.users.rawCollection().updateOne({ _id: targetId }, { $set: {
-                            updatedAt: new Date(),
-                            updatedBy: userId
-                        }});
-                    }
-                });
+            const allowed = await Roles.isAllowed( 'pwix.roles.fn.setUserRoles', userId );
+            let isAllowed = allowed;
+            if( isAllowed ){
+                targetId = _.isString( user ) ? user : ( user._id ? user._id : null );
+                if( !targetId ){
+                    logger.warn( 'setUserRoles unable to get a user identifier from provided user argument', user );
+                    return null;
+                }
+                res = await Roles.s.removeAssignedRolesFromUser( user );
+                res = await alRoles.setUserRolesAsync( user, roles.global.direct, { anyScope: true });
+                for( const it of ( Object.keys( roles.scoped || {} ))){
+                    res = await alRoles.setUserRolesAsync( user, roles.scoped[it].direct, { scope: it });
+                }
+                res = await Meteor.users.rawCollection().updateOne({ _id: targetId }, { $set: {
+                    updatedAt: new Date(),
+                    updatedBy: userId
+                }});
+            }
         }
         catch( e ) {
             logger.error( 'setUserRoles()', e );
             return null;
         }
+        return res;
     },
 
     // returns the list of used scopes

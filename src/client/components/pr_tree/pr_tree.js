@@ -569,6 +569,7 @@ Template.pr_tree.onRendered( function(){
         if( jsTreeInstance && self.PR.tree_checked() && !self.PR.tree_accounts()){
             const seq = ++self.PR.accountsBuildSeq;
             const accounts = Template.currentData().accounts?.get() || [];
+            const acInstance = AccountsCore.getInstance( 'users' );
             const prefix = self.PR.pr_prefix.get();
             self.PR.traceBuild && logger.debug( 'set accounts', accounts );
             // delete previous account nodes
@@ -584,19 +585,23 @@ Template.pr_tree.onRendered( function(){
                 if( !parent ){
                     logger.warn( 'parent role not found', self.PR.tree_id(), it );
                 } else {
-                    const doc = await AccountsCore.preferredLabel( 'users', it.user._id );
+                    // accounts here only have an _id as come from role-assignement
+                    //  force usage of the _id string to force AccountsCore to load the document
+                    const doc = await acInstance.preferredLabel( it.user._id );
                     // stale build? abort
                     if( seq !== self.PR.accountsBuildSeq || !self.PR.jsTreeInstance || !self.PR.tree ){
                         return;
                     }
-                    jsTreeInstance.create_node( parent, {
-                        "id": prefix+it._id,
-                        "text": doc.label,
-                        "children": [],
-                        "doc": it,
-                        "type": 'A'
-                    });
-                    //logger.debug( 'create_node', self.PR.tree_id(), it._id, it.role._id, doc.label );
+                    if( doc ){
+                        jsTreeInstance.create_node( parent, {
+                            "id": prefix+it._id,
+                            "text": doc.label,
+                            "children": [],
+                            "doc": it,
+                            "type": 'A'
+                        });
+                        //logger.debug( 'create_node', self.PR.tree_id(), it._id, it.role._id, doc.label );
+                    }
                 }
             })).then(() => {
                 if( seq !== self.PR.accountsBuildSeq || !self.PR.jsTreeInstance || !self.PR.tree ){

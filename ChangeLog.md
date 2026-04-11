@@ -22,6 +22,7 @@
     - Add meteor/check dependency
     - Add pwix:forms weak dependency
     - Add guards to limit rebuilts to only those which are useful
+    - Scopes view and edition are case-insensitively sorted
 
 ### 1.8.0
 
