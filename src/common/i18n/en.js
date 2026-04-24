@@ -28,6 +28,9 @@ Roles.i18n = {
                 view_title: 'View user\'s roles',
                 view_title_mail: 'View roles for %s',
             },
+            menu: {
+                my_roles: 'My roles'
+            },
             panels: {
                 add_button: 'New scope',
                 add_title: 'Add a new scope perimeter able to host roles',

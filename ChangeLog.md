@@ -23,6 +23,7 @@
     - Add pwix:forms weak dependency
     - Add guards to limit rebuilts to only those which are useful
     - Scopes view and edition are case-insensitively sorted
+    - Install a 'My roles' menu item when the user is logged-in unless configured otherwise
 
 ### 1.8.0
 

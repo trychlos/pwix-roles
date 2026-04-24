@@ -21,7 +21,8 @@ Roles._defaults = {
     scopesFn: null,
     scopesCollection: null,
     scopesPub: null,
-    verbosity: Roles.C.Verbose.CONFIGURE
+    verbosity: Roles.C.Verbose.CONFIGURE,
+    withAccountsUIDropdownItem: true
 };
 
 /**

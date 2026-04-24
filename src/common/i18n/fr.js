@@ -28,6 +28,9 @@ Roles.i18n = {
                 view_title: 'Visualisation des rôles',
                 view_title_mail: 'Visualisation des rôles de %s',
             },
+            menu: {
+                my_roles: 'Mes rôles'
+            },
             panels: {
                 add_button: 'Nouveau périmètre',
                 add_title: 'Ajoute un nouveau périmètre auqle vous pourrez attacher des rôles spécifiques',
