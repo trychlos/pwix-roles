@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.9.0-rc.0
+### 1.9.0
 
-    Release date: 
+    Release date: 2026- 4-24
 
     - configure() now warns for unmanaged keys
     - Guard against absent jstree() plugin
@@ -184,4 +184,4 @@
 
 ---
 P. Wieser
-- Last updated on 2026, Feb. 10th
+- Last updated on 2026, Apr. 24th
