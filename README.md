@@ -79,17 +79,11 @@ This Meteor package is installable with the usual command:
 
 ### Scoped vs. non-scoped roles
 
-As soon as an application needs roles, it needs an application administrator. So, as far as Roles is concerned, there is always at least one non-scoped roles.
+As soon as an application needs roles, it needs an application administrator. So, as far as Roles is concerned, there is always at least one non-scoped role.
 
 An application may too want manage scoped roles, whatever be - from Roles point of view - the exact scope semantic.
 
-Roles considers that scopes are dynamic, and cannot be all known. At any moment, it is so only possible to attribute to a user a scoped role for an existing scope.
-
-From scope point of view, several strategies are possible:
-
-- in an accounts manager, we can attribute to every user scoped roles to existing scopes (as soon, at least, as we are able to have a list of these scopes)
-
-- at the scope domain level, we can managed users permissions by attributing them scoped roles.
+Roles considers that scopes are dynamic, .e. they are not, and they cannot, be all known in advance. The best that Roles can do is to know scopes for which at least one role has been assigned. Whether a label or any other property is attached to scopes is not of direct Roles ressort, though we provide indirections to be able to provide such properties.
 
 ## Package configuration
 
@@ -219,13 +213,15 @@ Known configuration options are:
 
         Trace all functions calls.
 
+    Define the expected verbosity level.
+
 - `withAccountsUIDropdownItem`
 
     Whether to install a (localized) 'My roles' menu item in the AccountsUI dropdown menu when the user is logged in, defaulting to `true`.
 
     This requires that the `pwix:accounts-ui` package be used by the application, which is not required by this package.
 
-    Define the expected verbosity level.
+    New in v1.9.
 
 Please note that `Roles.configure()` method should be called in the same terms both in client and server sides.
 
@@ -237,233 +233,156 @@ Remind too that Meteor packages are instanciated at application level. They are 
 
 The globally exported object.
 
-### Functions
+### Client-side only functions
 
-- `Roles.addUsersToRoles( users, roles, options )`
+#### `Roles.current()`
 
-    An async function which directly calls the underlying `alanning:roles/addUsersToRolesAsync()` function, just making sure it is called on the server.
-
-    Returns nothing.
-
-    Available both on client and server.
-
-- `Roles.compareLevels( userA<Object|String>, userB<Object|String> )`
-
-    Compare the roles assigned to the two specified users, and provide a pseudo classement based of the level of their highest role.
-
-    Returns:
-
-    - `-1` if highest role of user A is lower than highest role of user B
-    - `0` if highest role of user A has same level than highest role of user B
-    - `+1` if highest role of user A is higher than highest role of user B
-
-    Rationale: this let compare the capabilities of two accounts. A typical use case is to allow an account to edit other accounts, but only with lower role levels, and for example, prevent him to editing the application administration account.
-
-- `Roles.configure( o<Object> )`
-
-    See [above](#package-configuration).
-
-    A reactive data source.
-
-    Available both on client and server.
-
-- `Roles.current()`
-
-    A reactive data source which provides the assigned roles of the currently logged-in user as an object:
+A reactive data source which provides the assigned roles of the currently logged-in user as an object:
 
 ```js
-    - userId    {String}    the current user identifier
-    - scoped    {Object}    a per-scope object where each key is a scope, and the value is an object with following keys:
-        - direct    {Array}     an array of directly (not inherited) assigned scoped roles
-        - all       {Array}     an array of all allowed scoepd roles (i.e. directly assigned+inherited)
-    - global    {Object}
-        - direct    {Array}     an array of directly (not inherited) assigned scoped roles
-        - all       {Array}     an array of all allowed scoepd roles (i.e. directly assigned+inherited)
+    {
+        userId:             <String>    the current user identifier
+        global: {                       describes the global roles of the user
+            all:            <Array>     the array of directly assigned roles
+            direct:         <Array>     the array of all roles of the user, whether they have been directly assigned, or inherited from the roles hierarchy
+        }
+        scoped: {                       a per-scope object where each key is a scope, and the value is an object with following keys:
+            <scope_identifier>: {
+                all:        <Array>     the array directly assigned roles
+                direct:     <Array>     the array of all roles of the user, whether they have been directly assigned, or inherited from the roles hierarchy
+            }
+        }
 ```
 
-    Note that this object gathers assigned roles, and that they are not filtered through the configured hierarchy. It may so happen that some assigned roles can be not defined in a new hierarchy. This is the task of the configured `maintainHierarchy` indicator to make sure that there is no difference between assigned roles and defined ones.
+NB 1: this object gathers assigned roles, and that they are not filtered through the current configured hierarchy. It may so happen that some assigned roles can be not (no more) defined in a new hierarchy. This is the task of the configured `maintainHierarchy` indicator to make sure that there is no difference between assigned roles and defined ones.
 
-    Available on client only.
+NB 2: the description of the `current()` object is changed in v1.5 to better host global and scopes roles.
 
-    Note that the description of the `current()` object is changed in v 1.5.0 to better host global and scopes roles.
+#### `Roles.ready()`
 
-- `Roles.suggestedPermissions()`
+A reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
 
-    Returns an object suitable to be provided to `Roles.allowFn()` permissions manager.
+Note that the readyness of the package doesn't depend of its configuration.
 
-    These are NOT default as the internal permissions manager doesn't care of these, and actually defaults to `true`.
+### Common functions
 
-- `Roles.directRolesForUser( user )`
+#### `async Roles.addUsersToRoles( users, roles, options )`
 
-    An async function which returns the direct roles of the user (_i.e._ only the first level of the hierarchy) as an array.
+An async function which directly calls the underlying `alanning:roles/addUsersToRolesAsync()` function, just making sure it is called on the server.
 
-    - `user`: a user identifier or a user object
+The function is subject to `pwix.roles.fn.addUsersToRoles` permission.
 
-    Available both on client and server.
+Returns nothing.
 
-- `Roles.flat()`
+#### `Roles.compareLevels( userA<Object|String>, userB<Object|String> )`
 
-    Returns the configured roles hierarchy as a flat object `name` -> `{ name, children, scoped }`.
+Compare the roles assigned to the two specified users, and provide a pseudo classement based of the level of their highest role.
 
-    Available both on client and server.
+Returns:
 
-- `Roles.getRolesForUser( user, options )`
+- `-1` if highest role of user A is lower than highest role of user B
+- `0` if highest role of user A has same level than highest role of user B
+- `+1` if highest role of user A is higher than highest role of user B
 
-    An async function which returns the list of roles directly attributed (_i.e._ ignoring the inherited roles) to the user as an array of documents:
-    - `_id`: the role identifier (its name)
-    - `_scope`: the relevant scope (only if `anyScope` option is `true`).
+Rationale: this let compare the capabilities of two accounts. A typical use case is to allow an account to edit other accounts, but only with lower role levels, and for example, prevent him to editing the application administration account.
 
-    Parms:
-    - `user`: a user document or a user identifier
-    - `options`: an options object with following keys:
+#### `Roles.configure( o<Object> )`
 
-        - `scope`: the desired scope
-        - `onlyScoped`: if set to `true`, only returns the roles in the given `scope`
+See [above](#package-configuration).
 
-    To get just global (non-scoped) roles, set `onlyScoped` to `true` and leave the `scope` option undefined.
+A reactive data source.
 
-    To get just scoped roles roles, set `onlyScoped` to `true` and a `scope`.
+#### `Roles.flat()`
 
-    If `onlyScoped` is falsy, all roles will be returned.
+Returns the configured roles hierarchy flattened as a hash of objects `name` -> `{ name, children, scoped }`
 
-    Available both on client and server.
+#### `async Roles.getUserRoles( target<Object|String>, requester<Object|String> )`
 
-- `Roles.getUsersInScope( scope )`
+An async function which returns the roles of the `target` user.
 
-    An async function which returns the array of user identifiers of accounts which have a role in this scope, maybe empty.
+The `requester` argument is ignored on client-side, as we use the currently connected user. On server-side, the argument is mandatory.
 
-    Available both on client and server.
+The function is subject to `pwix.roles.fn.getUserRoles` permission, which always resolves to `true` when requester is the target.
 
-- `Roles.hasScopedRole( userId, scope )`
+Returns roles as the usual `{ userId, global, scoped }` object.
 
-    Whether the specified user has any scoped role for the given scope.
+#### `async Roles.hasScopedRole( target<Object|String>, scope<String>, requester<Object|String> )`
 
-    Available both on client and server.
+An async function which returns `true` if the user has any role in the given scope.
 
-- `Roles.isRoleScoped( role )`
+The `requester` argument is ignored on client-side, as we use the currently connected user. On server-side, the argument is mandatory.
 
-    Whether the specified role is defined as scoped.
+The function is subject to `pwix.roles.fn.hasScopedRole` permission, which always resolves to `true` when requester is the target.
 
-    Available both on client and server.
+#### `Roles.highestLevel( roles<Array> )`
 
-- `Roles.ready()`
+Compute the highest level among the provided list of roles, returning the level number, '0' being the root of the role hierarchy.
 
-    A reactive data source which becomes `true` when the package is ready to be used (actually when the `alanning:roles` underlying package publication for the current user is ready).
+NB 1: the lower this level, the higher the role is in the hierarchy.
 
-    Note that the package considers itself as ready even if it has not yet been configured.
+NB 2: as a consequence, returns a very high level if the roles are empty (no role implies very low level in the hierarchy).
 
-    Available on client only.
+#### `Roles.isRoleScoped( role<String> )`
 
-- `Roles.removeAssignedRolesFromUser( user )`
+Returns `true` if the role is defined as scoped.
 
-    An async function which removes all currently defined roles for this user.
+#### `async Roles.removeAssignedRolesFromUser( target<Object|String>, requester<Object|String> )`
 
-    Returns `true` if all roles have been successfully deleted for this user.
+Remove the assigned roles when an account is deleted.
 
-    The application should take care of **not** remove all roles for the currently logged-in user. This is not checked by the package.
+The `requester` argument is ignored on client-side, as we use the currently connected user. On server-side, the argument is mandatory.
 
-    Available both on client and server.
+The function is subject to `pwix.roles.fn.removeAssignedRolesFromUser` permission, which always resolves to `false` when requester is the target.
 
-- `Roles.removeUserAssignmentsFromRoles( roles, opts )`
+Returns `true` if the function was successful.
 
-    An async function which removes all currently defined assignements for the specified role(s).
+#### `Roles.scopedRoles()`
 
-    Returns an array with a result per role.
+Returns an array of defined scoped roles. Children are not included as scoped per definition.
 
-    The application should take care of **not** remove all roles for the currently logged-in user. This is not checked by the package.
+#### `async Roles.setUserRoles( target<Object|String>, roles<Object>, requester<Object|String> )`
 
-    Available both on client and server.
+Assign the specified roles to the targeted user.
 
-- `Roles.setUserRoles( user, roles )`
+The `requester` argument is ignored on client-side, as we use the currently connected user. On server-side, the argument is mandatory.
 
-    An async function which replaces all currently defined roles for the specified user.
+The `roles` must be specified as an object `{ global: { direct[] }, scoped: { <scope>: { direct: [] }}}`
 
-    `user` may be a user identifier or a user document
+The function is subject to `pwix.roles.fn.setUserRoles` permission, which always resolves to `false` when requester is the target.
 
-    `roles` is an object { global: { direct: [], scoped: { <scope>: { direct: [] }}}}
+Returns `true` if the function was successful.
 
-    The application should take care of **not** remove all roles for the currently logged-in user. This is not checked by the package.
+#### `Roles.suggestedPermissions()`
 
-    Available both on client and server.
+Returns an object suitable to be provided to `Roles.allowFn()` permissions manager.
 
-- `Roles.suggestedPermissions()`
+#### `Roles.userIsInRoles( user, roles [, opts ])`
 
-    Returns an object with `allowFn` function for the package asked permissions. This object is suitable to feed the `pwix:permissions` manager, and can be overriden by the application.
+An async function which says if the specified user has at least one the specified roles.
 
-    Available both on client and server.
+- `user`: either a user identifier or a user document
+- `roles`: either a single role or an array of roles
 
-- `Roles.usedScopes()`
+Returns `true` if the user has any of the specified roles.
 
-    An async function which returns an array of used scopes. This array will most probably at least include the 'null' scope.
+#### `Roles.usedScopes()`
 
-    Available both on client and server.
+An async function which says if the specified user has at least one the specified roles.
 
-- `Roles.userIsInRoles( user, roles [, opts ])`
+- `user`: either a user identifier or a user document
+- `roles`: either a single role or an array of roles
 
-    An async function which says if the specified user has at least one the specified roles.
+Returns `true` if the user has any of the specified roles.
 
-    - `user`: either a user identifier or a user document
-    - `roles`: either a single role or an array of roles
+#### `Roles.viewAdd( o )`
 
-    Returns `true` if the user has any of the specified roles.
+Add an additional tab to the `prView` dialog.
 
-    Available both on client and server.
+The to-be added tab is described by the provided object which must exhibit following keys:
 
-- `Roles.viewAdd( o )`
+- `tabLabel`: a function which will be called with a `tabItem` argument, and must return the tab label as a string
 
-    Add an additional tab to the `prView` dialog.
-
-    The to-be added tab is described by the provided object which must exhibit following keys:
-
-    - `tabLabel`: a function which will be called with a `tabItem` argument, and must return the tab label as a string
-
-    - `paneContent`: a function which will be called with a `tabItem` argument, and must return a Promise which must eventually resolves to the HTML pane content.
-
-- `Roles.i18n.namespace()`
-
-    Returns the i18n namespace of the package.
-
-Note from `alanning:roles` documentation:
-
-    Roles functions which modify the database should not be called directly, but inside the Meteor methods.
-
-### Methods
-
-These are Meteor Mongo methods, i.e. to be `Meteor.callAsync(...)` by the client.
-
-- `pwix.Roles.m.addUsersToRoles( users, roles, options )`
-
-    Add roles to existing roles for each user.
-
-    - `users`: a user identifier, or a user object, or an array of user identifiers or user objects
-
-    - `roles`: a role name or an array of role names
-
-    - `options`: an optional object with following keys:
-
-        - `scope`: name of the scope, or null for the global role
-
-        - `ifExists`: if true, do not throw an exception if the role does not exist
-
-    This method directy calls `alanning:roles.addUsersToRoles()` function. It is just clearer that this is a server code.
-
-- `pwix.Roles.m.allRolesForUser( user )`
-
-- `pwix.Roles.m.countUsersInRoles( roles, options )`
-
-- `pwix.Roles.m.createRole( role, options )`
-
-- `pwix.Roles.m.getUsersInScope( scope )`
-
-- `pwix.Roles.m.removeAssignedRolesFromUser( user )`
-
-- `pwix.Roles.m.removeUserAssignmentsFromRoles( roles, options )`
-
-- `pwix.Roles.m.resetScopedAssignments( scope, assignments, options )`
-
-- `pwix.Roles.m.setUserRoles( user, roles )`
-
-- `pwix.Roles.m.usedScopes()`
+- `paneContent`: a function which will be called with a `tabItem` argument, and must return a Promise which must eventually resolves to the HTML pane content.
 
 ### Blaze components
 
@@ -513,7 +432,7 @@ The caller can get the result back in two ways:
 
     - then each time the user changes the selection by cyhecking/uncheckibng the checkboxes.
 
-Starting with v 1.5.0, the application can also use:
+Starting with v1.5, the application can also use:
 
 - the `pr-global-state` event, triggered with a data `{ global: direct<Array> }` which only contains directly attributed global roles
 

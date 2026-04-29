@@ -242,25 +242,18 @@ Roles._userHierarchy = function( roles ){
  * @param {Object} options
  */
 Roles.addUsersToRoles = async function( users, roles, options={} ){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.addUsersToRoles', users, roles, options ) : alRoles.addUsersToRolesAsync( users, roles, options ));
+    await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.addUsersToRoles', users, roles, options ) : Roles.s.addUsersToRoles( users, roles, options ));
 };
 
-/**
+/*
  * @locus Anywhere
  * @param {Object|String} target the targeted user as a user document or a user identifier
  * @param {Object|String} requester an optional requester user as a user document or a user identifier
- *  this is ignored on client side as we use the currently connected user
- *  this is mandatory on server side
- * @returns {Object} an object with following keys:
- *  - global: the global roles as an object with following keys:
- *    > all: an array of all roles
- *    > direct: an array of direct roles
- *  - scoped: the scoped roles as an object keyed by the scope identifier, with folloging keys
- *    > all: an array of all roles for this scope
- *    > direct: an array of direct roles for this scope
+ * @returns {Object} the roles object
  */
 Roles.allRolesForUser = async function( target, requester ){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.allRolesForUser', target ) : Roles.s.allRolesForUser( target, requester ));
+    logger.warn( 'allRolesForUser() is obsoleted started with v1.10. Please use getUserRoles()' );
+    return await Roles.getUserRoles( target, requester );
 };
 
 /**
@@ -277,16 +270,16 @@ Roles.allRolesForUser = async function( target, requester ){
  */
 Roles.compareLevels = async function( userA, userB, opts ){
     opts = opts || {};
-    const rolesA = await Roles.allRolesForUser( userA, userA );
+    const rolesA = await Roles.getUserRoles( userA, userA );
     const levelA = Roles.highestLevel( opts.scope ? rolesA.scoped[opts.scope].direct : rolesA.global.direct );
-    const rolesB = await Roles.allRolesForUser( userB, userB );
+    const rolesB = await Roles.getUserRoles( userB, userB );
     const levelB = Roles.highestLevel( opts.scope ? rolesB.scoped[opts.scope].direct : rolesB.global.direct );
     const res = levelA < levelB ? +1 : ( levelA > levelB ? -1 : 0 );
     //logger.debug( userA, rolesA, levelA, userB, rolesB, levelB, res );
     return res;
 };
 
-/**
+/*
  * @summary Returns the direct roles of the user
  * @locus Anywhere
  * @param {Object|String} user User identifier or actual user object
@@ -294,7 +287,7 @@ Roles.compareLevels = async function( userA, userB, opts ){
  * @returns {Array} array of roles directly attributed to the user (i.e. having removed the inherited ones)
  */
 Roles.directRolesForUser = async function( user, options={} ){
-    logger.warn( 'directRolesForUser() is obsoleted started with v1.9. Please use allRolesForUser()' );
+    logger.warn( 'directRolesForUser() is obsoleted started with v1.9. Please use getUserRoles()' );
     return Roles._filter( await Roles.getRolesForUser( user, options ) || [] );
 };
 
@@ -325,34 +318,59 @@ Roles.flat = function(){
     return full;
 };
 
-/**
+/*
  * @locus Anywhere
  * @param {Object|String} user a user document or a user identifier
- * @param {Object} options
  * @returns {Array} an array of roles documents
  */
 Roles.getRolesForUser = async function( user, options={} ){
-    logger.warn( 'getRolesForUser() is obsoleted started with v1.9. Please use allRolesForUser()' );
-    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.getRolesForUser', user, options ) : Roles.s.getRolesForUser( user, options ));
+    if( Meteor.isClient ){
+        logger.warn( 'getRolesForUser() is obsoleted started with v1.9. Please use getUserRoles()' );
+        return await Roles.getUserRoles( user );
+    }
+    logger.warn( 'getRolesForUser() is obsoleted started with v1.9. Please use getUserRoles() providing a requester identifier' );
+    return null;
 };
 
-/**
+/*
  * @locus Anywhere
  * @param {String} scope the scope identifier
- * @returns {Array} on server side, an array of user identifiers which have a role in this scope
+ * @returns {Array} an array of user identifiers which have a role in this scope
  */
 Roles.getUsersInScope = async function( scope ){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.getUsersInScope', scope ) : Roles.s.getUsersInScope( scope ));
+    logger.warn( 'getUsersInScope() is obsoleted started with v1.10' );
+    return [];
 };
 
 /**
  * @locus Anywhere
- * @param {String} userId a user identifier
+ * @param {Object|String} target the targeted user as a user document or a user identifier
+ * @param {Object|String} requester an optional requester user as a user document or a user identifier
+ *  this is ignored on client side as we use the currently connected user
+ *  this is mandatory on server side
+ * @returns {Object} an object with following keys:
+ *  - global: the global roles as an object with following keys:
+ *    > all: an array of all roles
+ *    > direct: an array of direct roles
+ *  - scoped: the scoped roles as an object keyed by the scope identifier, and values an object with following keys:
+ *    > all: an array of all roles for this scope
+ *    > direct: an array of direct roles for this scope
+ */
+Roles.getUserRoles = async function( target, requester ){
+    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.getUserRoles', target ) : Roles.s.getUserRoles( target, requester ));
+};
+
+/**
+ * @locus Anywhere
+ * @param {Object|String} target a user document or a user identifier
  * @param {String} scope a scope identifier
+ * @param {Object|String} requester an optional requester user document or user identifier
+ *  this is ignored on client side as we use the currently connected user
+ *  this is mandatory on server side
  * @returns {Boolean} whether the user has any scoped role
  */
-Roles.hasScopedRole = async function( userId, scope ){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.hasScopedRole', userId, scope ) : Roles.s.hasScopedRole( userId, scope ));
+Roles.hasScopedRole = async function( target, scope, requester ){
+    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.hasScopedRole', target, scope ) : Roles.s.hasScopedRole( target, scope, requester ));
 };
 
 /**
@@ -427,7 +445,7 @@ Roles.isRoleScoped = function( role ){
     return scoped;
 };
 
-/**
+/*
  * @param {Object} user a user identifier or a user object
  */
 Roles.removeAllRolesFromUser = async function( user ){
@@ -436,20 +454,24 @@ Roles.removeAllRolesFromUser = async function( user ){
 };
 
 /**
- * @param {Object} user a user identifier or a user object
+ * @summary Remove stored roles when an account is deleted
+ * @param {Object|String} target a user identifier or a user object
+ * @param {Object|String} requester an optional requester user document or user identifier
+ *  this is ignored on client side as we use the currently connected user
+ *  this is mandatory on server side
  */
-Roles.removeAssignedRolesFromUser = async function( user ){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.removeAssignedRolesFromUser', user ) : Roles.s.removeAssignedRolesFromUser( user ));
+Roles.removeAssignedRolesFromUser = async function( target, requester ){
+    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.removeAssignedRolesFromUser', target ) : Roles.s.removeAssignedRolesFromUser( target, requester ));
 };
 
-/**
+/*
  * @param {Array|String} roles a role or an array of roles
  * @param {Object} opts an option object with following keys:
  *  - scope: the relevant scope, all scopes if not set
  */
 Roles.removeUserAssignmentsForRoles = async function( roles, opts ){
-    logger.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
-    return await Roles.removeUserAssignmentsFromRoles( roles, opts );
+    logger.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2.' );
+    return false;
 };
 
 /**
@@ -459,7 +481,8 @@ Roles.removeUserAssignmentsForRoles = async function( roles, opts ){
  *  - scope: the relevant scope, all scopes if not set
  */
 Roles.removeUserAssignmentsFromRoles = async function( roles, opts ){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.removeUserAssignmentsFromRoles', roles, opts ) : Roles.s.removeUserAssignmentsFromRoles( roles, opts ));
+    logger.warn( 'removeUserAssignmentsFromRoles() is obsoleted started with v1.10.' );
+    return false;
 };
 
 /**
@@ -482,7 +505,7 @@ Roles.scopedRoles = function(){
  * @param {String|Object} user the user identifier or the user document
  * @param {Object} roles the roles to be set as an object { global: { direct[] }, scoped: { <scope>: { direct: [] }}}
  */
-Roles.setUserRoles = async function( user, roles ){
+Roles.setUserRoles = async function( target, roles, requester ){
     return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.setUserRoles', user, roles ) : Roles.s.setUserRoles( user, roles ));
 };
 
@@ -497,12 +520,13 @@ Roles.suggestedPermissions = function(){
         pwix: {
             roles: {
                 fn: {
-                    // whether the user 'userId' can access the 'user' roles ?
-                    // whatever be his own roles, userId is always allowed to access them (even if he doesn't have any permission, he is still allowed to read his own perms)
-                    async getRolesForUser( userId, user ){
+                    async addUsersToRoles( userId, users, roles, opts ){
                         return userId !== null;
                     },
-                    async getUsersInScope( userId, scope ){
+                    async getUserRoles( userId, user ){
+                        return userId !== null;
+                    },
+                    async hasScopedRole( userId, user, scope ){
                         return userId !== null;
                     },
                     async removeAssignedRolesFromUser( userId, user ){
@@ -512,7 +536,7 @@ Roles.suggestedPermissions = function(){
                         return userId !== null;
                     },
                     // whether the userId can manage scope assignments
-                    async setScopedAssignments( userId, opts ){
+                    async setScopedAssignments( userId, scope ){
                         return userId !== null;
                     },
                     async setUserRoles( userId, user, roles ){
@@ -539,10 +563,10 @@ Roles.suggestedPermissions = function(){
                     async count_by_roles( userId, roles ){
                         return true;
                     },
-                    async user_assignments( userId, user ){
+                    async used_scopes( userId ){
                         return userId !== null;
                     },
-                    async used_scopes( userId ){
+                    async user_assignments( userId, user ){
                         return userId !== null;
                     }
                 }
@@ -553,16 +577,7 @@ Roles.suggestedPermissions = function(){
 
 /**
  * @locus Anywhere
- * @returns {Promise} which eventually resolve to an array of used scopes (most probably including the 'null' one)
- */
-Roles.usedScopes = async function(){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.usedScopes' ) : Roles.s.usedScopes());
-};
-
-/**
- * Check if user has specified roles.
- * A reactive data source.
- * @locus Anywhere
+ * @summary Check if user has specified roles.
  * @param {Object|String} user User identifier or actual user object
  * @param {Array|String} roles required roles as a string or an array of strings
  * @param {Object} options
@@ -577,3 +592,10 @@ Roles.userIsInRoles = async function( user, roles, options={} ){
     return result;
 };
 
+/**
+ * @locus Anywhere
+ * @returns {Promise} which eventually resolve to an array of used scopes (most probably including the 'null' one)
+ */
+Roles.usedScopes = async function(){
+    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.usedScopes' ) : Roles.s.usedScopes());
+};

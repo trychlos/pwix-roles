@@ -14,6 +14,35 @@ import { Roles as alRoles } from 'meteor/alanning:roles';
 const logger = Logger.get();
 
 Roles.s = {
+    // add users to roles
+    //  alanning:roles.addUsersToRolesAsync() doesn't return anything
+    async addUsersToRoles( users, roles, opts, requesterId ){
+        const allowed = await Roles.isAllowed( 'pwix.roles.fn.addUsersToRoles', requesterId, users, roles, opts );
+        if( allowed ){
+            await alRoles.addUsersToRolesAsync( users, roles, options );
+        }
+    },
+
+    // get all roles for the user
+    async allRolesForUser( target, requester=null ){
+        logger.warn( 'allRolesForUser() is obsoleted started with v1.10. Please use getUserRoles()' );
+        return await Roles.s.getUserRoles( target, requester );
+    },
+
+    // get roles for the user
+    // https://meteor-community-packages.github.io/meteor-roles/classes/Roles.html#method_getRolesForUserAsync
+    // returns Promise null if an error occurred
+    async getRolesForUser( user, options, userId=null ){
+        logger.warn( 'getRolesForUser() is obsoleted started with v1.9. Please use getUserRoles()' );
+        return await Roles.s.getUserRoles( user, userId );
+    },
+
+    // get users in scope
+    async getUsersInScope( scope, userId=null ){
+        logger.warn( 'getUsersInScope() is obsoleted started with v1.10' );
+        return [];
+    },
+
     // get all roles for the user
     // returns {Object} an object with following keys:
     //   - global: the global roles as an object with following keys:
@@ -22,11 +51,19 @@ Roles.s = {
     //   - scoped: the scoped roles as an object keyed by the scope identifier, with folloging keys
     //     > all: an array of all roles for this scope
     //     > direct: an array of direct roles for this scope
-    async allRolesForUser( target, requester=null ){
+    async getUserRoles( target, requester=null ){
         check( target, Match.OneOf( Match.NonEmptyString, Object ));
         check( requester, Match.OneOf( Match.NonEmptyString, Object ));
+        let targetId = target;
+        if( _.isObject( target )){
+            targetId = target._id;
+        }
+        let requesterId = requester;
+        if( _.isObject( requester )){
+            requesterId = requester._id;
+        }
         try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.getRolesForUser', requester, target );
+            const allowed = ( targetId === requesterId ) ? true : await Roles.isAllowed( 'pwix.roles.fn.getUserRoles', requesterId, target );
             if( allowed ){
                 const collectionName = Roles.configure().assignmentsCollection;
                 const collection = Mongo.getCollection( collectionName );
@@ -72,7 +109,7 @@ Roles.s = {
                 //        ]
                 //    }
                 //  ]
-                let roles = { global: { direct: [], all: [] }, scoped: {}};
+                let roles = { userid: targetId, global: { direct: [], all: [] }, scoped: {}};
                 for( const it of fetched ){
                     if( it.scope ){
                         roles.scoped[it.scope] = roles.scoped[it.scope] || { all: [], direct: [] };
@@ -87,66 +124,34 @@ Roles.s = {
         }
         catch( e ){
             logger.error( 'allRolesForUser()', e );
-            return null;
         }
-    },
-
-    // get roles for the user
-    // https://meteor-community-packages.github.io/meteor-roles/classes/Roles.html#method_getRolesForUserAsync
-    // returns Promise null if an error occurred
-    async getRolesForUser( user, options, userId=null ){
-        logger.warn( 'getRolesForUser() is obsoleted started with v1.9. Please use allRolesForUser()' );
-        try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.getRolesForUser', userId, user );
-            if( allowed ){
-                const roles = await alRoles.getRolesForUserAsync( user, options );
-                logger.debug( 'getRolesForUser()', options, roles );
-            }
-            //logger.log( 'getRolesForUser', user, 'not allowed' );
-            return null;
-        }
-        catch( e ){
-            logger.error( 'getRolesForUser()', e );
-            return null;
-        }
-    },
-
-    // get users in scope
-    // returns a Promise which resolves to the list of users in this scope, which may be an empty array, or null if an error occurred
-    async getUsersInScope( scope, userId=null ){
-        assert( scope && scope.length && _.isString( scope ), 'expect a scope, got', scope );
-        try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.getUsersInScope', userId );
-            if( allowed ){
-                const fetched = await Meteor.roleAssignment.find({ scope: scope }).fetchAsync();
-                result = [];
-                fetched.every(( it ) => {
-                    result.push( user._id );
-                    return true;
-                });
-                return result;
-            }
-            //logger.log( 'getUsersInScope not allowed' );
-            return null;
-        }
-        catch( e ){
-            logger.error( 'getUsersInScope()', e );
-            return null;
-        }
+        return null;
     },
 
     // whether the userId has any 'scope' scoped role
-    async hasScopedRole( userId, scope, requester=null ){
-        check( userId, Match.NonEmptyString );
+    async hasScopedRole( target, scope, requester=null ){
+        check( target, Match.OneOf( Match.NonEmptyString, Object ));
         check( scope, Match.NonEmptyString );
+        check( requester, Match.OneOf( Match.NonEmptyString, Object ));
+        let targetId = target;
+        if( _.isObject( target )){
+            targetId = target._id;
+        }
+        let requesterId = requester;
+        if( _.isObject( requester )){
+            requesterId = requester._id;
+        }
         try {
-            const fetched = await Meteor.roleAssignment.find({ 'user._id': userId, scope: scope }).fetchAsync();
-            return fetched.length > 0;
+            const allowed = ( targetId === requesterId ) ? true : await Roles.isAllowed( 'pwix.roles.fn.hasScopedRole', requesterId, target, scope );
+            if( allowed ){
+                const fetched = await Meteor.roleAssignment.find({ 'user._id': targetId, scope: scope }).fetchAsync();
+                return fetched.length > 0;
+            }
         }
         catch( e ){
             logger.error( 'hasScopedRole()', e );
-            return false;
         }
+        return false;
     },
 
     // remove all roles for the user
@@ -158,70 +163,43 @@ Roles.s = {
 
     // remove all roles for the user
     //  returns true|false, or null if an error occurred
-    async removeAssignedRolesFromUser( user, userId=null ){
+    async removeAssignedRolesFromUser( target, requester=null ){
+        check( target, Match.OneOf( Match.NonEmptyString, Object ));
+        check( requester, Match.OneOf( Match.NonEmptyString, Object ));
+        let targetId = target;
+        if( _.isObject( target )){
+            targetId = target._id;
+        }
+        let requesterId = requester;
+        if( _.isObject( requester )){
+            requesterId = requester._id;
+        }
         try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.removeAssignedRolesFromUser', userId )
+            const allowed = ( targetId === requesterId ) ? false : await Roles.isAllowed( 'pwix.roles.fn.removeAssignedRolesFromUser', requester, target )
             if( allowed ){
-                if( user ){
-                    let id = null;
-                    if( _.isString( user )){
-                        id = user;
-                    } else if( _.isObject( user ) && user._id ){
-                        id = user._id;
-                    }
-                    if( id ){
-                        const countDeleted = await Meteor.roleAssignment.removeAsync({ 'user._id': id });
-                        logger.debug( 'removeAssignedRolesFromUser()', user, countDeleted );
-                        return countDeleted !== null;
-                    }
-                    logger.warn( 'removeAssignedRolesFromUser() unable to find an identifier', user );
-                    return null;
-                }
-                logger.warn( 'removeAssignedRolesFromUser() user is falsy', user );
-                return null;
+                const countDeleted = await Meteor.roleAssignment.removeAsync({ 'user._id': targetid });
+                logger.debug( 'removeAssignedRolesFromUser()', target, countDeleted );
+                return countDeleted !== null;
             }
-            //logger.log( 'removeAssignedRolesFromUser() not allowed' );
-            return null;
         }
         catch( e ) {
             logger.error( 'removeAssignedRolesFromUser()', e );
-            return null;
         }
+        return false;
     },
 
     // remove all assignments for the role(s)
     //  returns a Promise which resolves an array of the result for each role
     async removeUserAssignmentsForRoles( roles, opts, userId=null ){
-        logger.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2. Please use removeUserAssignmentsFromRoles()' );
-        return await Roles.s.removeUserAssignmentsFromRoles( roles, opts, userId );
+        logger.warn( 'removeUserAssignmentsForRoles() is obsoleted started with v1.3.2.' );
+        return false;
     },
 
     // remove all assignments for the role(s)
     //  returns a Promise which resolves to an array of the result for each role, or null if an error occurred
     async removeUserAssignmentsFromRoles( roles, opts={}, userId=null ){
-        try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.removeUserAssignmentsFromRoles', userId );
-            if( allowed ){
-                let promises = [];
-                const rolesArray = _.isArray( roles ) ? roles : [roles];
-                rolesArray.forEach(( role ) => {
-                    let query = {
-                        'role._id': role
-                    };
-                    if( opts.scope ){
-                        query.scope = opts.scope;
-                    }
-                    promises.push( Meteor.roleAssignment.removeAsync( query ));
-                });
-                return Promise.allSettled( promises );
-            }
-            //logger.log( 'removeUserAssignmentsFromRoles() not allowed' );
-            return null;
-        }
-        catch( e ) {
-            logger.error( 'removeUserAssignmentsFromRoles()', e );
-            return null;
-        }
+        logger.warn( 'removeUserAssignmentsFromRoles() is obsoleted started with v1.10.' );
+        return false;
     },
 
     // reset all assignment for a scope
@@ -237,7 +215,7 @@ Roles.s = {
             logger.error( 'resetScopedAssignments() expect assignments be an array, got', assignments, 'throwing...' );
             throw new Error( 'Bad argument: assignments' );
         }
-        const allowed = await Roles.isAllowed( 'pwix.roles.fn.setScopedAssignments', userId, { scope: scope });
+        const allowed = await Roles.isAllowed( 'pwix.roles.fn.setScopedAssignments', userId, scope );
         if( !allowed ){
             logger.debug( 'resetScopedAssignments() not allowed' );
             return pwixI18n.label( I18N, 'accounts.err_not_allowed' );
@@ -315,26 +293,29 @@ Roles.s = {
 
     // replace the roles of the user
     //  return true|false, or null if an error occurred
-    async setUserRoles( user, roles, userId=null ){
-        let targetId = null;
+    async setUserRoles( target, roles, requester=null ){
+        check( target, Match.OneOf( Match.NonEmptyString, Object ));
+        check( requester, Match.OneOf( Match.NonEmptyString, Object ));
+        let targetId = target;
+        if( _.isObject( target )){
+            targetId = target._id;
+        }
+        let requesterId = requester;
+        if( _.isObject( requester )){
+            requesterId = requester._id;
+        }
         let res = false;
         try {
-            const allowed = await Roles.isAllowed( 'pwix.roles.fn.setUserRoles', userId );
-            let isAllowed = allowed;
-            if( isAllowed ){
-                targetId = _.isString( user ) ? user : ( user._id ? user._id : null );
-                if( !targetId ){
-                    logger.warn( 'setUserRoles unable to get a user identifier from provided user argument', user );
-                    return null;
-                }
-                res = await Roles.s.removeAssignedRolesFromUser( user );
-                res = await alRoles.setUserRolesAsync( user, roles.global.direct, { anyScope: true });
+            const allowed = ( targetId === requesterId ) ? false : await Roles.isAllowed( 'pwix.roles.fn.setUserRoles', requester, target, roles );
+            if( allowed ){
+                res = await Roles.s.removeAssignedRolesFromUser( target, requester );
+                res = await alRoles.setUserRolesAsync( targetId, roles.global.direct, { anyScope: true });
                 for( const it of ( Object.keys( roles.scoped || {} ))){
-                    res = await alRoles.setUserRolesAsync( user, roles.scoped[it].direct, { scope: it });
+                    res = await alRoles.setUserRolesAsync( targetId, roles.scoped[it].direct, { scope: it });
                 }
                 res = await Meteor.users.rawCollection().updateOne({ _id: targetId }, { $set: {
                     updatedAt: new Date(),
-                    updatedBy: userId
+                    updatedBy: requesterId
                 }});
             }
         }
@@ -352,12 +333,10 @@ Roles.s = {
             if( allowed ){
                 return await Meteor.roleAssignment.rawCollection().distinct( 'scope' );
             }
-            //logger.log( 'usedScopes not allowed' );
-            return null;
         }
         catch( e ) {
             logger.error( 'usedScopes()', e );
-            return null;
         }
+        return null;
     }
 };

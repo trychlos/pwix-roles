@@ -26,7 +26,7 @@ const logger = Logger.get();
 
 // keys are roles (name/id)
 // values are arrays of user._id
-let _rolesHash = {};
+const _rolesHash = {};
 
 function _maintainUsersPerRole( cb ){
 

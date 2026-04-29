@@ -7,6 +7,9 @@
     Release date: 
 
     - Define new 'hasScopedRole()' function
+    - Deprecate Roles.allRolesForUser() in favor of Roles.getUserRoles()
+    - Obsolete unused Roles.getUsersInScope()
+    - Obsolete unused Roles.removeUserAssignmentsFromRoles()
 
 ### 1.9.0
 
