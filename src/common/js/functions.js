@@ -346,6 +346,16 @@ Roles.getUsersInScope = async function( scope ){
 };
 
 /**
+ * @locus Anywhere
+ * @param {String} userId a user identifier
+ * @param {String} scope a scope identifier
+ * @returns {Boolean} whether the user has any scoped role
+ */
+Roles.hasScopedRole = async function( userId, scope ){
+    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.hasScopedRole', userId, scope ) : Roles.s.hasScopedRole( userId, scope ));
+};
+
+/**
  * @summary Compute the highest level among the provided list of roles
  * @locus Anywhere
  * @param {Array} roles

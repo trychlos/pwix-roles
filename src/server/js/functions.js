@@ -135,6 +135,20 @@ Roles.s = {
         }
     },
 
+    // whether the userId has any 'scope' scoped role
+    async hasScopedRole( userId, scope, requester=null ){
+        check( userId, Match.NonEmptyString );
+        check( scope, Match.NonEmptyString );
+        try {
+            const fetched = await Meteor.roleAssignment.find({ 'user._id': userId, scope: scope }).fetchAsync();
+            return fetched.length > 0;
+        }
+        catch( e ){
+            logger.error( 'hasScopedRole()', e );
+            return false;
+        }
+    },
+
     // remove all roles for the user
     //  returns a Promise which resolves to true|false
     async removeAllRolesFromUser( user ){

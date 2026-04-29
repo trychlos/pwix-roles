@@ -66,6 +66,11 @@ Meteor.methods({
         return await Roles.s.getUsersInScope( scope, this.userId );
     },
 
+    // filter roles assignments for a scope
+    async 'pwix.Roles.m.hasScopedRole'( userId, scope ){
+        return await Roles.s.hasScopedRole( userId, scope, this.userId );
+    },
+
     // remove all roles for the user
     async 'pwix.Roles.m.removeAllRolesFromUser'( user ){
         logger.warn( 'removeAllRolesFromUser() is obsoleted started with v1.3.2. Please use removeAssignedRolesFromUser()' );

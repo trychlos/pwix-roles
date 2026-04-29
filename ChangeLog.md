@@ -2,11 +2,11 @@
 
 ## ChangeLog
 
-### 1.9.1-rc.0
+### 1.10.0-rc.0
 
     Release date: 
 
-    - 
+    - Define new 'hasScopedRole()' function
 
 ### 1.9.0
 

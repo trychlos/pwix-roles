@@ -334,6 +334,12 @@ The globally exported object.
 
     Available both on client and server.
 
+- `Roles.hasScopedRole( userId, scope )`
+
+    Whether the specified user has any scoped role for the given scope.
+
+    Available both on client and server.
+
 - `Roles.isRoleScoped( role )`
 
     Whether the specified role is defined as scoped.
