@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.10.0-rc.0
+### 1.10.0
 
-    Release date: 
+    Release date: 2026- 5- 2
 
     - Define new 'hasScopedRole()' function
     - Deprecate Roles.allRolesForUser() in favor of Roles.getUserRoles()
@@ -193,4 +193,4 @@
 
 ---
 P. Wieser
-- Last updated on 2026, Apr. 24th
+- Last updated on 2026, May. 2nd
