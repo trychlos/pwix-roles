@@ -46,7 +46,6 @@ Roles.scopes = {
 Tracker.autorun(() => {
     if( Roles.ready()){
         const scopesFn = Roles.configure().scopesFn;
-        logger.debug( 'scopesFn', scopesFn );
         if( scopesFn && _.isFunction( scopesFn )){
             scopesFn().then(( res ) => {
                 res = _.isArray( res ) ? res : [res];
@@ -65,7 +64,6 @@ Tracker.autorun(() => {
             Roles.scopes.handle = Meteor.subscribe( scopesPub );
             const scopesCollection = Roles.configure().scopesCollection || 'pwix_roles_used_scopes';
             Roles.scopes.collection = new Mongo.Collection( scopesCollection );
-            logger.debug( 'scopesPub', scopesPub, 'scopesCollection', scopesCollection );
         }
         // if we have subscribed to a publication ?
         if( Roles.scopes.handle ){
