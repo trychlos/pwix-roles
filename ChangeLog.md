@@ -7,6 +7,7 @@
     Release date: 
 
     - Remove debug lines
+    - Fix Roles.setUserRoles() target user
 
 ### 1.10.0
 

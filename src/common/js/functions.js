@@ -506,7 +506,7 @@ Roles.scopedRoles = function(){
  * @param {Object} roles the roles to be set as an object { global: { direct[] }, scoped: { <scope>: { direct: [] }}}
  */
 Roles.setUserRoles = async function( target, roles, requester ){
-    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.setUserRoles', user, roles ) : Roles.s.setUserRoles( user, roles ));
+    return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.setUserRoles', target, roles ) : Roles.s.setUserRoles( target, roles ));
 };
 
 /**
