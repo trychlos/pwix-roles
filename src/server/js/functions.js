@@ -177,7 +177,7 @@ Roles.s = {
         try {
             const allowed = ( targetId === requesterId ) ? false : await Roles.isAllowed( 'pwix.roles.fn.removeAssignedRolesFromUser', requester, target )
             if( allowed ){
-                const countDeleted = await Meteor.roleAssignment.removeAsync({ 'user._id': targetid });
+                const countDeleted = await Meteor.roleAssignment.removeAsync({ 'user._id': targetId });
                 logger.debug( 'removeAssignedRolesFromUser()', target, countDeleted );
                 return countDeleted !== null;
             }

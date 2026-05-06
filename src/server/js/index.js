@@ -4,6 +4,7 @@
 import '../../common/js/index.js';
 
 import './check_npms.js';
+import './collections.js';
 import './functions.js';
 import './maintain.js';
 import './methods.js';

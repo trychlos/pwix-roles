@@ -2,13 +2,14 @@
 
 ## ChangeLog
 
-### 1.10.1-rc.0
+### 1.11.0-rc.0
 
     Release date: 
 
     - Remove debug lines
     - Fix Roles.setUserRoles() target user
     - Fix call to (deprecated) allRolesForUser()
+    - Define new 'pwix.Roles.p.Assignments.roles' publication, thus bumping minor candidate version number
 
 ### 1.10.0
 

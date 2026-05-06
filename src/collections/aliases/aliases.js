@@ -28,4 +28,4 @@ rolesAliases.schema = new SimpleSchema({
     }
 });
 
-rolesAliases.attachSchema( rolesAliases.schema );
+//rolesAliases.attachSchema( rolesAliases.schema );
