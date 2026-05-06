@@ -8,6 +8,7 @@
 
     - Remove debug lines
     - Fix Roles.setUserRoles() target user
+    - Fix call to (deprecated) allRolesForUser()
 
 ### 1.10.0
 

@@ -84,7 +84,7 @@ Template.pr_scoped_accounts_panel.onCreated( function(){
         if( self.PR.editMode.get()){
             self.PR.userRoles.set( Template.currentData().roles );
         } else {
-            Roles.allRolesForUser( Meteor.userId()).then(( roles ) => {
+            Roles.getUserRoles( Meteor.userId()).then(( roles ) => {
                 self.PR.userRoles.set( _.cloneDeep( roles ));
             });
         }
