@@ -69,6 +69,7 @@ Meteor.methods({
 
     // filter roles assignments for a scope
     async 'pwix.Roles.m.hasScopedRole'( target, scope ){
+        if( !target || !scope ) return false;
         return await Roles.s.hasScopedRole( target, scope, this.userId );
     },
 

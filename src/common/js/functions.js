@@ -370,6 +370,7 @@ Roles.getUserRoles = async function( target, requester ){
  * @returns {Boolean} whether the user has any scoped role
  */
 Roles.hasScopedRole = async function( target, scope, requester ){
+    if( !target || !scope ) return false;
     return await ( Meteor.isClient ? Meteor.callAsync( 'pwix.Roles.m.hasScopedRole', target, scope ) : Roles.s.hasScopedRole( target, scope, requester ));
 };
 

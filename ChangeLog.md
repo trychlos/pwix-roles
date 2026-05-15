@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - hasScopedRole() function and method: protect against null target or scope
 
 ### 1.11.0
 
