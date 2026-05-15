@@ -7,6 +7,7 @@
     Release date: 
 
     - hasScopedRole() function and method: protect against null target or scope
+    - Fix pr_scoped_accounts_panel component to suit the event triggered by AccountsCore
 
 ### 1.11.0
 

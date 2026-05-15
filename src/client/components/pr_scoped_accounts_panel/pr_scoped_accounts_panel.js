@@ -161,7 +161,7 @@ Template.pr_scoped_accounts_panel.helpers({
 Template.pr_scoped_accounts_panel.events({
     // when we have validated the 'add account' selection dialog
     // replace the accounts assigned to this role by the new selected ones
-    'ah-accounts-select .pr-scoped-accounts-panel'( event, instance, data ){
+    'ac-accounts-select .pr-scoped-accounts-panel'( event, instance, data ){
         const node = instance.PR.selectedNode.get();
         let accountsAssignments = [];
         ( instance.PR.accountsAssignments.get() || [] ).forEach(( it ) => {
