@@ -13,7 +13,8 @@
 |    1 | 2023- 2- 2 | have aliases |
 |    3 | 2023- 2- 2 | implement f_CleanupObsoleteRoles at startup |
 |    6 | 2023- 2-10 | prEdit: checks **must also** be done server-side |
-|   14 |  |  |
+|   14 | 2026- 5-18 | have a 'implies' key which defines implied roles (e.g. authorization_manager implies clients_list, clients_groups_list, identities_groups_list and resources_list) |
+|   15 |  |  |
 
 ---
 ## Done
