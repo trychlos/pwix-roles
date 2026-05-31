@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.11.1-rc.0
+### 1.11.1
 
-    Release date: 
+    Release date: 2026- 5-31
 
     - hasScopedRole() function and method: protect against null target or scope
     - Fix pr_scoped_accounts_panel component to suit the event triggered by AccountsCore
@@ -209,4 +209,4 @@
 
 ---
 P. Wieser
-- Last updated on 2026, May. 10th
+- Last updated on 2026, May. 31st
