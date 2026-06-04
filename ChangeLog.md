@@ -6,7 +6,7 @@
 
     Release date: 
 
-    - 
+    - Guard against double 'pwix_roles_used_scopes' collection instanciation
 
 ### 1.11.1
 

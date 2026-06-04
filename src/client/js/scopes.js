@@ -17,6 +17,7 @@ Roles.scopes = {
     labels: new ReactiveDict(),
     // a subcription to the used scopes
     handle: null,
+    collectionName: null,
     collection: null,
 
     // returns the label
@@ -63,7 +64,10 @@ Tracker.autorun(() => {
             const scopesPub = Roles.configure().scopesPub || 'pwix.Roles.p.usedScopes';
             Roles.scopes.handle = Meteor.subscribe( scopesPub );
             const scopesCollection = Roles.configure().scopesCollection || 'pwix_roles_used_scopes';
-            Roles.scopes.collection = new Mongo.Collection( scopesCollection );
+            if( scopesCollection !== Roles.scopes.collectionName ){
+                Roles.scopes.collection = new Mongo.Collection( scopesCollection );
+                Roles.scopes.collectionName = scopesCollection;
+            }
         }
         // if we have subscribed to a publication ?
         if( Roles.scopes.handle ){
