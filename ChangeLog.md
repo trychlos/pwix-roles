@@ -2,9 +2,9 @@
 
 ## ChangeLog
 
-### 1.11.2-rc.0
+### 1.11.2
 
-    Release date: 
+    Release date: 2026- 6-30
 
     - Guard against double 'pwix_roles_used_scopes' collection instanciation
 
@@ -215,4 +215,4 @@
 
 ---
 P. Wieser
-- Last updated on 2026, May. 31st
+- Last updated on 2026, Jun. 30th
